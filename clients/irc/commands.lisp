@@ -6,8 +6,6 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(defvar *connection*)
-
 (define-event command (irc-event)
   ())
 
@@ -16,17 +14,20 @@
                             (host "irc.freenode.net")
                             (port 6667)
                             password
-                            (realname (machine-instance))))
+                            (realname (machine-instance)))
+  :loop *event-loop*)
 
-(define-command disconnect (ev name))
+(define-command disconnect (ev name)
+  :loop *event-loop*)
 
 
 (defmacro define-irc-command (name args &body body)
   (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.commands)))
     (multiple-value-bind (kargs body) (deeds::parse-into-kargs-and-body body)
-      `(define-command ,name (ev ,@args)
+      `(define-command ,name (ev connection ,@args)
+         :loop *event-loop*
          ,@kargs
-         (send-connection *connection* ,@body)))))
+         (send-connection connection ,@body)))))
 
 (define-irc-command pass (password)
   "PASS ~a" password)

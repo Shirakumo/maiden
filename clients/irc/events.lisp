@@ -7,7 +7,9 @@
 (in-package #:org.shirakumo.colleen.clients.irc)
 
 (define-event irc-event ()
-  ())
+  ((connection :initarg :connection :reader connection))
+  (:default-initargs
+   :connection (error "CONNECTION required")))
 
 (define-event reply (irc-event)
   ())
