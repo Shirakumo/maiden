@@ -7,6 +7,7 @@
 (in-package #:cl-user)
 (defpackage #:colleen
   (:nicknames #:org.shirakumo.colleen)
-  (:use #:cl)
-  ;; 
-  (:export))
+  (:use #:cl #:deeds)
+  ;; toolkit.lisp
+  (:export
+   #:with-default-encoding))

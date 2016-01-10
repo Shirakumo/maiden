@@ -14,5 +14,7 @@
   :homepage "https://github.com/Shinmera/colleen"
   :serial T
   :components ((:file "package")
+               (:file "toolkit")
                (:file "documentation"))
-  :depends-on ())
+  :depends-on (:deeds
+               :verbose))
