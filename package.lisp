@@ -8,6 +8,10 @@
 (defpackage #:colleen
   (:nicknames #:org.shirakumo.colleen)
   (:use #:cl #:deeds)
+  ;; event-loop.lisp
+  (:export
+   #:colleen-event-loop
+   #:*event-loop*)
   ;; toolkit.lisp
   (:export
    #:with-default-encoding))

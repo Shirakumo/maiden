@@ -15,6 +15,7 @@
   :serial T
   :components ((:file "package")
                (:file "toolkit")
+               (:file "event-loop")
                (:file "documentation"))
   :depends-on (:deeds
                :verbose))
