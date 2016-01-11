@@ -7,10 +7,10 @@
 (in-package #:cl-user)
 (defpackage #:colleen
   (:nicknames #:org.shirakumo.colleen)
-  (:use #:cl #:deeds)
+  (:use #:cl)
   ;; event-loop.lisp
   (:export
-   #:colleen-event-loop
+   #:event-loop
    #:*event-loop*)
   ;; toolkit.lisp
   (:export

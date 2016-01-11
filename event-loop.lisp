@@ -6,10 +6,10 @@
 
 (in-package #:org.shirakumo.colleen)
 
-(defclass colleen-event-loop (event-loop)
+(defclass event-loop (deeds:event-loop)
   ())
 
-(defmethod handle :before ((event event) (event-loop colleen-event-loop))
+(defmethod deeds:handle :before ((event deeds:event) (event-loop event-loop))
   (v:trace :colleen.event "Handling event ~a" event))
 
-(defvar *event-loop* (start (make-instance 'colleen-event-loop)))
+(defvar *event-loop* (start (make-instance 'event-loop)))
