@@ -12,4 +12,4 @@
 (defmethod deeds:handle :before ((event deeds:event) (event-loop event-loop))
   (v:trace :colleen.event "Handling event ~a" event))
 
-(defvar *event-loop* (start (make-instance 'event-loop)))
+(defvar *event-loop* (deeds:start (make-instance 'event-loop)))
