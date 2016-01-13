@@ -6,7 +6,7 @@
 
 (in-package #:cl-user)
 (defpackage #:colleen-irc-commands
-  (:nicknames #:org.shirakumo.colleen.clients.irc.commands)
+  (:nicknames #:irc #:org.shirakumo.colleen.clients.irc.commands)
   (:use)
   ;;
   (:export
@@ -53,6 +53,6 @@
 
 (defpackage #:colleen-irc
   (:nicknames #:org.shirakumo.colleen.clients.irc)
-  (:use #:cl #:colleen #:deeds #:org.shirakumo.colleen.clients.irc.commands)
+  (:use #:cl #:colleen)
   ;; 
   (:export))

@@ -6,10 +6,14 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(define-event command (irc-event)
-  ())
+(deeds:define-event send-event (irc-event)
+  ((message :initarg :message :reader message)))
 
-(define-command connect (ev name &key
+(deeds:define-handler (sender send-event) (ev)
+  :loop *event-loop*
+  (send-connection (connection ev) (message ev)))
+
+(deeds:define-command connect (ev name &key
                             (nick "Colleen")
                             (host "irc.freenode.net")
                             (port 6667)
@@ -17,17 +21,46 @@
                             (realname (machine-instance)))
   :loop *event-loop*)
 
-(define-command disconnect (ev name)
+(deeds:define-command disconnect (ev name)
   :loop *event-loop*)
 
-
-(defmacro define-irc-command (name args &body body)
-  (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.commands)))
-    (multiple-value-bind (kargs body) (deeds::parse-into-kargs-and-body body)
-      `(define-command ,name (ev connection ,@args)
-         :loop *event-loop*
-         ,@kargs
-         (send-connection connection ,@body)))))
+(defmacro define-irc-command (name args &body options-and-body)
+  (labels ((keyword (a) (intern (string a) :keyword))
+           (lambda-keyword-p (a) (find a lambda-list-keywords))
+           (ensure-list (a) (if (listp a) a (list a)))
+           (unlist (a) (if (listp a) (car a) a))
+           (make-req-field (a)
+             (destructuring-bind (name &rest kargs) (ensure-list a)
+               `(,name :initarg ,(keyword name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
+           (make-opt-field (a)
+             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+               `(,name :initarg ,(keyword name) :initform ,value ,@kargs)))
+           (make-opt-arg (a)
+             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+               (declare (ignore kargs))
+               `(,name ,value))))
+    (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.commands))
+          (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args))))
+      (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
+        (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
+          (destructuring-bind (&key superclasses loop) options
+            `(progn
+               (deeds:define-event ,name (deeds:command-event send-event ,@superclasses)
+                 (,@(mapcar #'make-req-field required)
+                  ,@(mapcar #'make-opt-field optional)
+                  ,@(when rest (list (make-req-field rest)))
+                  ,@(mapcar #'make-opt-field key)))
+               (defun ,name (,@(mapcar #'unlist required)
+                             ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
+                             ,@(when rest `(&rest ,rest))
+                             ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
+                 (deeds:do-issue ,name 
+                   :loop ,loop
+                   ,@(loop for var in pure-args
+                           collect (keyword var) collect var)))
+               (defmethod message ((ev ,name))
+                 (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
+                   (format NIL ,@body))))))))))
 
 (define-irc-command pass (password)
   "PASS ~a" password)
@@ -38,75 +71,115 @@
 (define-irc-command user (username hostname servername realname)
   "USER ~a ~a ~a :~a" username hostname servername realname)
 
-(define-command server (servername hopcount info))
+(define-irc-command server (servername hopcount info)
+  "SERVER ~a ~d :~a" servername hopcount info)
 
-(define-command oper (user password))
+(define-irc-command oper (user password)
+  "OPERA ~a ~a" user password)
 
 (define-irc-command quit (&optional comment)
   "QUIT~@[ :~a~]" comment)
 
-(define-command squit (server comment))
+(define-irc-command squit (server comment)
+  "SQUIT ~a :~a" server comment)
 
-(define-command join (&rest channels))
+(define-irc-command join (&rest channels)
+  "JOIN ~{~a~^,~} ~{~a~^,~}"
+  (loop for chan in channels collect (if (listp chan) (first chan) chan))
+  (loop for chan in channels collect (if (listp chan) (second chan) "")))
 
-(define-command part (&rest channels))
+(define-irc-command part (&rest channels)
+  "PART ~{~a~^,~}" channels)
 
-(define-command mode (target mode &key limit user ban-mask))
+(define-irc-command mode (target mode &key limit user ban-mask)
+  "MODE ~a ~a~@[ ~a~@[ ~a~@[ ~a~]~]~]" target mode limit user ban-mask)
 
-(define-command topic (channel &optional topic))
+(define-irc-command topic (channel &optional topic)
+  "TOPIC ~a~@[ :~a~]" channel topic)
 
-(define-command names (&rest channels))
+(define-irc-command names (&rest channels)
+  "NAMES ~{~a~^,~}" channels)
 
-(define-command list (channels &key server))
+(define-irc-command list (channel/s &key server)
+  "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (ensure-list channel/s) server)
 
-(define-command invite (nickname channel))
+(define-irc-command invite (nickname channel)
+  "INVITE ~a ~a" nickname channel)
 
-(define-command kick (channel user &optional comment))
+(define-irc-command kick (channel user &optional comment)
+  "KICK ~a ~a~@[ :~a~]" channel user comment)
 
-(define-command version (&key server))
+(define-irc-command version (&key server)
+  "VERSION~@[ ~a~]" server)
 
-(define-command stats (&key query server))
+(define-irc-command stats (&key query server)
+  "STATS~@[ ~a~@[ ~a~]~]" query server)
 
-(define-command links (&key remote-server server-mask))
+(define-irc-command links (&key remote-server server-mask)
+  "LINKS~*~@[~:*~@[ ~a~] ~a~]" remote-server server-mask)
 
-(define-command time (&key server))
+(define-irc-command time (&key server)
+  "TIME~@[ ~a~]" server)
 
-(define-command trace (&key server))
+(define-irc-command connect (target &key port remote)
+  "CONNECT ~a~@[ ~a~@[ ~a~]~]" target port remote)
 
-(define-command admin (&key server))
+(define-irc-command trace (&key server)
+  "TRACE~@[ ~a~]" server)
 
-(define-command info (&key server))
+(define-irc-command admin (&key server)
+  "ADMIN~@[ ~a~]" server)
 
-(define-command privmsg (message &rest receivers))
+(define-irc-command info (&key server)
+  "INFO~@[ ~a~]" server)
 
-(define-command notice (nickname text))
+(define-irc-command privmsg (receiver/s message)
+  "PRIVMSG ~{~a~^,~} :~a" (ensure-list receiver/s) message)
 
-(define-command who (&key name opers-only))
+(define-irc-command notice (nickname text)
+  "NOTICE ~a ~a" nickname text)
 
-(define-command whois (nickmasks &key server))
+(define-irc-command who (&key name opers-only)
+  "WHO~@[ ~a~@[ o~]~]" name opers-only)
 
-(define-command whowas (nickname &key count server))
+(define-irc-command whois (nickmask/s &key server)
+  "WHOIS~@[ ~a~] ~{~a~^,~}" server (ensure-list nickmask/s))
 
-(define-command kill (nickname comment))
+(define-irc-command whowas (nickname &key count server)
+  "WHOWAS ~a~@[ ~a~@[ ~a~]~]" nickname count server)
 
-(define-command ping (server &optional other-server))
+(define-irc-command kill (nickname comment)
+  "KILL ~a :~a" nickname comment)
 
-(define-command pong (daemon &optional other-daemon))
+(define-irc-command ping (server &optional other-server)
+  "PING ~a~@[ ~a~]" server other-server)
 
-(define-command error (message))
+(define-irc-command pong (daemon &optional other-daemon)
+  "PONG ~a~@[ ~a~]" daemon other-daemon)
 
-(define-command away (&optional message))
+(define-irc-command error (message)
+  "ERROR :~a" message)
 
-(define-command rehash ())
+(define-irc-command away (&optional message)
+  "AWAY~@[ :~a~]" message)
 
-(define-command restart ())
+(define-irc-command rehash ()
+  "REHASH")
 
-(define-command summon (user &key server))
+(define-irc-command restart ()
+  "RESTART")
 
-(define-command users (&key server))
+(define-irc-command summon (user &key server)
+  "SUMMON ~a~@[ ~a~]" user server)
 
-(define-command wallops (message))
+(define-irc-command users (&key server)
+  "USERS~@[ ~a~]" server)
 
-(define-command userhost (&rest nicknames))
+(define-irc-command wallops (message)
+  "WALLOPS :~a" message)
 
-(define-command ison (&rest nicknames))
+(define-irc-command userhost (&rest nicknames)
+  "USERHOST~{ ~a~}" nicknames)
+
+(define-irc-command ison (&rest nicknames)
+  "ISON~{ ~a~}" nicknames)
