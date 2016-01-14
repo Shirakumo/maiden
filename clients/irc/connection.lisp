@@ -7,6 +7,7 @@
 (in-package #:org.shirakumo.colleen.clients.irc)
 
 (defvar *send-length-limit* 512)
+(defvar *connections* (make-hash-table :test 'equalp))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass connection ()
@@ -30,6 +31,12 @@
      :port 6667
      :encoding :UTF-8)
     (:metaclass deeds::cached-slots-class)))
+
+(defmethod initialize-instance :after ((connection connection) &key)
+  (when (gethash (name connection) *connections*)
+    ;; Error
+    )
+  (setf (gethash (name connection) *connections*) connection))
 
 (defmethod print-object ((connection connection) stream)
   (print-unreadable-object (connection stream :type T)
@@ -74,10 +81,14 @@
                         usocket:connection-reset-error
                         usocket:connection-aborted-error
                         cl:end-of-file)
-                     (lambda () (handle-connection-failure connection))))
+                     (lambda (err)
+                       (v:warn :colleen.client.irc.connection err)
+                       (handle-connection-failure connection))))
       (loop for message = (read-connection connection)
-            for event = (when message (parse-event connection message))
-            do (when event (deeds:issue event *event-loop*)))))
+            for events = (when (and message (string/= message ""))
+                           (parse-reply connection message))
+            do (dolist (event events)
+                 (deeds:issue event *event-loop*)))))
   connection)
 
 (defmethod handle-connection-failure ((connection connection))
@@ -96,18 +107,9 @@
       ;; Slow character by character copy, but since we have to do
       ;; CRLF detection portably, we cannot use READ-LINE.
       (loop with stream = (usocket:socket-stream (socket connection))
-            for char = (read-char stream NIL NIL)
+            for char = (read-char stream)
             do (case char
                  (#\Return
                   (when (eql (peek-char NIL stream NIL NIL) #\Newline)
                     (return)))
-                 ((NIL) (return))
                  (T (write-char char out)))))))
-
-(defmethod parse-event ((connection connection) message)
-  (cl-ppcre:register-groups-bind (NIL prefix command NIL arguments) ("^(:([^ ]+) +)?([^ ]+)( +(.+))?$" message)
-    (let* ((colon (search " :" arguments))
-           (arguments (append (cl-ppcre:split " +" arguments :end (or colon (length arguments)))
-                              (when colon (list (subseq arguments (+ 2 colon)))))))
-      (v:info :colleen.client.irc ":PREFIX ~a :COMMAND ~a :ARGUMENTS ~a" prefix command arguments)
-      (make-instance 'irc-event :connection connection))))
