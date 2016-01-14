@@ -58,12 +58,11 @@
   connection)
 
 (defmethod send-connection ((connection connection) message)
-  (let ((stream (usocket:socket-stream (socket connection))))
+  (let ((stream (usocket:socket-stream (socket connection)))
+        (message (format NIL "~a~c~c" message #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding connection))))
       (warn 'message-too-long-warning :message message))
     (write-string message stream)
-    (write-char #\Return stream)
-    (write-char #\Linefeed stream)
     (finish-output stream))
   connection)
 
