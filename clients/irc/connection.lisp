@@ -9,6 +9,21 @@
 (defvar *send-length-limit* 512)
 (defvar *connections* (make-hash-table :test 'equalp))
 
+(defmethod connection ((name string))
+  (gethash name *connections*))
+
+(defmethod connection ((name symbol))
+  (connection (string name)))
+
+(defun (setf connection) ((name string) (connection connection))
+  (when (gethash name *connections*)
+    (cerror "Replace it." "Connection ~s already exists." name) ;; BETTER ERROR
+    )
+  (setf (gethash name *connections*) connection))
+
+(defun (setf connection) ((name symbol) (connection connection))
+  (setf (connection (string name)) connection))
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass connection ()
     ((name :initarg :name :accessor name)
@@ -30,13 +45,10 @@
      :host (error "HOST required.")
      :port 6667
      :encoding :UTF-8)
-    (:metaclass deeds::cached-slots-class)))
+    (:metaclass deeds:cached-slots-class)))
 
 (defmethod initialize-instance :after ((connection connection) &key)
-  (when (gethash (name connection) *connections*)
-    ;; Error
-    )
-  (setf (gethash (name connection) *connections*) connection))
+  (setf (connection (name connection)) connection))
 
 (defmethod print-object ((connection connection) stream)
   (print-unreadable-object (connection stream :type T)
