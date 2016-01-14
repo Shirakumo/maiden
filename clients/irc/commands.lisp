@@ -14,15 +14,29 @@
   (send-connection (connection ev) (message ev)))
 
 (deeds:define-command connect (ev name &key
-                            (nick "Colleen")
-                            (host "irc.freenode.net")
-                            (port 6667)
-                            password
-                            (realname (machine-instance)))
-  :loop *event-loop*)
+                                  (nick "Colleen")
+                                  (username (machine-instance))
+                                  (realname (machine-instance))
+                                  (host "irc.freenode.net")
+                                  (port 6667)
+                                  password
+                                  (encoding :utf-8))
+  :loop *event-loop*
+  (initiate-connection
+   (make-instance
+    'connection
+    :name name
+    :nickname nick
+    :username username
+    :realname realname
+    :host host
+    :port port
+    :password password
+    :encoding encoding)))
 
 (deeds:define-command disconnect (ev name)
-  :loop *event-loop*)
+  :loop *event-loop*
+  (close-connection name))
 
 (defmacro define-irc-command (name args &body options-and-body)
   (labels ((keyword (a) (intern (string a) :keyword))
