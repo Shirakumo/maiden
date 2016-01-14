@@ -14,4 +14,7 @@
    #:*event-loop*)
   ;; toolkit.lisp
   (:export
+   #:kw
+   #:ensure-list
+   #:unlist
    #:with-default-encoding))
