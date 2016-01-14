@@ -39,39 +39,37 @@
   (close-connection name))
 
 (defmacro define-irc-command (name args &body options-and-body)
-  (labels ((keyword (a) (intern (string a) :keyword))
-           (lambda-keyword-p (a) (find a lambda-list-keywords))
-           (ensure-list (a) (if (listp a) a (list a)))
-           (unlist (a) (if (listp a) (car a) a))
+  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
            (make-req-field (a)
              (destructuring-bind (name &rest kargs) (ensure-list a)
-               `(,name :initarg ,(keyword name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
+               `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
            (make-opt-field (a)
              (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
-               `(,name :initarg ,(keyword name) :initform ,value ,@kargs)))
+               `(,name :initarg ,(kw name) :initform ,value ,@kargs)))
            (make-opt-arg (a)
              (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
                (declare (ignore kargs))
                `(,name ,value))))
-    (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.commands))
+    (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
+          (connection (gensym "CONNECTION"))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args))))
       (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
         (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
-          (destructuring-bind (&key superclasses loop) options
+          (destructuring-bind (&key superclasses (loop '*event-loop*)) options
             `(progn
                (deeds:define-event ,name (deeds:command-event send-event ,@superclasses)
                  (,@(mapcar #'make-req-field required)
                   ,@(mapcar #'make-opt-field optional)
                   ,@(when rest (list (make-req-field rest)))
                   ,@(mapcar #'make-opt-field key)))
-               (defun ,name (,@(mapcar #'unlist required)
+               (defun ,name (,connection
+                             ,@(mapcar #'unlist required)
                              ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
                              ,@(when rest `(&rest ,rest))
                              ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
                  (deeds:do-issue ,name 
-                   :loop ,loop
-                   ,@(loop for var in pure-args
-                           collect (keyword var) collect var)))
+                   :loop ,loop :connection ,connection
+                   ,@(loop for var in pure-args collect (kw var) collect var)))
                (defmethod message ((ev ,name))
                  (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
                    (format NIL ,@body))))))))))
@@ -114,8 +112,8 @@
 (define-irc-command names (&rest channels)
   "NAMES ~{~a~^,~}" channels)
 
-(define-irc-command list (channel/s &key server)
-  "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (ensure-list channel/s) server)
+(define-irc-command list (channels &key server)
+  "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (ensure-list channels) server)
 
 (define-irc-command invite (nickname channel)
   "INVITE ~a ~a" nickname channel)
@@ -147,8 +145,8 @@
 (define-irc-command info (&key server)
   "INFO~@[ ~a~]" server)
 
-(define-irc-command privmsg (receiver/s message)
-  "PRIVMSG ~{~a~^,~} :~a" (ensure-list receiver/s) message)
+(define-irc-command privmsg (receivers message)
+  "PRIVMSG ~{~a~^,~} :~a" (ensure-list receivers) message)
 
 (define-irc-command notice (nickname text)
   "NOTICE ~a ~a" nickname text)
@@ -156,8 +154,8 @@
 (define-irc-command who (&key name opers-only)
   "WHO~@[ ~a~@[ o~]~]" name opers-only)
 
-(define-irc-command whois (nickmask/s &key server)
-  "WHOIS~@[ ~a~] ~{~a~^,~}" server (ensure-list nickmask/s))
+(define-irc-command whois (nickmasks &key server)
+  "WHOIS~@[ ~a~] ~{~a~^,~}" server (ensure-list nickmasks))
 
 (define-irc-command whowas (nickname &key count server)
   "WHOWAS ~a~@[ ~a~@[ ~a~]~]" nickname count server)
