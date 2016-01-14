@@ -92,10 +92,12 @@
   connection)
 
 (defmethod handle-connection-failure ((connection connection))
-  (sleep 5) ;; Eventually write a backoff
+  (v:info :colleen.client.irc.connection "~a Closing connection due to failure." connection)
   (handler-case (close-connection connection)
     (error (err)
-      (v:log :error :colleen.client.irc err)))
+      (v:log :error :colleen.client.irc.connection err)))
+  (sleep 5) ;; Eventually write a backoff
+  (v:info :colleen.client.irc.connection "~a Attempting to recover from failure." connection)
   (initiate-connection connection))
 
 (defmethod read-connection ((connection connection))
