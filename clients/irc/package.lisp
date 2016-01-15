@@ -429,5 +429,6 @@
 (defpackage #:colleen-irc
   (:nicknames #:org.shirakumo.colleen.clients.irc)
   (:use #:cl #:colleen)
+  (:shadow #:client)
   ;; 
   (:export))

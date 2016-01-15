@@ -6,10 +6,8 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(deeds:define-event irc-event ()
-  ((connection :initarg :connection :reader connection))
-  (:default-initargs
-   :connection (error "CONNECTION required")))
+(deeds:define-event irc-event (client-event)
+  ())
 
 (deeds:define-event reply-event (irc-event)
   ((sender :initarg :sender :reader sender)
@@ -27,23 +25,25 @@
 
 (defvar *reply-events* (make-hash-table :test 'equalp))
 
-(defun parse-reply (connection message)
+(defun parse-reply (client message)
   (or
    (cl-ppcre:register-groups-bind (NIL sender NIL user NIL host code NIL args)
        ("^(:([^ ]+)(!([^ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
      (let ((events (or (gethash code *reply-events*)
-                       (and ;; Signal a warning
-                        '(unknown-event)))))
+                       (progn (warn 'unknown-message-event-warning :client client :message message)
+                              '(unknown-event)))))
        (mapcar (lambda (event)
-                 (make-instance event :connection connection :code code :args args
+                 (make-instance event :client client :code code :args args
                                       :sender sender :sender-user user :sender-host host))
                events)))
-   ;; signal an error
-   ))
+   (error 'message-parse-error :client client :message message)))
 
 (defmacro define-irc-reply (name code (regex &rest args))
   (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
-        (code (princ-to-string code))
+        (code (etypecase code
+                (symbol (string code))
+                (string code)
+                (integer (format NIL "~3,'0d" code))))
         (instance (gensym "INSTANCE"))
         (rest (gensym "REST")))
     `(progn
@@ -113,23 +113,23 @@
       (WALLOPS RPL-WALLOPS ":(.*)" (MESSAGE))
       (USERHOST RPL-USERHOST "(.*)" ((NICKNAMES #\ )))
       (ISON RPL-ISON "(.*)" ((NICKNAMES #\ )))
-      (1 RPL-WELCOME "(:.*)" (INFO))
-      (2 RPL-YOURHOST "(:.*)" (INFO))
-      (3 RPL-CREATED "(:.*)" (INFO))
-      (4 RPL-MYINFO "([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+)" (SERVER-NAME VERSION USER-MODES CHAN-MODES))
-      (5 RPL-BOUNCE "(:.*)" (INFO))
-      (6 RPL-MAP "" NIL)
-      (7 RPL-MAPEND "" NIL)
-      (8 RPL-SNOMASK "" NIL)
-      (9 RPL-STATMEMTOT "" NIL)
-      (14 RPL-YOURCOOKIE "" NIL)
-      (15 RPL-MAP "" NIL)
-      (16 RPL-MAPMORE "" NIL)
-      (17 RPL-MAPEND "" NIL)
-      (42 RPL-YOURID "" NIL)
-      (43 RPL-SAVENICK "(:.*)" (INFO))
-      (50 RPL-ATTEMPTINGJUNC "" NIL)
-      (51 RPL-ATTEMPTINGREROUTE "" NIL)
+      (001 RPL-WELCOME "(:.*)" (INFO))
+      (002 RPL-YOURHOST "(:.*)" (INFO))
+      (003 RPL-CREATED "(:.*)" (INFO))
+      (004 RPL-MYINFO "([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+)" (SERVER-NAME VERSION USER-MODES CHAN-MODES))
+      (005 RPL-BOUNCE "(:.*)" (INFO))
+      (006 RPL-MAP "" NIL)
+      (007 RPL-MAPEND "" NIL)
+      (008 RPL-SNOMASK "" NIL)
+      (009 RPL-STATMEMTOT "" NIL)
+      (014 RPL-YOURCOOKIE "" NIL)
+      (015 RPL-MAP "" NIL)
+      (016 RPL-MAPMORE "" NIL)
+      (017 RPL-MAPEND "" NIL)
+      (042 RPL-YOURID "" NIL)
+      (043 RPL-SAVENICK "(:.*)" (INFO))
+      (050 RPL-ATTEMPTINGJUNC "" NIL)
+      (051 RPL-ATTEMPTINGREROUTE "" NIL)
       (200 RPL-TRACELINK "Link
 \([^(]+)(\\.([ ]+))? ([^
 ]+)

@@ -6,12 +6,11 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(deeds:define-event send-event (irc-event)
+(define-event send-event (irc-event)
   ((message :initarg :message :reader message)))
 
-(deeds:define-handler (sender send-event) (ev)
-  :loop *event-loop*
-  (send-connection (connection ev) (message ev)))
+(define-handler (sender send-event) (ev)
+  (send-connection (colleen:client ev) (message ev)))
 
 (deeds:define-command connect (ev name &key
                                   (nick "Colleen")
@@ -24,7 +23,7 @@
   :loop *event-loop*
   (initiate-connection
    (make-instance
-    'connection
+    'client
     :name name
     :nickname nick
     :username username
@@ -51,7 +50,6 @@
                (declare (ignore kargs))
                `(,name ,value))))
     (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
-          (connection (gensym "CONNECTION"))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args))))
       (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
         (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
@@ -62,13 +60,13 @@
                   ,@(mapcar #'make-opt-field optional)
                   ,@(when rest (list (make-req-field rest)))
                   ,@(mapcar #'make-opt-field key)))
-               (defun ,name (,connection
+               (defun ,name (client
                              ,@(mapcar #'unlist required)
                              ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
                              ,@(when rest `(&rest ,rest))
                              ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
                  (deeds:do-issue ,name 
-                   :loop ,loop :connection ,connection
+                   :loop ,loop :client client
                    ,@(loop for var in pure-args collect (kw var) collect var)))
                (defmethod message ((ev ,name))
                  (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
@@ -90,6 +88,7 @@
   "OPERA ~a ~a" user password)
 
 (define-irc-command quit (&optional comment)
+  :superclasses (deeds:blocking-event)
   "QUIT~@[ :~a~]" comment)
 
 (define-irc-command squit (server comment)

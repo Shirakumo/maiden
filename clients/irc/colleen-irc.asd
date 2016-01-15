@@ -16,7 +16,7 @@
   :components ((:file "package")
                (:file "events")
                (:file "commands")
-               (:file "connection")
+               (:file "client")
                (:file "documentation"))
   :depends-on (:colleen
                :usocket
