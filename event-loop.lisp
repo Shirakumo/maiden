@@ -13,3 +13,8 @@
   (v:trace :colleen.event "Handling event ~a" event))
 
 (defvar *event-loop* (deeds:start (make-instance 'event-loop)))
+
+(defmacro define-handler ((name ev) args &body body)
+  `(deeds:define-handler (,name ,ev) ,args
+     :loop *event-loop*
+     ,@body))
