@@ -138,3 +138,8 @@
       (v:warn :colleen.clients.irc.connection "No pong reply in ~s seconds." since-pong))
     (when (< (* (timeout client) 1/5) since-pong)
       (irc:ping client (host client)))))
+
+(define-handler (nick irc:rpl-nick) (ev client sender nickname)
+  (when (string= sender (nickname client))
+    (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
+    (setf (nickname client) nickname)))
