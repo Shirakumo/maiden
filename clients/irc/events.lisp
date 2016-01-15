@@ -28,7 +28,7 @@
 (defun parse-reply (client message)
   (or
    (cl-ppcre:register-groups-bind (NIL sender NIL user NIL host code NIL args)
-       ("^(:([^ ]+)(!([^ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
+       ("^(:([^! ]+)(!([^@ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
      (let ((events (or (gethash code *reply-events*)
                        (progn (warn 'unknown-message-event-warning :client client :message message)
                               '(unknown-event)))))
