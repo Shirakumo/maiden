@@ -15,7 +15,11 @@
   :serial T
   :components ((:file "package")
                (:file "toolkit")
+               (:file "conditions")
                (:file "event-loop")
+               (:file "event")
+               (:file "client")
                (:file "documentation"))
   :depends-on (:deeds
-               :verbose))
+               :verbose
+               :bordeaux-threads))
