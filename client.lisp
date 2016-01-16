@@ -69,8 +69,17 @@
   (print-unreadable-object (client stream :type T)
     (format stream "~a~@[ ~s~]" (name client) (when (client-connected-p client) :connected))))
 
-(defgeneric client-connected-p (client))
-(defgeneric close-connection (client))
+(defgeneric client-connected-p (client)
+  (:method ((name string))
+    (client-connected-p (client name)))
+  (:method ((name symbol))
+    (client-connected-p (client name))))
+
+(defgeneric close-connection (client)
+  (:method ((name string))
+    (close-connection (client name)))
+  (:method ((name symbol))
+    (close-connection (client name))))
 
 (defmethod remove-client :before ((client remote-client))
   (when (client-connected-p client)
@@ -90,7 +99,11 @@
     (format stream "~a~@[ ~s~] ~s ~a:~a"
             (name client) (when (client-connected-p client) :connected) :host (host client) (port client))))
 
-(defgeneric initiate-connection (client))
+(defgeneric initiate-connection (client)
+  (:method ((name string))
+    (initiate-connection (client name)))
+  (:method ((name symbol))
+    (initiate-connection (client name))))
 
 (defmethod initiate-connection :around ((client server-client))
   (with-default-encoding ((encoding client))
