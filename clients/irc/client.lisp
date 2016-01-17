@@ -36,7 +36,7 @@
        (open-stream-p (usocket:socket-stream (socket client)))))
 
 (defmethod initiate-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (nickname username password realname host port socket encoding read-thread) (client client)
+  (deeds:with-fuzzy-slot-bindings (nickname username password realname host port socket read-thread) (client client)
     (setf socket (usocket:socket-connect host port))
     (unless (and read-thread (bt:thread-alive-p read-thread))
       (setf read-thread (bt:make-thread (lambda () (handle-connection client)))))
