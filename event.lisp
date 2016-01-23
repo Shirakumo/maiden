@@ -6,12 +6,24 @@
 
 (in-package #:org.shirakumo.colleen)
 
-(defmacro define-event (name direct-superclasses direct-slots &rest options)
-  `(deeds:define-event ,name ,direct-superclasses
-     ,direct-slots
-     ,@options))
-
 (define-event client-event ()
   ((client :initarg :client :reader client))
   (:default-initargs
    :client (error "CLIENT required.")))
+
+(define-event sender-event (client-event)
+  ((sender :initarg :sender :reader sender))
+  (:default-initargs
+   :sender (error "SENDER required.")))
+
+(define-event message-event (sender-event)
+  ((message :initarg :message :reader message))
+  (:default-initargs
+   :message (error "MESSAGE required.")))
+
+(defgeneric reply (message-event message &key &allow-other-keys))
+
+(define-event authentication-result (sender-event)
+  ((authenticated :initarg :authenticated :reader authenticated))
+  (:default-initargs
+   :authenticated NIL))
