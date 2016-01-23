@@ -19,7 +19,7 @@
 (defvar *block-loop* (deeds:start (make-instance 'block-loop)))
 
 (defmacro do-issue (event &rest args)
-  `(deeds:do-issue ',event ,@args :loop *event-loop*))
+  `(deeds:do-issue ,event ,@args :loop *event-loop*))
 
 (defmacro define-event (name direct-superclasses direct-slots &rest options)
   `(deeds:define-event ,name ,direct-superclasses
