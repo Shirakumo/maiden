@@ -31,41 +31,47 @@
      :loop *event-loop*
      ,@body))
 
-(define-handler (block-bridge event) (ev)
-  :class 'locally-blocking-handler
-  (issue ev *block-loop*))
+(define-handler (block-bridge deeds:event) (ev)
+  :class 'deeds:locally-blocking-handler
+  (deeds:issue ev *block-loop*))
 
 (defclass block-handler (deeds:one-time-handler)
-  ((condition :initform (bt:make-condition-variable) :accessor condition)
+  ((cvar :initform (bt:make-condition-variable) :accessor cvar)
+   (lock :initform (bt:make-lock) :accessor lock)
    (event :initform NIL :accessor event)))
 
 (defun make-block-handler (event-type filter)
-  (let ((handler (make-instance
-                  'block-handler
-                  :event-type event-type
-                  :filter filter
-                  :delivery-function (lambda (ev)
-                                       (setf (event handler) ev)
-                                       (unwind-protect
-                                            (bt:condition-notify (condition handler))
-                                         (deeds:deregister-handler handler *block-loop*))))))
-    (register-handler handler *block-loop*)
-    handler))
+  (let ((handler NIL))
+    (flet ((handler (ev)
+             (setf (event handler) ev)
+             ;; Quickly access lock to make sure the issuer has
+             ;; entered the condition-wait.
+             (bt:with-lock-held ((lock handler)))
+             (unwind-protect
+                  (bt:condition-notify (cvar handler))
+               (deeds:deregister-handler handler *block-loop*))))
+      (setf handler (make-instance
+                     'block-handler
+                     :event-type event-type
+                     :filter filter
+                     :delivery-function #'handler))
+      (deeds:register-handler handler *block-loop*)
+      handler)))
 
 (defmacro with-response (issue response (&key filter timeout) &body body)
   (let ((handler (gensym "HANDLER")))
     (destructuring-bind (issue-event &rest issue-args) (ensure-list issue)
       (destructuring-bind (response-event &optional (event 'ev) &rest response-args) (ensure-list response)
-        `(let ((,handler (make-block-handler ,response-event ,filter)))
-           (do-issue ,issue-event ,@issue-args)
-           (bt:with-lock-held ((deeds:handler-lock ,handler))
-             (case (bt:condition-wait (condition ,handler) (deeds:handler-lock ,handler) :timeout ,timeout)
-               ((NIL)
-                (deeds:deregister-handler ,handler *block-loop*)
-                (stop ,handler))
-               (T
-                (let ((,event (event ,handler)))
-                  (deeds:with-fuzzy-slot-bindings ,response-args (,event ,response-event)
-                    ,@body))))))))))
+        `(let ((,handler (make-block-handler ',response-event ',filter)))
+           (unwind-protect
+                (bt:with-lock-held ((lock ,handler))
+                  (do-issue ,issue-event ,@issue-args)
+                  (when (bt:condition-wait (cvar ,handler) (lock ,handler) :timeout ,timeout)
+                    (let ((,event (event ,handler)))
+                      (declare (ignorable ,event))
+                      (deeds:with-fuzzy-slot-bindings ,response-args (,event ,response-event)
+                        ,@body))))
+             (deeds:deregister-handler ,handler *block-loop*)
+             (deeds:stop ,handler)))))))
 
 
