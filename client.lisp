@@ -61,6 +61,14 @@
   (bt:with-lock-held (*clients-lock*)
     (setf *clients* (remove client *clients*))))
 
+(defclass user-client (client)
+  ()
+  (:metaclass deeds:cached-slots-class))
+
+(defgeneric authenticate (sender client)
+  (:method (sender (client client))
+    (do-issue authentication-result :sender sender :client client)))
+
 (defclass remote-client (client)
   ()
   (:metaclass deeds:cached-slots-class))
