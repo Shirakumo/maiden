@@ -35,43 +35,8 @@
   :class 'deeds:locally-blocking-handler
   (deeds:issue ev *block-loop*))
 
-(defclass block-handler (deeds:one-time-handler)
-  ((cvar :initform (bt:make-condition-variable) :accessor cvar)
-   (lock :initform (bt:make-lock) :accessor lock)
-   (event :initform NIL :accessor event)))
-
-(defun make-block-handler (event-type filter)
-  (let ((handler NIL))
-    (flet ((handler (ev)
-             (setf (event handler) ev)
-             ;; Quickly access lock to make sure the issuer has
-             ;; entered the condition-wait.
-             (bt:with-lock-held ((lock handler)))
-             (unwind-protect
-                  (bt:condition-notify (cvar handler))
-               (deeds:deregister-handler handler *block-loop*))))
-      (setf handler (make-instance
-                     'block-handler
-                     :event-type event-type
-                     :filter filter
-                     :delivery-function #'handler))
-      (deeds:register-handler handler *block-loop*)
-      handler)))
-
-(defmacro with-response (issue response (&key filter timeout) &body body)
-  (let ((handler (gensym "HANDLER")))
-    (destructuring-bind (issue-event &rest issue-args) (ensure-list issue)
-      (destructuring-bind (response-event &optional (event 'ev) &rest response-args) (ensure-list response)
-        `(let ((,handler (make-block-handler ',response-event ',filter)))
-           (unwind-protect
-                (bt:with-lock-held ((lock ,handler))
-                  (do-issue ,issue-event ,@issue-args)
-                  (when (bt:condition-wait (cvar ,handler) (lock ,handler) :timeout ,timeout)
-                    (let ((,event (event ,handler)))
-                      (declare (ignorable ,event))
-                      (deeds:with-fuzzy-slot-bindings ,response-args (,event ,response-event)
-                        ,@body))))
-             (deeds:deregister-handler ,handler *block-loop*)
-             (deeds:stop ,handler)))))))
+(defmacro with-response (issue response (&rest kargs) &body body)
+  `(deeds:with-response ,issue ,response (,@kargs :loop *block-loop*)
+     ,@body))
 
 
