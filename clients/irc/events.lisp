@@ -97,7 +97,7 @@
       (ADMIN RPL-ADMIN "([^ ]+)?" (SERVER))
       (INFO RPL-INFO "([^ ]+)?" (SERVER))
       (PRIVMSG RPL-PRIVMSG "([^ ]+) :(.*)" ((RECEIVERS #\,) MESSAGE))
-      (NOTICE RPL-NOTICE "([^ ]+) ([^ ]+)" (NICKNAME TEXT))
+      (NOTICE RPL-NOTICE "([^ ]+) :(.*)" (NICKNAME MESSAGE))
       (WHO RPL-WHO "(([^ ]+)( o)?)?" (NIL NAME OPERS-ONLY))
       (WHOIS RPL-WHOIS "(([^ ]+) )?([^ ]+)" (NIL SERVER (NICKMASKS #\,)))
       (WHOWAS RPL-WHOWAS "([^ ]+)( ([^ ]+)( ([^ ]+))?)?" (NICKNAME NIL COUNT NIL SERVER))
