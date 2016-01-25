@@ -67,7 +67,7 @@
 
 (defgeneric authenticate (sender client)
   (:method (sender (client client))
-    (do-issue authentication-result :sender sender :client client)))
+    NIL))
 
 (defclass remote-client (client)
   ()

@@ -22,8 +22,3 @@
    :message (error "MESSAGE required.")))
 
 (defgeneric reply (message-event message &key &allow-other-keys))
-
-(define-event authentication-result (sender-event)
-  ((authenticated :initarg :authenticated :reader authenticated))
-  (:default-initargs
-   :authenticated NIL))
