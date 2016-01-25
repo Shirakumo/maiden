@@ -145,3 +145,19 @@
   (when (string= sender (nickname client))
     (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
+
+(defmethod authenticate (nick (client client))
+  (case (services client)
+    (:unknown
+     NIL)
+    (:anope
+     (with-response
+         (irc:privmsg :receivers "NickServ" :message (format NIL "STATUS ~a" nick) :client client)
+         (irc:rpl-notice ev message)
+         (:filter '(eql 0 (search "STATUS" message))
+          :timeout 5)
+       (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
+         (and (string= nick status-nick)
+              (string= code "3")))))
+    ((NIL)
+     T)))
