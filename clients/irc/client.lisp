@@ -12,7 +12,7 @@
   (colleen:client thing))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass client (server-client)
+  (defclass client (server-client user-client)
     ((nickname :initarg :nickname :accessor nickname)
      (username :initarg :username :accessor username)
      (password :initarg :password :accessor password)
@@ -20,14 +20,16 @@
      (socket :initform NIL :accessor socket)
      (timeout :initarg :timeout :accessor timeout)
      (last-pong :initform 0 :accessor last-pong)
-     (read-thread :initform NIL :accessor read-thread))
+     (read-thread :initform NIL :accessor read-thread)
+     (services :initarg :services :accessor services))
     (:default-initargs
      :nickname (machine-instance)
      :username (machine-instance)
      :password NIL
      :realname (machine-instance)
      :port 6667
-     :timeout 60)
+     :timeout 60
+     :services :unknown)
     (:metaclass deeds:cached-slots-class)))
 
 (defmethod client-connected-p ((client client))

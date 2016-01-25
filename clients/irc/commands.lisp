@@ -19,7 +19,8 @@
                                   (host "irc.freenode.net")
                                   (port 6667)
                                   password
-                                  (encoding :utf-8))
+                                  (encoding :utf-8)
+                                  (services :unknown))
   :loop *event-loop*
   (initiate-connection
    (make-instance
@@ -31,7 +32,8 @@
     :host host
     :port port
     :password password
-    :encoding encoding)))
+    :encoding encoding
+    :services services)))
 
 (deeds:define-command disconnect (ev name)
   :loop *event-loop*
