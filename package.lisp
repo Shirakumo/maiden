@@ -16,6 +16,8 @@
    #:add-client
    #:remove-client
    #:list-clients
+   #:user-client
+   #:authenticate
    #:remote-client
    #:client-connected-p
    #:close-connection
@@ -44,13 +46,23 @@
   ;; event-loop.lisp
   (:export
    #:event-loop
+   #:block-loop
    #:*event-loop*
+   #:*block-loop*
+   #:do-issue
+   #:with-event
+   #:define-event
    #:define-handler
-   #:define-event)
+   #:with-response)
   ;; event.lisp
   (:export
    #:client-event
-   #:client)
+   #:client
+   #:sender-event
+   #:sender
+   #:message-event
+   #:message
+   #:reply)
   ;; toolkit.lisp
   (:export
    #:kw
