@@ -18,10 +18,6 @@
 (defvar *event-loop* (deeds:start (make-instance 'event-loop)))
 (defvar *block-loop* (deeds:start (make-instance 'block-loop)))
 
-(define-handler (block-bridge deeds:event) (ev)
-  :class 'deeds:locally-blocking-handler
-  (deeds:issue ev *block-loop*))
-
 (defmacro do-issue (event &rest args)
   `(deeds:do-issue ,event ,@args :loop *event-loop*))
 
@@ -41,6 +37,9 @@
      ,@options-and-body))
 
 (defmacro with-response (issue response (&rest kargs) &body body)
-  `(deeds:with-response ,issue ,response (,@kargs :loop *block-loop*)
+  `(deeds:with-response (,@(ensure-list issue) :loop *event-loop*) ,response (,@kargs :loop *block-loop*)
      ,@body))
 
+(define-handler (block-bridge deeds:event) (ev)
+  :class 'deeds:locally-blocking-handler
+  (deeds:issue ev *block-loop*))
