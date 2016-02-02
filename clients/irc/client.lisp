@@ -17,6 +17,7 @@
      (username :initarg :username :accessor username)
      (password :initarg :password :accessor password)
      (realname :initarg :realname :accessor realname)
+     (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
      (socket :initform NIL :accessor socket)
      (timeout :initarg :timeout :accessor timeout)
      (last-pong :initform 0 :accessor last-pong)
@@ -31,6 +32,10 @@
      :timeout 60
      :services :unknown)
     (:metaclass deeds:cached-slots-class)))
+
+(defmethod initialise-instance :after ((client client) &key)
+  (unless (slot-boundp client 'intended-nickname)
+    (setf (intended-nickname) (nickname client))))
 
 (defmethod client-connected-p ((client client))
   (and (socket client)
@@ -141,10 +146,16 @@
     (when (< (* (timeout client) 1/5) since-pong)
       (irc:ping client (host client)))))
 
-(define-handler (nick irc:rpl-nick) (ev client sender nickname)
-  (when (string= sender (nickname client))
+(define-handler (nick-change irc:rpl-nick) (ev client sender nickname)
+  (when (string-equal sender (nickname client))
     (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
+
+(define-handler (yank-nick irc:rpl-quit) (ev client sender)
+  (when (and (string-equal sender (intended-nickname client))
+             (not (string-equal sender (nick client))))
+    (v:info :colleen.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)
+    (irc:nick client sender)))
 
 (defmethod authenticate (nick (client client))
   (case (services client)
