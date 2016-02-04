@@ -6,9 +6,7 @@
 
 (in-package #:cl-user)
 (asdf:defsystem colleen-serialize
-  :defsystem-depends-on (:colleen)
-  :class "colleen:module"
-  :version "3.0.0"
+  :version "1.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -18,4 +16,5 @@
   :components ((:file "package")
                (:file "client")
                (:file "documentation"))
-  :depends-on ())
+  :depends-on (:colleen
+               :cl-conspack))
