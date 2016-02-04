@@ -5,7 +5,7 @@
 |#
 
 (in-package #:cl-user)
-(asdf:defsystem colleen-relay
+(asdf:defsystem colleen-remote
   :defsystem-depends-on (:colleen)
   :class "colleen:module"
   :version "3.0.0"
