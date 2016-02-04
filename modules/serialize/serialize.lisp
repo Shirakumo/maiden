@@ -12,6 +12,10 @@
   (dolist (string strings)
     (write-string string *serialize-output*)))
 
+(define-compiler-macro p (&rest strings)
+  `(progn ,@(loop for string in strings
+                  collect `(write-string ,string *serialize-output*))))
+
 (defun pc (&rest things)
   (dolist (thing things)
     (princ thing *serialize-output*)))
@@ -19,6 +23,13 @@
 (defun p1 (&rest things)
   (dolist (thing things)
     (prin1 thing *serialize-output*)))
+
+(defun pe (string &optional (transform #'identity))
+  (loop for char across string
+        for obj = (funcall transform char)
+        do (when (find obj "#:()[]{}<>\\\" ")
+             (write-char #\\ *serialize-output*))
+           (write-char obj *serialize-output*)))
 
 (defun serialize (object)
   (with-output-to-string (*serialize-output*)
@@ -39,13 +50,16 @@
 (defmethod serialize-object ((object symbol))
   (when (keywordp object)
     (p ":"))
-  (loop for char across (symbol-name object)
-        do (when (find char ":()[]{}<>\\\" ")
-             (write-char #\\ *serialize-output*))
-           (write-char char *serialize-output*)))
+  (pe (symbol-name object) #'char-downcase))
 
 (defmethod serialize-object ((object real))
   (p1 object))
+
+(defmethod serialize-object ((object complex))
+  (p "<:complex ")
+  (serialize-object (realpart object))
+  (serialize-object (imagpart object))
+  (p ">"))
 
 (defmethod serialize-object ((object array))
   (p "[")
@@ -73,3 +87,18 @@
              (p " ") (serialize-object name)
              (p " ") (serialize-object (slot-value object name))))
   (p ">"))
+
+(defmethod serialize-object ((object pathname))
+  (p "<:pathname ")
+  (pe (namestring object))
+  (p ">"))
+
+(defmethod serialize-object ((object package))
+  (p "<:package ")
+  (pe (package-name object))
+  (p ">"))
+
+(defmethod serialize-object ((object character))
+  (p "#")
+  (write-char object *serialize-output*))
+
