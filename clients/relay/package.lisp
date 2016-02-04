@@ -4,8 +4,8 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:cl-user)
-(defpackage #:colleen-relay
+(in-package #:colleen-user)
+(define-module #:colleen-relay
   (:nicknames #:org.shirakumo.colleen.clients.relay)
   (:use #:cl #:colleen)
   (:shadow #:client)

@@ -6,6 +6,8 @@
 
 (in-package #:cl-user)
 (asdf:defsystem colleen-irc
+  :defsystem-depends-on (:colleen)
+  :class "colleen:module"
   :version "3.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -18,7 +20,6 @@
                (:file "commands")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:colleen
-               :usocket
+  :depends-on (:usocket
                :babel
                :cl-ppcre))

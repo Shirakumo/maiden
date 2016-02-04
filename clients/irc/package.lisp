@@ -4,8 +4,8 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:cl-user)
-(defpackage #:colleen-irc-events
+(in-package #:colleen-user)
+(define-module #:colleen-irc-events
   (:nicknames #:irc #:org.shirakumo.colleen.clients.irc.events)
   (:use)
   ;; commands.lisp

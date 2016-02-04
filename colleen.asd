@@ -5,7 +5,12 @@
 |#
 
 (in-package #:cl-user)
+
+(pushnew :deeds-no-startup *features*)
+
 (asdf:defsystem colleen
+  :defsystem-depends-on (:modularize)
+  :class "modularize:module"
   :version "3.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -22,4 +27,6 @@
                (:file "documentation"))
   :depends-on (:deeds
                :verbose
-               :bordeaux-threads))
+               :ubiquitous-concurrent
+               :bordeaux-threads
+               :pathname-utils))

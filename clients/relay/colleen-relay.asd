@@ -6,6 +6,8 @@
 
 (in-package #:cl-user)
 (asdf:defsystem colleen-relay
+  :defsystem-depends-on (:colleen)
+  :class "colleen:module"
   :version "3.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"

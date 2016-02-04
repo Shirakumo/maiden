@@ -5,9 +5,23 @@
 |#
 
 (in-package #:cl-user)
-(defpackage #:colleen
+(modularize:define-module #:colleen
   (:nicknames #:org.shirakumo.colleen)
-  (:use #:cl)
+  (:use #:cl #:modularize)
+  ;; re-export from modularize
+  (:export
+   #:virtual-module
+   #:virtual-module-name
+   #:define-module
+   #:define-module-extension
+   #:delete-module
+   #:module
+   #:module-p
+   #:module-storage
+   #:module-storage-remove
+   #:module-identifier
+   #:module-name
+   #:current-module)
   ;; client.lisp
   (:export
    #:client
@@ -69,3 +83,7 @@
    #:ensure-list
    #:unlist
    #:with-default-encoding))
+
+(defpackage #:colleen-user
+  (:nicknames #:org.shirakumo.colleen.user)
+  (:use #:cl #:colleen))
