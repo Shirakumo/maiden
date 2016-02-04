@@ -8,7 +8,7 @@
 (asdf:defsystem colleen-relay
   :defsystem-depends-on (:colleen)
   :class "colleen:module"
-  :version "3.0.0"
+  :version "0.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
