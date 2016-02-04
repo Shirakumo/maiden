@@ -16,5 +16,4 @@
   :components ((:file "package")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:colleen
-               :cl-conspack))
+  :depends-on (:colleen))
