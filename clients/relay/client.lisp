@@ -7,19 +7,18 @@
 (in-package #:org.shirakumo.colleen.clients.relay)
 
 (define-client base-client (server-client)
-  ((socket :initform NIL :accessor socket)))
+  ((socket :initform NIL :accessor socket)
+   (read-thread :initform NIL :accessor read-thread)))
 
 (defmethod client-connected-p ((client base-client))
-  (and (socket client)
-       (usocket:socket-stream (socket client))
-       (open-stream-p (usocket:socket-stream (socket client)))))
+  (socket client))
 
-(defmethod initiate-connection ((base-client base-client))
+(defmethod initiate-connection :around ((base-client base-client))
   (deeds:with-fuzzy-slot-bindings (read-thread) (base-client base-client)
     (call-next-method)
     (unless (and read-thread (bt:thread-alive-p read-thread))
       (setf read-thread (bt:make-thread (lambda () (handle-connection base-client))))))
-  client)
+  base-client)
 
 (defmethod close-connection ((base-client base-client))
   (deeds:with-fuzzy-slot-bindings (socket read-thread) (base-client base-client)
@@ -49,13 +48,23 @@
     (setf socket (usocket:socket-listen host port))))
 
 (defmethod handle-connection ((server server))
-  (loop for socket = (socket-accept (socket server))
-        do (v:info :colleen.client.relay.connection "Accepting new relay client ~a" socket)
-           (initiate-connection (make-instance 'client :server server :socket socket))))
+  (v:info :colleen.client.relay.server "Waiting for new clients...")
+  (loop for socket = (usocket:socket-accept (socket server))
+        do (v:info :colleen.client.relay.server "Accepting new relay client ~a" socket)
+           (initiate-connection (make-instance 'client :server server :socket socket
+                                                       :host (usocket:get-peer-address socket)
+                                                       :port (usocket:get-peer-port socket)
+                                                       :name NIL))))
 
 (define-client client (base-client)
-  ((server :initarg :server :accessor server))
-  (:default-initargs :server NIL))
+  ((server :initarg :server :accessor server)
+   (socket :initarg :socket :accessor socket))
+  (:default-initargs :server NIL :socket NIL))
+
+(defmethod client-connected-p ((client client))
+  (and (call-next-method)
+       (usocket:socket-stream (socket client))
+       (open-stream-p (usocket:socket-stream (socket client)))))
 
 (defmethod initiate-connection ((client client))
   (deeds:with-fuzzy-slot-bindings (socket host port) (client client)
@@ -70,7 +79,7 @@
 
 (defmethod handle-connection ((client client))
   (loop for message = (read-connection client)
-        do (v:info :colleen.client.relay.connection "New message ~s" message)
+        do (v:info :colleen.client.relay.client "New message ~s" message)
            (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
                  until input-available
                  do (when (and (server client) (not (client-connected-p (server client))))
