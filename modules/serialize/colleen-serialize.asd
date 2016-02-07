@@ -14,6 +14,7 @@
   :homepage "https://github.com/Shinmera/colleen"
   :serial T
   :components ((:file "package")
-               (:file "client")
+               (:file "serialize")
                (:file "documentation"))
-  :depends-on (:colleen))
+  :depends-on (:colleen
+               :cl-store))
