@@ -6,54 +6,86 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass server (server-client)
-    ((socket :initform NIL :accessor socket))
-    (:metaclass deeds:cached-slots-class))
-  
-  (defclass client (server-client)
-    ((socket :initform NIL :accessor socket))
-    (:metaclass deeds:cached-slots-class)))
+(define-client base-client (server-client)
+  ((socket :initform NIL :accessor socket)))
 
-(defmethod client-connected-p ((client client))
+(defmethod client-connected-p ((client base-client))
   (and (socket client)
        (usocket:socket-stream (socket client))
        (open-stream-p (usocket:socket-stream (socket client)))))
 
-(defmethod initiate-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (host port socket spawn-thread) (client client)
-    (setf socket (usocket:socket-listen host port))
-    (unless (and spawn-thread (bt:thread-alive-p spawn-thread))
-      (setf spawn-thread (bt:make-thread (lambda () (handle-connection client))))))
+(defmethod initiate-connection ((base-client base-client))
+  (deeds:with-fuzzy-slot-bindings (read-thread) (base-client base-client)
+    (call-next-method)
+    (unless (and read-thread (bt:thread-alive-p read-thread))
+      (setf read-thread (bt:make-thread (lambda () (handle-connection base-client))))))
   client)
 
-(defmethod close-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (socket spawn-thread) (client client)
-    (when (and spawn-thread (bt:thread-alive-p spawn-thread) (not (eql (bt:current-thread) spawn-thread)))
-      (bt:interrupt-thread spawn-thread (lambda () (invoke-restart 'abort)))
-      (setf spawn-thread NIL))
-    (deeds:stop (deeds:handler 'spawner *event-loop*))
-    (usocket:socket-close socket)
-    (setf socket NIL)))
+(defmethod close-connection ((base-client base-client))
+  (deeds:with-fuzzy-slot-bindings (socket read-thread) (base-client base-client)
+    (unwind-protect
+         (when (and read-thread (bt:thread-alive-p read-thread))
+           (cond ((eql (bt:current-thread) read-thread)
+                  (when (find-restart 'abort)
+                    (abort)))
+                 (T
+                  (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort)))
+                  (setf read-thread NIL))))
+      (when socket
+        (usocket:socket-close socket)
+        (setf socket NIL)))))
+
+(defmethod handle-connection :around ((base-client base-client))
+  (unwind-protect
+       (with-simple-restart (abort "Exit the connection handling.")
+         (call-next-method))
+    (close-connection base-client)))
+
+(define-client server (base-client)
+  ())
+
+(defmethod initiate-connection ((server server))
+  (deeds:with-fuzzy-slot-bindings (socket host port) (server server)
+    (setf socket (usocket:socket-listen host port))))
+
+(defmethod handle-connection ((server server))
+  (loop for socket = (socket-accept (socket server))
+        do (v:info :colleen.client.relay.connection "Accepting new relay client ~a" socket)
+           (initiate-connection (make-instance 'client :server server :socket socket))))
+
+(define-client client (base-client)
+  ((server :initarg :server :accessor server))
+  (:default-initargs :server NIL))
+
+(defmethod initiate-connection ((client client))
+  (deeds:with-fuzzy-slot-bindings (socket host port) (client client)
+    (unless socket
+      (setf socket (usocket:socket-connect host port)))))
+
+(defmethod close-connection :after ((client client))
+  (do-issue relay-connection-closed :client client))
+
+(defmethod initiate-connection :after ((client client))
+  (do-issue relay-connection-initiated :client client))
 
 (defmethod handle-connection ((client client))
-  (with-simple-restart (abort "Exit the connection handling.")
-    (loop for socket = (socket-accept (socket client))
-          do (do-issue new-relay-client :client client :socket socket))))
+  (loop for message = (read-connection client)
+        do (v:info :colleen.client.relay.connection "New message ~s" message)
+           (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
+                 until input-available
+                 do (when (and (server client) (not (client-connected-p (server client))))
+                      (close-connection client)))))
 
-(define-event new-relay-client (client-event)
-  ((socket :initarg :socket :reader socket))
-  (:default-initargs
-   :socket (error "SOCKET required.")))
+(define-event relay-connection-initiated (client-event)
+  ())
 
-(define-handler (spawner new-relay-client) (ev socket)
-  :class 'deeds:parallel-handler
-  (unwind-protect
-       (loop for message = (read-connection client)
-             for event = (when (and message (string/= message ""))
-                            (parse-event client message))
-             do (deeds:issue event *event-loop*)
-                (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
-                      until input-available
-                      do (ping-connection client)))
-    (usocket:socket-close socket)))
+(define-event relay-connection-closed (client-event)
+  ())
+
+(defmethod read-connection ((client client))
+  (read-line (usocket:socket-stream (socket client))))
+
+(defmethod send-connection ((client client) message)
+  (let ((stream (usocket:socket-stream (socket client))))
+    (write-line message stream)
+    (finish-output stream)))
