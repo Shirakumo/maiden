@@ -30,6 +30,7 @@
    #:add-client
    #:remove-client
    #:list-clients
+   #:define-client
    #:user-client
    #:authenticate
    #:remote-client

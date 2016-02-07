@@ -9,11 +9,10 @@
 (defvar *clients* ())
 (defvar *clients-lock* (bt:make-lock "Colleen clients registry lock"))
 
-(defclass client ()
+(deeds:define-cached-slots-class client ()
   ((name :initarg :name :reader name))
   (:default-initargs
-   :name (error "NAME required."))
-  (:metaclass deeds:cached-slots-class))
+   :name (error "NAME required.")))
 
 (defmethod shared-initialize :around ((client client) slot-names &rest args &key name)
   (etypecase name
@@ -61,17 +60,23 @@
   (bt:with-lock-held (*clients-lock*)
     (setf *clients* (remove client *clients*))))
 
-(defclass user-client (client)
-  ()
-  (:metaclass deeds:cached-slots-class))
+(defmacro define-client (name direct-superclasses direct-slots &rest options)
+  (when (loop for super in direct-superclasses
+              never (c2mop:subclassp (find-class super) (find-class 'client)))
+    (push 'client direct-superclasses))
+  `(deeds:define-cached-slots-class ,name ,direct-superclasses
+     ,direct-slots
+     ,@options))
+
+(define-client user-client ()
+  ())
 
 (defgeneric authenticate (sender client)
   (:method (sender (client client))
     NIL))
 
-(defclass remote-client (client)
-  ()
-  (:metaclass deeds:cached-slots-class))
+(define-client remote-client ()
+  ())
 
 (defmethod print-object ((client remote-client) stream)
   (print-unreadable-object (client stream :type T)
@@ -93,14 +98,13 @@
   (when (client-connected-p client)
     (cerror "Remove the client anyway." 'client-still-connected-error :client client)))
 
-(defclass server-client (remote-client)
+(define-client server-client (remote-client)
   ((host :initarg :host :accessor host)
    (port :initarg :port :accessor port)
    (encoding :initarg :encoding :accessor encoding))
   (:default-initargs
    :host (error "HOST required.")
-   :encoding :utf-8)
-  (:metaclass deeds:cached-slots-class))
+   :encoding :utf-8))
 
 (defmethod print-object ((client server-client) stream)
   (print-unreadable-object (client stream :type T)
