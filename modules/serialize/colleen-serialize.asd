@@ -17,4 +17,7 @@
                (:file "serialize")
                (:file "documentation"))
   :depends-on (:colleen
-               :cl-store))
+               :cl-store
+               :chipz
+               :salza2
+               :trivial-gray-streams))
