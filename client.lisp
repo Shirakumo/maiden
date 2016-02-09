@@ -51,7 +51,7 @@
                           return cons)))
       (cond (existing
              (cerror "Replace the client." 'client-already-exists-error
-                     :client client :existing (car existing))
+                     :client client :existing-client (car existing))
              (setf (car existing) client))
             (T
              (push client *clients*))))))
