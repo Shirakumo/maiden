@@ -64,6 +64,7 @@
   client)
 
 (defmethod send-connection ((client client) message)
+  ;; FIXME: multithread
   (let ((stream (usocket:socket-stream (socket client)))
         (message (format NIL "~a~c~c" message #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
