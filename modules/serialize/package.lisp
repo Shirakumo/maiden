@@ -6,5 +6,5 @@
 
 (in-package #:colleen-user)
 (defpackage #:colleen-serialize
-  (:nicknames #:irc #:org.shirakumo.colleen.modules.serialize)
+  (:nicknames #:org.shirakumo.colleen.modules.serialize)
   (:use #:cl))

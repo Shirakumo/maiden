@@ -10,7 +10,7 @@
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Relay client for Colleen"
+  :description "Serialisation support for Colleen events."
   :homepage "https://github.com/Shinmera/colleen"
   :serial T
   :components ((:file "package")
