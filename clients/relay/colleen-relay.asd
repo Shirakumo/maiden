@@ -19,5 +19,4 @@
                (:file "client")
                (:file "documentation"))
   :depends-on (:usocket
-               :babel
-               :cl-ppcre))
+               :colleen-serialize))

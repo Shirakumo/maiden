@@ -49,7 +49,7 @@
 
 (defmethod handle-connection ((server server))
   (v:info :colleen.client.relay.server "Waiting for new clients...")
-  (loop for socket = (usocket:socket-accept (socket server))
+  (loop for socket = (usocket:socket-accept (socket server) :element-type '(unsigned-byte 8))
         do (v:info :colleen.client.relay.server "Accepting new relay client ~a" socket)
            (initiate-connection (make-instance 'client :server server :socket socket
                                                        :host (usocket:get-peer-address socket)
@@ -69,7 +69,7 @@
 (defmethod initiate-connection ((client client))
   (deeds:with-fuzzy-slot-bindings (socket host port) (client client)
     (unless socket
-      (setf socket (usocket:socket-connect host port)))))
+      (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
 
 (defmethod close-connection :after ((client client))
   (do-issue relay-connection-closed :client client))
@@ -92,9 +92,16 @@
   ())
 
 (defmethod read-connection ((client client))
-  (read-line (usocket:socket-stream (socket client))))
+  (colleen-serialize::deserialize (usocket:socket-stream (socket client))))
 
 (defmethod send-connection ((client client) message)
-  (let ((stream (usocket:socket-stream (socket client))))
-    (write-line message stream)
-    (finish-output stream)))
+  (colleen-serialize::serialize message (usocket:socket-stream (socket client))))
+
+#|
+(ql:quickload :colleen-relay)
+(in-package :colleen-relay)
+(defvar *server* (make-instance 'server :host "127.0.0.1" :port 2222 :name "server"))
+(defvar *client* (make-instance 'client :host "127.0.0.1" :port 2222 :name "client"))
+(initiate-connection *server*)
+(initiate-connection *client*)
+|#
