@@ -78,12 +78,13 @@
   (do-issue relay-connection-initiated :client client))
 
 (defmethod handle-connection ((client client))
-  (loop for message = (read-connection client)
-        do (v:info :colleen.client.relay.client "New message ~s" message)
-           (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
-                 until input-available
-                 do (when (and (server client) (not (client-connected-p (server client))))
-                      (close-connection client)))))
+  (with-simple-restart (continue "Discard the message and continue.")
+    (loop for message = (read-connection client)
+          do (v:info :colleen.client.relay.client "New message ~s" message)
+             (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
+                   until input-available
+                   do (when (and (server client) (not (client-connected-p (server client))))
+                        (close-connection client))))))
 
 (define-event relay-connection-initiated (client-event)
   ())
