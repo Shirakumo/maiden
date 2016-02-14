@@ -21,7 +21,8 @@
   :components ((:file "package")
                (:file "toolkit")
                (:file "conditions")
-               (:file "event-loop")
+               (:file "core")
+               (:file "component")
                (:file "event")
                (:file "client")
                (:file "documentation"))
@@ -29,4 +30,5 @@
                :verbose
                :ubiquitous-concurrent
                :bordeaux-threads
-               :pathname-utils))
+               :pathname-utils
+               :uuid))
