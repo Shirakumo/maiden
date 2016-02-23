@@ -7,7 +7,8 @@
 (in-package #:cl-user)
 (modularize:define-module #:colleen
   (:nicknames #:org.shirakumo.colleen)
-  (:use #:cl #:modularize)
+  (:use #:cl #:modularize #:deeds)
+  (:shadow #:define-handler)
   ;; re-export from modularize
   (:export
    #:virtual-module
