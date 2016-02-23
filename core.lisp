@@ -23,7 +23,7 @@
 
 (defclass entity () ())
 
-(defclass named-entity (named-entity)
+(defclass named-entity (entity)
   ((name :initarg :name :accessor name)
    (id :initform (uuid:make-v4-uuid) :accessor id)))
 
@@ -90,6 +90,6 @@
 (defclass core-block-loop (event-loop)
   ())
 
-(defmethod deeds:handle :before ((event event) (event-loop core-event-loop))
+(defmethod handle :before ((event event) (event-loop core-event-loop))
   (v:trace :colleen.event "Handling event ~a" event))
 
