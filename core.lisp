@@ -25,7 +25,9 @@
 
 (defclass named-entity (entity)
   ((name :initarg :name :accessor name)
-   (id :initform (uuid:make-v4-uuid) :accessor id)))
+   (id :initform (uuid:make-v4-uuid) :accessor id))
+  (:default-initargs
+   :name NIL))
 
 (defmethod print-object ((named-entity named-entity) stream)
   (print-unreadable-object (named-entity stream :type T)
