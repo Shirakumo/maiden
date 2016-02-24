@@ -27,16 +27,6 @@
   (:export
    #:define-event
    #:do-issue)
-  ;; component.lisp
-  (:export
-   #:component-class
-   #:handlers
-   #:component
-   #:cores
-   #:start
-   #:stop
-   #:define-handler
-   #:define-component)
   ;; conditions.lisp
   (:export
    #:colleen-condition
@@ -54,6 +44,16 @@
    #:message
    #:message-parse-error
    #:unknown-message-event-warning)
+  ;; consumer.lisp
+  (:export
+   #:consumer-class
+   #:handlers
+   #:consumer
+   #:cores
+   #:start
+   #:stop
+   #:define-handler
+   #:define-consumer)
   ;; core.lisp
   (:export
    #:matches

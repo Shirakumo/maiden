@@ -22,7 +22,7 @@
                (:file "toolkit")
                (:file "conditions")
                (:file "core")
-               (:file "component")
+               (:file "consumer")
                (:file "event")
                (:file "client")
                (:file "documentation"))
