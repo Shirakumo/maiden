@@ -23,6 +23,10 @@
    #:module-identifier
    #:module-name
    #:current-module)
+  ;; re-export from deeds
+  (:export
+   #:define-event
+   #:do-issue)
   ;; component.lisp
   (:export
    #:component-class
