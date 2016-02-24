@@ -23,14 +23,12 @@
   T)
 
 (defmethod (setf handlers) :after (handlers (class component-class))
-  (make-instances-obsolete class)
-  ;; "Ping" each instance to ensure update-instance-for-redefined-class
-  ;; is always called as soon as we need it.
   (setf (instances class)
         (loop for pointer in (instances class)
               for component = (trivial-garbage:weak-pointer-value pointer)
               when component
-              collect (progn (slot-value component 'handlers) pointer))))
+              collect (prog1 pointer 
+                        (reinitialize-handlers component (handlers class))))))
 
 (defclass component (named-entity)
   ((handlers :initform () :accessor handlers)
@@ -42,15 +40,7 @@
   (dolist (handler (handlers (class-of component)))
     (push (instantiate-handler handler component) (handlers component))))
 
-;; Since the call of this can happen at a random point in time (for our intents and
-;; purposes) after the redefinition happens --which includes when one of the handlers'
-;; threads actually runs-- we need some system to prevent this from happening as much
-;; as possible, as otherwise outdated handler code might be running that would lead
-;; to unexpected behaviour. We do this by storing a weak reference to each component
-;; instance within its class and then use that to ping one of its slots, thus
-;; necessarily triggering the calling of this method.
-(defmethod update-instance-for-redefined-class :after ((component component) added-slots discarded-slots plist &rest initargs)
-  (declare (ignore added-slots discarded-slots plist initargs))
+(defmethod reinitialize-handlers ((component component) handlers)
   (v:info :colleen.core.component "~a updating handlers." component)
   (let ((cores (cores component)))
     ;; Deregister
@@ -58,7 +48,7 @@
     ;; Rebuild
     (stop component)
     (setf (handlers component) ())
-    (dolist (handler (handlers (class-of component)))
+    (dolist (handler handlers)
       (push (instantiate-handler handler component) (handlers component)))
     (start component)
     ;; Reregister
