@@ -66,8 +66,24 @@
 (defmethod consumer (id (core core))
   (find id (consumers core) :test #'matches))
 
+(defmethod add-consumer ((consumers list) target)
+  (dolist (consumer consumers)
+    (add-consumer consumer target)))
+
+(defmethod add-consumer (consumer (targets list))
+  (dolist (target targets)
+    (add-consumer consumer target)))
+
 (defmethod add-consumer (consumer (core core))
   (pushnew consumer (consumers core) :test #'matches))
+
+(defmethod remove-consumer ((consumers list) target)
+  (dolist (consumer consumers)
+    (remove-consumer consumer target)))
+
+(defmethod remove-consumer (consumer (targets list))
+  (dolist (target targets)
+    (remove-consumer consumer target)))
 
 (defmethod remove-consumer (id (core core))
   (setf (consumers core) (remove id (consumers core) :test #'matches)))
