@@ -30,5 +30,5 @@
                       (T item)) into new-list
         finally (return (if found new-list (cons thing new-list)))))
 
-(defmacro update-list (thing list &key (key #'identity) (test #'eql))
+(defmacro update-list (thing list &key (key '#'identity) (test '#'eql))
   `(setf ,list (make-updated-list ,thing ,list ,key ,test)))
