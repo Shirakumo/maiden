@@ -60,12 +60,12 @@
     (setf (handlers component) ())
     (dolist (handler (handlers (class-of component)))
       (push (instantiate-handler handler component) (handlers component)))
+    (start component)
     ;; Reregister
     (add-consumer component cores)))
 
 (defmethod add-consumer :after ((component component) (core core))
-  (dolist (handler (handlers component))
-    (register-handler handler core))
+  (register-handler (handlers component) core)
   (push core (cores component)))
 
 (defmethod remove-consumer ((component component) (everywhere (eql T)))
@@ -118,19 +118,21 @@
     (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body body)
       (let ((class (or (getf options :class) 'queued-handler))
             (options (deeds::removef options :class)))
-        `(update-list (make-instance
-                       'abstract-handler
-                       :target-class ',class
-                       :name ',name
-                       :event-type ',event-type
-                       :delivery-function (lambda (,compvar ,event)
-                                            (declare (ignorable ,compvar ,event))
-                                            (with-origin (',name)
-                                              (with-fuzzy-slot-bindings ,args (,event ,event-type)
-                                                ,@body)))
-                       ,@options)
-                      (handlers (find-class ',component))
-                      :key #'name)))))
+        `(progn
+           (update-list (make-instance
+                         'abstract-handler
+                         :target-class ',class
+                         :name ',name
+                         :event-type ',event-type
+                         :delivery-function (lambda (,compvar ,event)
+                                              (declare (ignorable ,compvar ,event))
+                                              (with-origin (',name)
+                                                (with-fuzzy-slot-bindings ,args (,event ,event-type)
+                                                  ,@body)))
+                         ,@options)
+                        (handlers (find-class ',component))
+                        :key #'name)
+           (list ',component ',name))))))
 
 (defmacro define-component (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
