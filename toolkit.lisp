@@ -19,3 +19,16 @@
   `(let (#+sbcl (sb-impl::*default-external-format* ,encoding)
          #+ccl (ccl:*default-external-format* ,encoding))
      ,@body))
+
+(defun make-updated-list (thing list key test)
+  (loop with found = NIL
+        with thing-key = (funcall key thing)
+        for item in list
+        collect (cond ((funcall test (funcall key item) thing-key)
+                       (setf found T)
+                       thing)
+                      (T item)) into new-list
+        finally (return (if found new-list (cons thing new-list)))))
+
+(defmacro update-list (thing list &key (key #'identity) (test #'eql))
+  `(setf ,list (make-updated-list ,thing ,list ,key ,test)))
