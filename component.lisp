@@ -73,17 +73,16 @@
     (remove-consumer component core)))
 
 (defmethod remove-consumer :after ((component component) (core core))
-  (dolist (handler (handlers component))
-    (deregister-handler handler core))
+  (deregister-handler (handlers component) core)
   (setf (cores component) (remove core (cores component))))
 
 (defmethod start ((component component))
-  (dolist (handler (handlers component))
-    (start handler)))
+  (start (handlers component))
+  component)
 
 (defmethod stop ((component component))
-  (dolist (handler (handlers component))
-    (stop handler)))
+  (stop (handlers component))
+  component)
 
 (defclass abstract-handler ()
   ((target-class :initarg :target-class :accessor target-class)

@@ -51,11 +51,13 @@
 
 (defmethod start ((core core))
   (start (event-loop core))
-  (start (block-loop core)))
+  (start (block-loop core))
+  core)
 
 (defmethod stop ((core core))
   (stop (event-loop core))
-  (stop (block-loop core)))
+  (stop (block-loop core))
+  core)
 
 (defmethod issue ((event event) (core core))
   (issue event (event-loop core)))
@@ -65,6 +67,10 @@
 
 (defmethod consumer (id (core core))
   (find id (consumers core) :test #'matches))
+
+(defmethod add-consumer :around (consumer target)
+  (call-next-method)
+  consumer)
 
 (defmethod add-consumer ((consumers list) target)
   (dolist (consumer consumers)
@@ -76,6 +82,10 @@
 
 (defmethod add-consumer (consumer (core core))
   (pushnew consumer (consumers core) :test #'matches))
+
+(defmethod remove-consumer :around (consumer target)
+  (call-next-method)
+  consumer)
 
 (defmethod remove-consumer ((consumers list) target)
   (dolist (consumer consumers)
@@ -94,10 +104,10 @@
 (defmethod (setf handler) ((handler handler) (core core))
   (setf (handler (event-loop core)) handler))
 
-(defmethod register-handler ((handler handler) (core core))
+(defmethod register-handler (handler (core core))
   (register-handler handler (event-loop core)))
 
-(defmethod deregister-handler ((handler handler) (core core))
+(defmethod deregister-handler (handler (core core))
   (deregister-handler handler (event-loop core)))
 
 (defclass core-event-loop (compiled-event-loop)
