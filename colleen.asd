@@ -21,9 +21,10 @@
   :components ((:file "package")
                (:file "toolkit")
                (:file "conditions")
+               (:file "event")
                (:file "core")
                (:file "consumer")
-               (:file "event")
+               (:file "agent")
                (:file "client")
                (:file "documentation"))
   :depends-on (:deeds
