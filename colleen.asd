@@ -30,5 +30,6 @@
                :verbose
                :ubiquitous-concurrent
                :bordeaux-threads
+               :trivial-garbage
                :pathname-utils
                :uuid))
