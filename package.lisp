@@ -23,25 +23,16 @@
    #:module-identifier
    #:module-name
    #:current-module)
-  ;; client.lisp
+  ;; component.lisp
   (:export
-   #:client
-   #:name
-   #:client
-   #:add-client
-   #:remove-client
-   #:list-clients
-   #:define-client
-   #:user-client
-   #:authenticate
-   #:remote-client
-   #:client-connected-p
-   #:close-connection
-   #:server-client
-   #:host
-   #:port
-   #:encoding
-   #:initiate-connection)
+   #:component-class
+   #:handlers
+   #:component
+   #:cores
+   #:start
+   #:stop
+   #:define-handler
+   #:define-component)
   ;; conditions.lisp
   (:export
    #:colleen-condition
@@ -59,26 +50,34 @@
    #:message
    #:message-parse-error
    #:unknown-message-event-warning)
-  ;; event-loop.lisp
+  ;; core.lisp
   (:export
+   #:matches
+   #:entity
+   #:named-entity
+   #:name
+   #:id
+   #:core
    #:event-loop
    #:block-loop
-   #:*event-loop*
-   #:*block-loop*
-   #:do-issue
-   #:with-event
-   #:define-event
-   #:define-handler
-   #:with-response)
+   #:consumers
+   #:consumer
+   #:add-consumer
+   #:remove-consumer
+   #:handler
+   #:register-handler
+   #:deregister-handler
+   #:core-event-loop
+   #:core-block-loop)
   ;; event.lisp
   (:export
+   #:respond
    #:client-event
    #:client
    #:sender-event
    #:sender
    #:message-event
-   #:message
-   #:reply)
+   #:message)
   ;; toolkit.lisp
   (:export
    #:kw
