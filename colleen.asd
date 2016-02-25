@@ -22,6 +22,7 @@
                (:file "toolkit")
                (:file "conditions")
                (:file "event")
+               (:file "entity")
                (:file "core")
                (:file "consumer")
                (:file "agent")
