@@ -7,7 +7,8 @@
 (in-package #:org.shirakumo.colleen)
 
 (defclass consumer-class (standard-class)
-  ((handlers :initform () :accessor handlers)
+  ((direct-handlers :initform () :accessor direct-handlers)
+   (handlers :initform () :accessor handlers)
    (instances :initform () :accessor instances)))
 
 (defmethod c2mop:validate-superclass ((class consumer-class) (superclass t))
@@ -22,6 +23,25 @@
 (defmethod c2mop:validate-superclass ((class consumer-class) (superclass consumer-class))
   T)
 
+(defun cascade-handler-changes (class)
+  (let ((handlers (copy-list (direct-handlers class))))
+    (loop for superclass in (c2mop:class-direct-superclasses class)
+          when (c2mop:subclassp superclass 'consumer)
+          do (loop for handler in (handlers superclass)
+                   unless (find (name handler) handlers :key #'name)
+                   do (push handler handlers)))
+    (setf (handlers class) handlers))
+  (loop for sub-class in (c2mop:class-direct-subclasses class)
+        when (and (c2mop:subclassp sub-class 'consumer-class)
+                  (c2mop:class-finalized-p sub-class))
+        do (cascade-handler-changes sub-class)))
+
+(defmethod c2mop:finalize-inheritance :after ((class consumer-class))
+  (dolist (super (c2mop:class-direct-superclasses class))
+    (unless (c2mop:class-finalized-p super)
+      (c2mop:finalize-inheritance super)))
+  (cascade-handler-changes class))
+
 (defmethod (setf handlers) :after (handlers (class consumer-class))
   (setf (instances class)
         (loop for pointer in (instances class)
@@ -29,6 +49,16 @@
               when consumer
               collect (prog1 pointer 
                         (reinitialize-handlers consumer (handlers class))))))
+
+(defmethod (setf direct-handlers) :after (handlers (class consumer-class))
+  (c2mop:finalize-inheritance class))
+
+(defun update-handler (handler class-ish)
+  (let ((class (etypecase class-ish
+                 (consumer-class class-ish)
+                 (consumer (class-of class-ish))
+                 (symbol (find-class class-ish)))))
+    (update-list handler (direct-handlers class) :key #'name)))
 
 (defclass consumer (named-entity)
   ((handlers :initform () :accessor handlers)
@@ -109,19 +139,19 @@
       (let ((class (or (getf options :class) 'queued-handler))
             (options (deeds::removef options :class)))
         `(progn
-           (update-list (make-instance
-                         'abstract-handler
-                         :target-class ',class
-                         :name ',name
-                         :event-type ',event-type
-                         :delivery-function (lambda (,compvar ,event)
-                                              (declare (ignorable ,compvar ,event))
-                                              (with-origin (',name)
-                                                (with-fuzzy-slot-bindings ,args (,event ,event-type)
-                                                  ,@body)))
-                         ,@options)
-                        (handlers (find-class ',consumer))
-                        :key #'name)
+           (update-handler
+            (make-instance
+             'abstract-handler
+             :target-class ',class
+             :name ',name
+             :event-type ',event-type
+             :delivery-function (lambda (,compvar ,event)
+                                  (declare (ignorable ,compvar ,event))
+                                  (with-origin (',name)
+                                    (with-fuzzy-slot-bindings ,args (,event ,event-type)
+                                      ,@body)))
+             ,@options)
+            ',consumer)
            (list ',consumer ',name))))))
 
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
