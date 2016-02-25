@@ -16,8 +16,8 @@
 (define-condition agent-already-exists-error (agent-condition)
   ((existing-agent :initarg :existing-agent :reader existing-agent))
   (:default-initargs :existing-agent (error "EXISTING-AGENT required."))
-  (:report (lambda (c s) (format s "An agent of the same class ~s (~a) already exists.
-                                 (class-name (class-of (agent c)))" (existing-agent c)))))
+  (:report (lambda (c s) (format s "An agent of the same class ~s (~a) already exists."
+                                 (class-name (class-of (agent c))) (existing-agent c)))))
 
 (define-condition client-condition (colleen-condition)
   ((client :initarg :client :reader client))
