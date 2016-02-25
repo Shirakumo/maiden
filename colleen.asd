@@ -34,4 +34,5 @@
                :bordeaux-threads
                :trivial-garbage
                :pathname-utils
+               :closer-mop
                :uuid))
