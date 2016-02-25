@@ -34,7 +34,7 @@
   (:method ((name symbol))
     (close-connection (client name))))
 
-(defmethod remove-client :before ((client remote-client))
+(defmethod remove-consumer :before ((client remote-client) target)
   (when (client-connected-p client)
     (cerror "Remove the client anyway." 'client-still-connected-error :client client)))
 
