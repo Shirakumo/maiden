@@ -8,30 +8,25 @@
 
 (defvar *send-length-limit* 512)
 
-(defun client (thing)
-  (colleen:client thing))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass client (server-client user-client)
-    ((nickname :initarg :nickname :accessor nickname)
-     (username :initarg :username :accessor username)
-     (password :initarg :password :accessor password)
-     (realname :initarg :realname :accessor realname)
-     (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
-     (socket :initform NIL :accessor socket)
-     (timeout :initarg :timeout :accessor timeout)
-     (last-pong :initform 0 :accessor last-pong)
-     (read-thread :initform NIL :accessor read-thread)
-     (services :initarg :services :accessor services))
-    (:default-initargs
-     :nickname (machine-instance)
-     :username (machine-instance)
-     :password NIL
-     :realname (machine-instance)
-     :port 6667
-     :timeout 60
-     :services :unknown)
-    (:metaclass deeds:cached-slots-class)))
+(define-consumer client (server-client user-client)
+  ((nickname :initarg :nickname :accessor nickname)
+   (username :initarg :username :accessor username)
+   (password :initarg :password :accessor password)
+   (realname :initarg :realname :accessor realname)
+   (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
+   (socket :initform NIL :accessor socket)
+   (timeout :initarg :timeout :accessor timeout)
+   (last-pong :initform 0 :accessor last-pong)
+   (read-thread :initform NIL :accessor read-thread)
+   (services :initarg :services :accessor services))
+  (:default-initargs
+   :nickname (machine-instance)
+   :username (machine-instance)
+   :password NIL
+   :realname (machine-instance)
+   :port 6667
+   :timeout 60
+   :services :unknown))
 
 (defmethod initialise-instance :after ((client client) &key)
   (unless (slot-boundp client 'intended-nickname)
@@ -43,7 +38,7 @@
        (open-stream-p (usocket:socket-stream (socket client)))))
 
 (defmethod initiate-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (nickname username password realname host port socket read-thread) (client client)
+  (with-slots (nickname username password realname host port socket read-thread) client
     (setf socket (usocket:socket-connect host port))
     (unless (and read-thread (bt:thread-alive-p read-thread))
       (setf read-thread (bt:make-thread (lambda () (handle-connection client)))))
@@ -53,7 +48,7 @@
   client)
 
 (defmethod close-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (socket read-thread) (client client)
+  (with-slots (socket read-thread) client
     (when (open-stream-p (usocket:socket-stream socket))
       (irc:quit client))
     (when (and read-thread (bt:thread-alive-p read-thread) (not (eql (bt:current-thread) read-thread)))
@@ -131,11 +126,13 @@
                         (unread-char char stream))))
                  (T (write-char char out)))))))
 
-(define-handler (ping irc:rpl-ping) (ev client server other-server)
+(define-handler (client ping irc:rpl-ping) (client ev server other-server)
+  :match-consumer client
   (setf (last-pong client) (get-universal-time))
   (irc:pong client server other-server))
 
-(define-handler (pong irc:rpl-pong) (ev client)
+(define-handler (client pong irc:rpl-pong) (client ev)
+  :match-consumer client
   (setf (last-pong client) (get-universal-time)))
 
 (defmethod ping-connection ((client client))
@@ -147,12 +144,14 @@
     (when (< (* (timeout client) 1/5) since-pong)
       (irc:ping client (host client)))))
 
-(define-handler (nick-change irc:rpl-nick) (ev client sender nickname)
+(define-handler (client nick-change irc:rpl-nick) (client ev sender nickname)
+  :match-consumer client
   (when (string-equal sender (nickname client))
     (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
 
-(define-handler (yank-nick irc:rpl-quit) (ev client sender)
+(define-handler (client yank-nick irc:rpl-quit) (client ev sender)
+  :match-consumer client
   (when (and (string-equal sender (intended-nickname client))
              (not (string-equal sender (nick client))))
     (v:info :colleen.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)

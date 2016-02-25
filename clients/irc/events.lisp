@@ -6,10 +6,10 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(deeds:define-event irc-event (client-event)
+(define-event irc-event (client-event)
   ())
 
-(deeds:define-event reply-event (irc-event)
+(define-event reply-event (irc-event)
   ((sender :initarg :sender :reader sender)
    (sender-user :initarg :sender-user :reader sender-user)
    (sender-host :initarg :sender-host :reader sender-host)
@@ -20,7 +20,7 @@
   (print-unreadable-object (reply-event stream :type T :identity T)
     (format stream "~s ~a" :sender (sender reply-event))))
 
-(deeds:define-event unknown-event (reply-event)
+(define-event unknown-event (reply-event)
   ())
 
 (defvar *reply-events* (make-hash-table :test 'equalp))
@@ -47,7 +47,7 @@
         (instance (gensym "INSTANCE"))
         (rest (gensym "REST")))
     `(progn
-       (deeds:define-event ,name (reply-event)
+       (define-event ,name (reply-event)
          ,(loop for arg in args
                 for (name delim) = (ensure-list arg NIL)
                 when name

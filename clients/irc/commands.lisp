@@ -9,35 +9,8 @@
 (define-event send-event (irc-event)
   ((message :initarg :message :reader message)))
 
-(define-handler (sender send-event) (ev)
-  (send-connection (colleen:client ev) (message ev)))
-
-(deeds:define-command connect (ev name &key
-                                  (nick "Colleen")
-                                  (username (machine-instance))
-                                  (realname (machine-instance))
-                                  (host "irc.freenode.net")
-                                  (port 6667)
-                                  password
-                                  (encoding :utf-8)
-                                  (services :unknown))
-  :loop *event-loop*
-  (initiate-connection
-   (make-instance
-    'client
-    :name name
-    :nickname nick
-    :username username
-    :realname realname
-    :host host
-    :port port
-    :password password
-    :encoding encoding
-    :services services)))
-
-(deeds:define-command disconnect (ev name)
-  :loop *event-loop*
-  (close-connection name))
+(define-handler (client sender send-event) (client ev)
+  (send-connection client (message ev)))
 
 (defmacro define-irc-command (name args &body options-and-body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
@@ -57,7 +30,7 @@
         (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
           (destructuring-bind (&key superclasses (loop '*event-loop*)) options
             `(progn
-               (deeds:define-event ,name (deeds:command-event send-event ,@superclasses)
+               (define-event ,name (deeds:command-event send-event ,@superclasses)
                  (,@(mapcar #'make-req-field required)
                   ,@(mapcar #'make-opt-field optional)
                   ,@(when rest (list (make-req-field rest)))
@@ -67,7 +40,7 @@
                              ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
                              ,@(when rest `(&rest ,rest))
                              ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
-                 (deeds:do-issue ,name 
+                 (do-issue ,name 
                    :loop ,loop :client client
                    ,@(loop for var in pure-args collect (kw var) collect var)))
                (defmethod message ((ev ,name))
