@@ -14,9 +14,3 @@
 
 (defmethod matches ((a agent) (b agent))
   (eql (class-of a) (class-of b)))
-
-(defmethod add-consumer ((agent agent) (core core))
-  (let ((existing (find agent (consumers core) :test #'matches)))
-    (when existing
-      (cerror "Add it anyway." 'agent-already-exists-error :agent agent :existing-agent existing)))
-  (call-next-method))
