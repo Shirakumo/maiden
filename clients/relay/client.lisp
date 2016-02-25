@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(define-client base-client (server-client)
+(define-consumer base-client (server-client)
   ((socket :initform NIL :accessor socket)
    (read-thread :initform NIL :accessor read-thread)))
 
@@ -14,14 +14,14 @@
   (socket client))
 
 (defmethod initiate-connection :around ((base-client base-client))
-  (deeds:with-fuzzy-slot-bindings (read-thread) (base-client base-client)
+  (with-slots (read-thread) base-client
     (call-next-method)
     (unless (and read-thread (bt:thread-alive-p read-thread))
       (setf read-thread (bt:make-thread (lambda () (handle-connection base-client))))))
   base-client)
 
 (defmethod close-connection ((base-client base-client))
-  (deeds:with-fuzzy-slot-bindings (socket read-thread) (base-client base-client)
+  (with-slots (socket read-thread) base-client
     (unwind-protect
          (when (and read-thread (bt:thread-alive-p read-thread))
            (cond ((eql (bt:current-thread) read-thread)
@@ -40,11 +40,11 @@
          (call-next-method))
     (close-connection base-client)))
 
-(define-client server (base-client)
+(define-consumer server (base-client)
   ())
 
 (defmethod initiate-connection ((server server))
-  (deeds:with-fuzzy-slot-bindings (socket host port) (server server)
+  (with-slots (socket host port) server
     (setf socket (usocket:socket-listen host port))))
 
 (defmethod handle-connection ((server server))
@@ -56,7 +56,7 @@
                                                        :port (usocket:get-peer-port socket)
                                                        :name NIL))))
 
-(define-client client (base-client)
+(define-consumer client (base-client)
   ((server :initarg :server :accessor server)
    (socket :initarg :socket :accessor socket))
   (:default-initargs :server NIL :socket NIL))
@@ -67,15 +67,9 @@
        (open-stream-p (usocket:socket-stream (socket client)))))
 
 (defmethod initiate-connection ((client client))
-  (deeds:with-fuzzy-slot-bindings (socket host port) (client client)
+  (with-slots (socket host port) client
     (unless socket
       (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
-
-(defmethod close-connection :after ((client client))
-  (do-issue relay-connection-closed :client client))
-
-(defmethod initiate-connection :after ((client client))
-  (do-issue relay-connection-initiated :client client))
 
 (defmethod handle-connection ((client client))
   (with-simple-restart (continue "Discard the message and continue.")
