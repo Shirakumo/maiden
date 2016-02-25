@@ -5,6 +5,7 @@
 |#
 
 (in-package #:cl-user)
+
 (modularize:define-module #:colleen
   (:nicknames #:org.shirakumo.colleen)
   (:use #:cl #:modularize #:deeds)
@@ -27,6 +28,19 @@
   (:export
    #:define-event
    #:do-issue)
+  ;; client.lisp
+  (:export
+   #:client
+   #:user-client
+   #:authenticate
+   #:remote-client
+   #:client-connected-p
+   #:close-connection
+   #:server-client
+   #:host
+   #:port
+   #:encoding
+   #:initiate-connection)
   ;; conditions.lisp
   (:export
    #:colleen-condition
