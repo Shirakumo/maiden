@@ -35,4 +35,5 @@
                :trivial-garbage
                :pathname-utils
                :closer-mop
-               :uuid))
+               :uuid
+               :usocket))

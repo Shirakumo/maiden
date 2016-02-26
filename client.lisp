@@ -6,14 +6,25 @@
 
 (in-package #:org.shirakumo.colleen)
 
+(defgeneric authenticate (sender client))
+(defgeneric client-connected-p (client))
+(defgeneric close-connection (client))
+(defgeneric initiate-connection (client))
+(defgeneric handle-connection (client))
+(defgeneric process (message tcp-client))
+(defgeneric send (thing tcp-client))
+(defgeneric receive (tcp-client))
+(defgeneric ping (tcp-client))
+(defgeneric accept (socket tcp-server))
+(defgeneric make-tcp-server-client (server socket))
+
 (define-consumer client () ())
 
 (define-consumer user-client (client)
   ())
 
-(defgeneric authenticate (sender client)
-  (:method (sender (client client))
-    NIL))
+(defmethod authenticate (sender (client user-client))
+  NIL)
 
 (define-consumer remote-client (client)
   ())
@@ -22,41 +33,133 @@
   (print-unreadable-object (client stream :type T)
     (format stream "~a~@[ ~s~]" (name client) (when (client-connected-p client) :connected))))
 
-(defgeneric client-connected-p (client)
-  (:method ((name string))
-    (client-connected-p (client name)))
-  (:method ((name symbol))
-    (client-connected-p (client name))))
-
-(defgeneric close-connection (client)
-  (:method ((name string))
-    (close-connection (client name)))
-  (:method ((name symbol))
-    (close-connection (client name))))
-
 (defmethod remove-consumer :before ((client remote-client) target)
   (when (client-connected-p client)
     (cerror "Remove the client anyway." 'client-still-connected-error :client client)))
 
-(define-consumer server-client (remote-client)
+(define-consumer ip-client (remote-client)
   ((host :initarg :host :accessor host)
-   (port :initarg :port :accessor port)
-   (encoding :initarg :encoding :accessor encoding))
+   (port :initarg :port :accessor port))
   (:default-initargs
-   :host (error "HOST required.")
-   :encoding :utf-8))
+   :host (error "HOST required.")))
 
-(defmethod print-object ((client server-client) stream)
+(defmethod print-object ((client ip-client) stream)
   (print-unreadable-object (client stream :type T)
     (format stream "~a~@[ ~s~] ~s ~a:~a"
             (name client) (when (client-connected-p client) :connected) :host (host client) (port client))))
 
-(defgeneric initiate-connection (client)
-  (:method ((name string))
-    (initiate-connection (client name)))
-  (:method ((name symbol))
-    (initiate-connection (client name))))
+(define-consumer socket-client (ip-client)
+  ((socket :initform NIL :accessor socket)
+   (read-thread :initform NIL :accessor read-thread)))
 
-(defmethod initiate-connection :around ((client server-client))
+(defmethod client-connected-p ((client socket-client))
+  (socket client))
+
+(defmethod initiate-connection :around ((socket-client socket-client))
+  (with-slots (read-thread) socket-client
+    (call-next-method)
+    (unless (and read-thread (bt:thread-alive-p read-thread))
+      (setf read-thread (bt:make-thread (lambda () (handle-connection socket-client))))))
+  socket-client)
+
+(defmethod close-connection ((socket-client socket-client))
+  (with-slots (socket read-thread) socket-client
+    (unwind-protect
+         (when (and read-thread (bt:thread-alive-p read-thread))
+           (cond ((eql (bt:current-thread) read-thread)
+                  (when (find-restart 'abort)
+                    (abort)))
+                 (T
+                  (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort)))
+                  (setf read-thread NIL))))
+      (when socket
+        (usocket:socket-close socket)
+        (setf socket NIL))))
+  socket-client)
+
+(defmethod handle-connection :around ((socket-client socket-client))
+  (unwind-protect
+       (with-simple-restart (abort "Exit the connection handling.")
+         (call-next-method))
+    (close-connection socket-client)))
+
+(define-consumer text-connection-client (socket-client)
+  ((encoding :initarg :encoding :accessor encoding)
+   (buffer :initarg :buffer :accessor buffer))
+  (:default-initargs
+   :encoding :utf-8
+   :buffer :line))
+
+(defmethod initiate-connection :around ((client text-connection-client))
   (with-default-encoding ((encoding client))
     (call-next-method)))
+
+(defmethod receive ((client text-connection-client))
+  (etypecase (buffer client)
+    ((eql :line) (read-line (usocket:socket-stream (socket client))))
+    (string (read-sequence (buffer client) (usocket:socket-stream (socket client))))))
+
+(defmethod send ((message string) (client text-connection-client))
+  (write-string message (usocket:socket-stream (socket client))))
+
+(define-consumer tcp-client (socket-client)
+  ((ping-interval :initarg :ping-interval :accessor ping-interval))
+  (:default-initargs
+   :ping-interval 5))
+
+(defmethod client-connected-p ((client tcp-client))
+  (and (call-next-method)
+       (usocket:socket-stream (socket client))
+       (open-stream-p (usocket:socket-stream (socket client)))))
+
+(defmethod initiate-connection ((client tcp-client))
+  (with-slots (socket host port) client
+    (unless socket
+      (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
+
+(defmethod handle-connection ((client client))
+  (with-simple-restart (continue "Discard the message and continue.")
+    (loop for message = (receive client)
+          do (process message client)
+             (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 5))
+                   until input-available
+                   do (ping client)))))
+
+(defmethod ping ((client tcp-client))
+  client)
+
+(define-consumer tcp-server (socket-client)
+  ((clients :initform () :accessor clients)))
+
+(defmethod initiate-connection ((server tcp-server))
+  (with-slots (socket host port) server
+    (setf socket (usocket:socket-listen host port))))
+
+(defmethod close-connection :after ((server tcp-server))
+  (loop for client = (car (clients server))
+        do (loop while (client-connected-p client)
+                 do (sleep 0.1))
+           (pop (clients server))))
+
+(defmethod handle-connection ((server tcp-server))
+  (loop for socket = (usocket:socket-accept (socket server) :element-type '(unsigned-byte 8))
+        do (push (accept socket server) (clients server))))
+
+(defmethod accept (socket (server tcp-server))
+  (initiate-connection (make-tcp-server-client server socket)))
+
+(defmethod make-tcp-server-client ((server tcp-server) socket)
+  (make-instance 'tcp-server-client
+                 :server server :socket socket
+                 :host (usocket:get-peer-address socket)
+                 :port (usocket:get-peer-port socket)
+                 :name NIL))
+
+(define-consumer tcp-server-client (tcp-client)
+  ((server :initarg :server :accessor server))
+  (:default-initargs
+   :server (error "SERVER required.")))
+
+(defmethod ping :before ((client tcp-server-client))
+  (unless (client-connected-p (server client))
+    (close-connection client)))

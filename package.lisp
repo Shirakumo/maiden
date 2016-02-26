@@ -30,17 +30,35 @@
    #:do-issue)
   ;; client.lisp
   (:export
-   #:client
-   #:user-client
    #:authenticate
-   #:remote-client
    #:client-connected-p
    #:close-connection
-   #:server-client
+   #:initiate-connection
+   #:handle-connection
+   #:process
+   #:send
+   #:receive
+   #:ping
+   #:accept
+   #:make-tcp-server-client
+   #:client
+   #:user-client
+   #:remote-client
+   #:ip-client
    #:host
    #:port
+   #:socket-client
+   #:socket
+   #:read-thread
+   #:text-connection-client
    #:encoding
-   #:initiate-connection)
+   #:buffer
+   #:tcp-client
+   #:ping-interval
+   #:tcp-server
+   #:clients
+   #:tcp-server-client
+   #:server)
   ;; conditions.lisp
   (:export
    #:colleen-condition
