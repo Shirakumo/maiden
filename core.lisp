@@ -28,6 +28,10 @@
   (stop (block-loop core))
   core)
 
+(defmethod issue :before ((event event) (core core))
+  (deeds:with-immutable-slots-unlocked ()
+    (setf (slot-value event 'event-loop) core)))
+
 (defmethod issue ((event event) (core core))
   (issue event (event-loop core)))
 
