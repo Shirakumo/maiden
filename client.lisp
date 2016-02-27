@@ -105,6 +105,35 @@
   (bt:with-lock-held ((lock client))
     (call-next-method)))
 
+(define-consumer reconnecting-client (remote-client)
+  ((failures :initform 0 :accessor failures)
+   (max-failures :initarg :max-failures :accessor max-failures)
+   (backoff :initarg :backoff :accessor backoff)
+   (interval :initarg :interval :accessor interval))
+  (:default-initargs
+   :max-failures 6
+   :backoff :exponential
+   :intarval 2))
+
+(defmethod handle-connection-failure (err (client reconnecting-client))
+  (handler-case (close-connection client)
+    (error (err)
+      (v:log :error :colleen.client.reconnection err)))
+  (loop
+    (when (< (max-failures client) (failures client))
+      (error 'client-reconnection-exceeded-error :client client))
+    (incf (failures client))
+    (sleep (etypecase (backoff client)
+             (:constant (interval client))
+             (:linear (* (interval client) (failures client)))
+             (:exponential (expt (interval client) (failures client)))))
+    (when (handler-case (initiate-connection client)
+            (error (err)
+              (v:log :error :colleen.client.reconnection err)
+              NIL))
+      (setf (failures client) 0)
+      (return))))
+
 (define-consumer text-connection-client (socket-client)
   ((encoding :initarg :encoding :accessor encoding)
    (buffer :initarg :buffer :accessor buffer))

@@ -56,6 +56,11 @@
    #:socket-client
    #:socket
    #:read-thread
+   #:reconnecting-client
+   #:failures
+   #:max-failures
+   #:backoff
+   #:interval
    #:text-connection-client
    #:encoding
    #:buffer

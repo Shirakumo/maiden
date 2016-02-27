@@ -45,6 +45,11 @@
   (:report (lambda (c s) (format s "The client ~a is still connected!"
                                  (client c)))))
 
+(define-condition client-reconnection-exceeded-error (client-error)
+  ()
+  (:report (lambda (c s) (format s "Client ~a exceeded its reconnection attempts."
+                                 (client c)))))
+
 (define-condition client-timeout-error (client-error)
   ((timeout :initarg :timeout :reader timeout))
   (:default-initargs :timeout NIL)
