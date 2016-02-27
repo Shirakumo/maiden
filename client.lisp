@@ -190,6 +190,9 @@
 (defmethod handle-connection-idle ((client tcp-client))
   client)
 
+(define-consumer text-tcp-client (text-client tcp-client)
+  ((element-type :initform 'character :reader element-type)))
+
 (define-consumer tcp-server (socket-client)
   ((clients :initform () :accessor clients)))
 

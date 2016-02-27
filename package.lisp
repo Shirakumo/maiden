@@ -70,6 +70,7 @@
    #:buffer
    #:tcp-client
    #:element-type
+   #:text-tcp-client
    #:tcp-server
    #:clients
    #:tcp-server-client
