@@ -33,9 +33,13 @@
   (print-unreadable-object (client stream :type T)
     (format stream "~a~@[ ~s~]" (name client) (when (client-connected-p client) :connected))))
 
-(defmethod remove-consumer :before ((client remote-client) target)
+(defmethod start :after ((client remote-client))
+  (unless (client-connected-p client)
+    (initiate-connection client)))
+
+(defmethod stop :before ((client remote-client))
   (when (client-connected-p client)
-    (cerror "Remove the client anyway." 'client-still-connected-error :client client)))
+    (close-connection client)))
 
 (define-consumer ip-client (remote-client)
   ((host :initarg :host :accessor host)
