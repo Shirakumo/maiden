@@ -212,12 +212,19 @@
                  :name NIL))
 
 (define-consumer tcp-server-client (tcp-client)
-  ((server :initarg :server :accessor server))
+  ((server :initarg :server :accessor server)
+   (socket :initarg :socket :accessor socket))
   (:default-initargs
    :server (error "SERVER required.")))
 
+(defmethod handle-connection-error (err (client tcp-server-client))
+  (abort))
+
 (defmethod initialize-instance :after ((client tcp-server-client) &key)
   (push client (clients (server client))))
+
+(defmethod close-connection :after ((client tcp-server-client))
+  ())
 
 (defmethod ping :before ((client tcp-server-client))
   (unless (client-connected-p (server client))
