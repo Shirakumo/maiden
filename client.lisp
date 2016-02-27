@@ -156,7 +156,7 @@
 
 (defmethod handle-connection ((server tcp-server))
   (loop for socket = (usocket:socket-accept (socket server) :element-type '(unsigned-byte 8))
-        do (push (accept socket server) (clients server))))
+        do (accept socket server)))
 
 (defmethod accept (socket (server tcp-server))
   (initiate-connection (make-tcp-server-client server socket)))
@@ -172,6 +172,9 @@
   ((server :initarg :server :accessor server))
   (:default-initargs
    :server (error "SERVER required.")))
+
+(defmethod initialize-instance :after ((client tcp-server-client) &key)
+  (push client (clients (server client))))
 
 (defmethod ping :before ((client tcp-server-client))
   (unless (client-connected-p (server client))
