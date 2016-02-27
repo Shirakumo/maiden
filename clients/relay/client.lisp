@@ -6,97 +6,89 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(define-consumer base-client (server-client)
-  ((socket :initform NIL :accessor socket)
-   (read-thread :initform NIL :accessor read-thread)))
+(define-consumer relay (tcp-server agent)
+  ((network :initform NIL :accessor network)
+   (watchers :initform NIL :accessor watchers)))
 
-(defmethod client-connected-p ((client base-client))
-  (socket client))
+(defmethod make-tcp-server-client ((server tcp-server) socket)
+  (make-instance 'relay-client
+                 :server server :socket socket
+                 :host (usocket:get-peer-address socket)
+                 :port (usocket:get-peer-port socket)
+                 :name NIL))
 
-(defmethod initiate-connection :around ((base-client base-client))
-  (with-slots (read-thread) base-client
-    (call-next-method)
-    (unless (and read-thread (bt:thread-alive-p read-thread))
-      (setf read-thread (bt:make-thread (lambda () (handle-connection base-client))))))
-  base-client)
+(defmethod relay ((event client-event) (relay realy))
+  (let* ((target (find-target (client event) (network relay)))
+         (core (find target (cores relay) :key #'name))
+         (client (find target (clients relay) :key #'remote)))
+    (when core
+      (deeds:with-immutable-slots-unlocked ()
+        (setf (client event) (consumer target core))))
+    (cond (core (issue event core))
+          (client (issue event client))
+          (T (error "Don't know")))))
 
-(defmethod close-connection ((base-client base-client))
-  (with-slots (socket read-thread) base-client
-    (unwind-protect
-         (when (and read-thread (bt:thread-alive-p read-thread))
-           (cond ((eql (bt:current-thread) read-thread)
-                  (when (find-restart 'abort)
-                    (abort)))
-                 (T
-                  (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort)))
-                  (setf read-thread NIL))))
-      (when socket
-        (usocket:socket-close socket)
-        (setf socket NIL)))))
+(defmethod relay ((transport transport) (relay relay))
+  (let* ((target (find-target (target event) (network relay)))
+         (core (find target (cores relay) :test #'matches))
+         (client (find target (clients relay) :key #'remote)))
+    (cond (core (issue (event transport) core))
+          (client (issue transport client))
+          (T (error "Don't know.")))))
 
-(defmethod handle-connection :around ((base-client base-client))
-  (unwind-protect
-       (with-simple-restart (abort "Exit the connection handling.")
-         (call-next-method))
-    (close-connection base-client)))
+(define-handler (relay relay event) (relay event)
+  (loop for (test target) in (watchers relay)
+        do (when (watching event test)
+             (relay event relay))))
 
-(define-consumer server (base-client)
+(define-consumer relay-client (tcp-server-client)
   ())
 
-(defmethod initiate-connection ((server server))
-  (with-slots (socket host port) server
-    (setf socket (usocket:socket-listen host port))))
+(defmethod ping ((client relay-client))
+  (send :ping client))
 
-(defmethod handle-connection ((server server))
-  (v:info :colleen.client.relay.server "Waiting for new clients...")
-  (loop for socket = (usocket:socket-accept (socket server) :element-type '(unsigned-byte 8))
-        do (v:info :colleen.client.relay.server "Accepting new relay client ~a" socket)
-           (initiate-connection (make-instance 'client :server server :socket socket
-                                                       :host (usocket:get-peer-address socket)
-                                                       :port (usocket:get-peer-port socket)
-                                                       :name NIL))))
+(defmethod process (message (client relay-client))
+  (typecase message
+    ((eql :ping))
+    (T
+     (relay message (server client)))))
 
-(define-consumer client (base-client)
-  ((server :initarg :server :accessor server)
-   (socket :initarg :socket :accessor socket))
-  (:default-initargs :server NIL :socket NIL))
-
-(defmethod client-connected-p ((client client))
-  (and (call-next-method)
-       (usocket:socket-stream (socket client))
-       (open-stream-p (usocket:socket-stream (socket client)))))
-
-(defmethod initiate-connection ((client client))
-  (with-slots (socket host port) client
-    (unless socket
-      (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
-
-(defmethod handle-connection ((client client))
-  (with-simple-restart (continue "Discard the message and continue.")
-    (loop for message = (read-connection client)
-          do (v:info :colleen.client.relay.client "New message ~s" message)
-             (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 1))
-                   until input-available
-                   do (when (and (server client) (not (client-connected-p (server client))))
-                        (close-connection client))))))
-
-(define-event relay-connection-initiated (client-event)
-  ())
-
-(define-event relay-connection-closed (client-event)
-  ())
-
-(defmethod read-connection ((client client))
+(defmethod receive ((client relay-client))
   (colleen-serialize::deserialize (usocket:socket-stream (socket client))))
 
-(defmethod send-connection ((client client) message)
+(defmethod send (message (client relay-client))
   (colleen-serialize::serialize message (usocket:socket-stream (socket client))))
+
+(defmethod issue (thing (client relay-client))
+  (send thing client))
+
+(defmethod initiate-connection :after ((client relay-client))
+  (broadcast 'connection-initiated :client client))
+
+(defmethod close-connection :after ((client relay-client))
+  (broadcast 'connection-closed :client client))
+
+(define-event connection-initiated (client-event)
+  ())
+
+(define-event connection-closed (client-event)
+  ())
+
+(define-event reachable-clients (client-event)
+  ((clients :initarg :clients :accessor clients)))
+
+(define-event unreachable-clients (client-event)
+  ((clients :initarg :clients :accessor clients)))
+
+(defclass transport ()
+  ((event :initarg :event :accessor event)
+   (target :initarg :target :accessor target)))
 
 #|
 (ql:quickload :colleen-relay)
 (in-package :colleen-relay)
-(defvar *server* (make-instance 'server :host "127.0.0.1" :port 2222 :name "server"))
+(defvar *relay* (make-instance 'relay :host "127.0.0.1" :port 2222 :name "relay"))
 (defvar *client* (make-instance 'client :host "127.0.0.1" :port 2222 :name "client"))
-(initiate-connection *server*)
+(initiate-connection *relay*)
 (initiate-connection *client*)
 |#
