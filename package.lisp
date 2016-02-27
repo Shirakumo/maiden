@@ -40,7 +40,7 @@
    #:close-connection
    #:initiate-connection
    #:handle-connection
-   #:handle-connection-failure
+   #:handle-connection-error
    #:handle-connection-idle
    #:process
    #:send

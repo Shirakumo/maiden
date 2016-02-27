@@ -11,7 +11,7 @@
 (defgeneric close-connection (client))
 (defgeneric initiate-connection (client))
 (defgeneric handle-connection (client))
-(defgeneric handle-connection-failure (err client))
+(defgeneric handle-connection-error (err client))
 (defgeneric handle-connection-idle (tcp-client))
 (defgeneric process (message tcp-client))
 (defgeneric send (thing tcp-client))
@@ -93,7 +93,7 @@
                            cl:end-of-file
                            colleen:client-timeout-error)
                         (lambda (err)
-                           (handle-connection-failure err client))))
+                           (handle-connection-error err client))))
          (with-simple-restart (abort "Exit the connection handling.")
            (call-next-method)))
     (close-connection client)))
@@ -116,7 +116,7 @@
    :backoff :exponential
    :interval 2))
 
-(defmethod handle-connection-failure (err (client reconnecting-client))
+(defmethod handle-connection-error (err (client reconnecting-client))
   (handler-case (close-connection client)
     (error (err)
       (v:log :error :colleen.client.reconnection err)))
