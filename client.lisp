@@ -113,7 +113,7 @@
   (:default-initargs
    :max-failures 6
    :backoff :exponential
-   :intarval 2))
+   :interval 2))
 
 (defmethod handle-connection-failure (err (client reconnecting-client))
   (handler-case (close-connection client)
