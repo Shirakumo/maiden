@@ -65,10 +65,11 @@
    #:ping-interval
    #:ping-timeout
    #:pong-time
-   #:text-connection-client
+   #:text-client
    #:encoding
    #:buffer
    #:tcp-client
+   #:element-type
    #:tcp-server
    #:clients
    #:tcp-server-client

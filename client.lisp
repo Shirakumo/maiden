@@ -147,23 +147,23 @@
   (when (and (pong-time client) (< (ping-timeout client) (- (get-universal-time) (pong-time client))))
     (error 'client-timeout-error :timeout (- (get-universal-time) (pong-time client)) :client client)))
 
-(define-consumer text-connection-client (socket-client)
+(define-consumer text-client (socket-client)
   ((encoding :initarg :encoding :accessor encoding)
    (buffer :initarg :buffer :accessor buffer))
   (:default-initargs
    :encoding :utf-8
    :buffer :line))
 
-(defmethod initiate-connection :around ((client text-connection-client))
+(defmethod initiate-connection :around ((client text-client))
   (with-default-encoding ((encoding client))
     (call-next-method)))
 
-(defmethod receive ((client text-connection-client))
+(defmethod receive ((client text-client))
   (etypecase (buffer client)
     ((eql :line) (read-line (usocket:socket-stream (socket client))))
     (string (read-sequence (buffer client) (usocket:socket-stream (socket client))))))
 
-(defmethod send ((message string) (client text-connection-client))
+(defmethod send ((message string) (client text-client))
   (write-string message (usocket:socket-stream (socket client))))
 
 (define-consumer tcp-client (socket-client)
