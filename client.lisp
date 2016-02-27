@@ -150,6 +150,7 @@
 
 (defmethod close-connection :after ((server tcp-server))
   (loop for client = (car (clients server))
+        while client
         do (loop while (client-connected-p client)
                  do (sleep 0.1))
            (pop (clients server))))
