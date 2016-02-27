@@ -11,6 +11,7 @@
 (defgeneric close-connection (client))
 (defgeneric initiate-connection (client))
 (defgeneric handle-connection (client))
+(defgeneric handle-connection-failure (err client))
 (defgeneric process (message tcp-client))
 (defgeneric send (thing tcp-client))
 (defgeneric receive (tcp-client))
@@ -60,15 +61,15 @@
 (defmethod client-connected-p ((client socket-client))
   (socket client))
 
-(defmethod initiate-connection :around ((socket-client socket-client))
-  (with-slots (read-thread) socket-client
+(defmethod initiate-connection :around ((client socket-client))
+  (with-slots (read-thread) client
     (call-next-method)
     (unless (and read-thread (bt:thread-alive-p read-thread))
-      (setf read-thread (bt:make-thread (lambda () (handle-connection socket-client))))))
-  socket-client)
+      (setf read-thread (bt:make-thread (lambda () (handle-connection client))))))
+  client)
 
-(defmethod close-connection ((socket-client socket-client))
-  (with-slots (socket read-thread) socket-client
+(defmethod close-connection ((client socket-client))
+  (with-slots (socket read-thread) client
     (unwind-protect
          (when (and read-thread (bt:thread-alive-p read-thread))
            (cond ((eql (bt:current-thread) read-thread)
@@ -80,13 +81,21 @@
       (when socket
         (usocket:socket-close socket)
         (setf socket NIL))))
-  socket-client)
+  client)
 
-(defmethod handle-connection :around ((socket-client socket-client))
+(defmethod handle-connection :around ((socket-client client))
   (unwind-protect
-       (with-simple-restart (abort "Exit the connection handling.")
-         (call-next-method))
-    (close-connection socket-client)))
+       (handler-bind ((or usocket:ns-try-again-condition 
+                          usocket:timeout-error 
+                          usocket:shutdown-error
+                          usocket:connection-reset-error
+                          usocket:connection-aborted-error
+                          cl:end-of-file)
+                      (lambda (err)
+                        (handle-connection-failure err client)))
+         (with-simple-restart (abort "Exit the connection handling.")
+           (call-next-method)))
+    (close-connection client)))
 
 (defmethod receive :around ((client socket-client))
   (bt:with-lock-held ((lock client))
@@ -130,7 +139,7 @@
     (unless socket
       (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
 
-(defmethod handle-connection ((client client))
+(defmethod handle-connection ((client tcp-client))
   (with-simple-restart (continue "Discard the message and continue.")
     (loop for message = (receive client)
           do (process message client)

@@ -40,6 +40,7 @@
    #:close-connection
    #:initiate-connection
    #:handle-connection
+   #:handle-connection-failure
    #:process
    #:send
    #:receive
