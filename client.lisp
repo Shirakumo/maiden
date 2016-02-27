@@ -12,10 +12,10 @@
 (defgeneric initiate-connection (client))
 (defgeneric handle-connection (client))
 (defgeneric handle-connection-failure (err client))
+(defgeneric handle-connection-idle (tcp-client))
 (defgeneric process (message tcp-client))
 (defgeneric send (thing tcp-client))
 (defgeneric receive (tcp-client))
-(defgeneric ping (tcp-client))
 (defgeneric accept (socket tcp-server))
 (defgeneric make-tcp-server-client (server socket))
 
@@ -86,12 +86,13 @@
 (defmethod handle-connection :around ((client client))
   (unwind-protect
        (handler-bind (((or usocket:ns-try-again-condition 
-                            usocket:timeout-error 
-                            usocket:shutdown-error
-                            usocket:connection-reset-error
-                            usocket:connection-aborted-error
-                            cl:end-of-file)
-                         (lambda (err)
+                           usocket:timeout-error 
+                           usocket:shutdown-error
+                           usocket:connection-reset-error
+                           usocket:connection-aborted-error
+                           cl:end-of-file
+                           colleen:client-timeout-error)
+                        (lambda (err)
                            (handle-connection-failure err client))))
          (with-simple-restart (abort "Exit the connection handling.")
            (call-next-method)))
@@ -134,6 +135,18 @@
       (setf (failures client) 0)
       (return))))
 
+(define-consumer ping-client (remote-client)
+  ((ping-interval :initarg :ping-interval :accessor ping-interval)
+   (ping-timeout :initarg :ping-timeout :accessor ping-timeout)
+   (pong-time :initform NIL :accessor pong-time))
+  (:default-initargs
+   :ping-interval 5
+   :ping-timeout 120))
+
+(defmethod handle-connection-idle :before ((client ping-client))
+  (when (and (pong-time client) (< (ping-timeout client) (- (get-universal-time) (pong-time client))))
+    (error 'client-timeout-error :timeout (- (get-universal-time) (pong-time client)) :client client)))
+
 (define-consumer text-connection-client (socket-client)
   ((encoding :initarg :encoding :accessor encoding)
    (buffer :initarg :buffer :accessor buffer))
@@ -154,9 +167,7 @@
   (write-string message (usocket:socket-stream (socket client))))
 
 (define-consumer tcp-client (socket-client)
-  ((ping-interval :initarg :ping-interval :accessor ping-interval))
-  (:default-initargs
-   :ping-interval 5))
+  ())
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
@@ -174,9 +185,9 @@
           do (process message client)
              (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 5))
                    until input-available
-                   do (ping client)))))
+                   do (handle-connection-idle client)))))
 
-(defmethod ping ((client tcp-client))
+(defmethod handle-connection-idle ((client tcp-client))
   client)
 
 (define-consumer tcp-server (socket-client)
@@ -226,6 +237,6 @@
 (defmethod close-connection :after ((client tcp-server-client))
   ())
 
-(defmethod ping :before ((client tcp-server-client))
+(defmethod handle-connection-idle :before ((client tcp-server-client))
   (unless (client-connected-p (server client))
     (close-connection client)))

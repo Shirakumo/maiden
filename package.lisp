@@ -41,10 +41,10 @@
    #:initiate-connection
    #:handle-connection
    #:handle-connection-failure
+   #:handle-connection-idle
    #:process
    #:send
    #:receive
-   #:ping
    #:accept
    #:make-tcp-server-client
    #:client
@@ -61,11 +61,14 @@
    #:max-failures
    #:backoff
    #:interval
+   #:ping-client
+   #:ping-interval
+   #:ping-timeout
+   #:pong-time
    #:text-connection-client
    #:encoding
    #:buffer
    #:tcp-client
-   #:ping-interval
    #:tcp-server
    #:clients
    #:tcp-server-client
