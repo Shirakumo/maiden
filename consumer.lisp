@@ -154,6 +154,46 @@
             ',consumer)
            (list ',consumer ',name))))))
 
+(defmacro define-command ((consumer event-type) args &body body)
+  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
+           (make-req-field (a)
+             (destructuring-bind (name &rest kargs) (ensure-list a)
+               `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
+           (make-opt-field (a)
+             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+               `(,name :initarg ,(kw name) :initform ,value ,@kargs)))
+           (make-arg (a)
+             (if (lambda-keyword-p a)
+                 a
+                 (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+                   (declare (ignore kargs))
+                   `(,name ,value)))))
+    (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body body)
+      (destructuring-bind (&rest options &key superclasses class-options &allow-other-keys) options
+        (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) (cddr args)
+          (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
+                 (pure-options (deeds::removef options :superclasses :class-options))
+                 (fun-args (mapcar #'make-arg (cddr args)))
+                 (fun-kargs (loop for arg in (cddr pure-args) collect (kw arg) collect arg))
+                 (slot-args (append (mapcar #'make-req-field required)
+                                    (mapcar #'make-opt-field optional)
+                                    (when rest (list (make-req-field rest)))
+                                    (mapcar #'make-opt-field key))))
+            (unless (or (find '&key fun-args)
+                        (find '&optional fun-args))
+              (setf (cdr (last fun-args)) '(&key)))
+            (setf (cdr (last fun-args)) '(loop))
+            (setf (cdr (last fun-kargs)) '(:loop loop))
+            `(progn
+               (define-event ,event-type (command-event ,@superclasses)
+                 ,slot-args
+                 ,@class-options)
+               (define-handler (,consumer ,event-type ,event-type) ,pure-args
+                 ,@pure-options
+                 ,@body)
+               (defun ,event-type ,fun-args
+                 (broadcast ',event-type ,@fun-kargs)))))))))
+
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
               never (c2mop:subclassp (find-class super) (find-class 'consumer)))
