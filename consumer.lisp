@@ -70,17 +70,16 @@
   (dolist (handler (handlers (class-of consumer)))
     (push (instantiate-handler handler consumer) (handlers consumer))))
 
+;; FIXME: parallelism
 (defmethod reinitialize-handlers ((consumer consumer) handlers)
   (v:info :colleen.core.consumer "~a updating handlers." consumer)
   (let ((cores (cores consumer)))
     ;; Deregister
     (remove-consumer consumer cores)
     ;; Rebuild
-    (stop consumer)
     (setf (handlers consumer) ())
     (dolist (handler handlers)
       (push (instantiate-handler handler consumer) (handlers consumer)))
-    (start consumer)
     ;; Reregister
     (add-consumer consumer cores)))
 
