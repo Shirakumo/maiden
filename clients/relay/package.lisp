@@ -8,6 +8,5 @@
 (define-module #:colleen-relay
   (:nicknames #:org.shirakumo.colleen.clients.relay)
   (:use #:cl #:colleen)
-  (:shadow #:client)
   ;; 
   (:export))
