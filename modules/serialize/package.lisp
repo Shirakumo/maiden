@@ -7,4 +7,7 @@
 (in-package #:colleen-user)
 (defpackage #:colleen-serialize
   (:nicknames #:org.shirakumo.colleen.modules.serialize)
-  (:use #:cl))
+  (:use #:cl)
+  (:export
+   #:serialize
+   #:deserialize))
