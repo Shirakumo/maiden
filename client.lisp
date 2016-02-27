@@ -50,7 +50,8 @@
 
 (define-consumer socket-client (ip-client)
   ((socket :initform NIL :accessor socket)
-   (read-thread :initform NIL :accessor read-thread)))
+   (read-thread :initform NIL :accessor read-thread)
+   (lock :initform (bt:make-lock) :accessor lock)))
 
 (defmethod client-connected-p ((client socket-client))
   (socket client))
@@ -82,6 +83,14 @@
        (with-simple-restart (abort "Exit the connection handling.")
          (call-next-method))
     (close-connection socket-client)))
+
+(defmethod receive :around ((client socket-client))
+  (bt:with-lock-held ((lock client))
+    (call-next-method)))
+
+(defmethod send :around (message (client socket-client))
+  (bt:with-lock-held ((lock client))
+    (call-next-method)))
 
 (define-consumer text-connection-client (socket-client)
   ((encoding :initarg :encoding :accessor encoding)
@@ -130,6 +139,10 @@
 
 (define-consumer tcp-server (socket-client)
   ((clients :initform () :accessor clients)))
+
+(defmethod (setf clients) :around (clients (server tcp-server))
+  (bt:with-lock-held ((lock tcp-server))
+    (call-next-method)))
 
 (defmethod initiate-connection ((server tcp-server))
   (with-slots (socket host port) server
