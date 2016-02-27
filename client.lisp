@@ -167,7 +167,7 @@
   (write-string message (usocket:socket-stream (socket client))))
 
 (define-consumer tcp-client (socket-client)
-  ())
+  ((element-type :initform '(unsigned-byte 8) :reader element-type)))
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
@@ -177,7 +177,7 @@
 (defmethod initiate-connection ((client tcp-client))
   (with-slots (socket host port) client
     (unless socket
-      (setf socket (usocket:socket-connect host port :element-type '(unsigned-byte 8))))))
+      (setf socket (usocket:socket-connect host port :element-type (element-type client))))))
 
 (defmethod handle-connection ((client tcp-client))
   (with-simple-restart (continue "Discard the message and continue.")
