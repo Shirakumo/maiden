@@ -83,7 +83,7 @@
         (setf socket NIL))))
   client)
 
-(defmethod handle-connection :around ((socket-client client))
+(defmethod handle-connection :around ((client client))
   (unwind-protect
        (handler-bind (((or usocket:ns-try-again-condition 
                             usocket:timeout-error 
@@ -123,7 +123,7 @@
     (when (< (max-failures client) (failures client))
       (error 'client-reconnection-exceeded-error :client client))
     (incf (failures client))
-    (sleep (etypecase (backoff client)
+    (sleep (ecase (backoff client)
              (:constant (interval client))
              (:linear (* (interval client) (failures client)))
              (:exponential (expt (interval client) (failures client)))))
