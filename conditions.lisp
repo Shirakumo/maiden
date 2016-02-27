@@ -65,7 +65,7 @@
   (:report (lambda (c s) (format s "Failed to parse ~s from ~a."
                                  (message c) (client c)))))
 
-(define-condition unknown-message-event-warning (message-condition client-warning)
+(define-condition unknown-message-warning (message-condition client-warning)
   ()
-  (:report (lambda (c s) (format s "Don't know any event to use for ~s from ~a."
+  (:report (lambda (c s) (format s "Don't know what to do for ~s from ~a."
                                  (message c) (client c)))))

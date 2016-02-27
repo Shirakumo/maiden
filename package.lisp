@@ -86,7 +86,7 @@
    #:message-condition
    #:message
    #:message-parse-error
-   #:unknown-message-event-warning)
+   #:unknown-message-warning)
   ;; consumer.lisp
   (:export
    #:consumer-class
