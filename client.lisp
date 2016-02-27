@@ -141,7 +141,7 @@
   ((clients :initform () :accessor clients)))
 
 (defmethod (setf clients) :around (clients (server tcp-server))
-  (bt:with-lock-held ((lock tcp-server))
+  (bt:with-lock-held ((lock server))
     (call-next-method)))
 
 (defmethod initiate-connection ((server tcp-server))
