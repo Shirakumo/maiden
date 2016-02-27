@@ -9,7 +9,7 @@
 (modularize:define-module #:colleen
   (:nicknames #:org.shirakumo.colleen)
   (:use #:cl #:modularize #:deeds)
-  (:shadow #:define-handler)
+  (:shadow #:define-handler #:define-command)
   ;; re-export from modularize
   (:export
    #:virtual-module
@@ -27,7 +27,12 @@
   ;; re-export from deeds
   (:export
    #:define-event
-   #:do-issue)
+   #:do-issue
+   #:issue
+   #:broadcast)
+  ;; agent.lisp
+  (:export
+   #:agent)
   ;; client.lisp
   (:export
    #:authenticate
@@ -85,6 +90,7 @@
    #:start
    #:stop
    #:define-handler
+   #:define-command
    #:define-consumer)
   ;; core.lisp
   (:export
