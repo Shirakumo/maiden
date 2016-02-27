@@ -85,14 +85,14 @@
 
 (defmethod handle-connection :around ((socket-client client))
   (unwind-protect
-       (handler-bind ((or usocket:ns-try-again-condition 
-                          usocket:timeout-error 
-                          usocket:shutdown-error
-                          usocket:connection-reset-error
-                          usocket:connection-aborted-error
-                          cl:end-of-file)
-                      (lambda (err)
-                        (handle-connection-failure err client)))
+       (handler-bind (((or usocket:ns-try-again-condition 
+                            usocket:timeout-error 
+                            usocket:shutdown-error
+                            usocket:connection-reset-error
+                            usocket:connection-aborted-error
+                            cl:end-of-file)
+                         (lambda (err)
+                           (handle-connection-failure err client))))
          (with-simple-restart (abort "Exit the connection handling.")
            (call-next-method)))
     (close-connection client)))
