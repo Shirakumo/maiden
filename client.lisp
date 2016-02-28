@@ -79,7 +79,7 @@
                   (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort)))
                   (setf read-thread NIL))))
       (when socket
-        (usocket:socket-close socket)
+        (ignore-errors (usocket:socket-close socket))
         (setf socket NIL))))
   client)
 
