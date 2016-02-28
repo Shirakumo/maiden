@@ -107,7 +107,7 @@
   (bt:with-lock-held ((lock client))
     (call-next-method)))
 
-(define-consumer reconnecting-client (remote-client)
+(define-consumer reconnecting-client (socket-client)
   ((failures :initform 0 :accessor failures)
    (max-failures :initarg :max-failures :accessor max-failures)
    (backoff :initarg :backoff :accessor backoff)
@@ -118,9 +118,10 @@
    :interval 2))
 
 (defmethod handle-connection-error (err (client reconnecting-client))
-  (handler-case (close-connection client)
-    (error (err)
-      (v:log :error :colleen.client.reconnection err)))
+  (v:warn :colleen.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
+  ;; We don't care if it fails to close gracefully.
+  (ignore-errors (usocket:socket-close (socket client)))
+  (setf (socket client) NIL)
   (loop
     (when (< (max-failures client) (failures client))
       (error 'client-reconnection-exceeded-error :client client))
@@ -129,12 +130,13 @@
              (:constant (interval client))
              (:linear (* (interval client) (failures client)))
              (:exponential (expt (interval client) (failures client)))))
-    (when (handler-case (initiate-connection client)
-            (error (err)
-              (v:log :error :colleen.client.reconnection err)
-              NIL))
-      (setf (failures client) 0)
-      (return))))
+    (handler-case
+        (progn (initiate-connection client)
+               (setf (failures client) 0)
+               (continue))
+      (error (err)
+        (v:error :colleen.client.reconnection "~a Failed to reconnect: ~a" client err)
+        NIL))))
 
 (define-consumer ping-client (remote-client)
   ((ping-interval :initarg :ping-interval :accessor ping-interval)
