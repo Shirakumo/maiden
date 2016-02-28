@@ -32,3 +32,13 @@
 
 (defmacro update-list (thing list &key (key '#'identity) (test '#'eql))
   `(setf ,list (make-updated-list ,thing ,list ,key ,test)))
+
+(defmacro with-retry-restart ((restart format-string &rest format-args) &body body)
+  (let ((tag (gensym "TAG")) (stream (gensym "STREAM")))
+    `(block ,tag
+       (tagbody
+          ,tag (restart-case (return-from ,tag ,@body)
+                 (,restart ()
+                   :report (lambda (,stream)
+                             (format ,stream ,format-string ,@format-args))
+                   (go ,tag)))))))

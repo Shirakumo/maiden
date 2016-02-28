@@ -136,7 +136,8 @@
    #:kw
    #:ensure-list
    #:unlist
-   #:with-default-encoding))
+   #:with-default-encoding
+   #:with-retry-restart))
 
 (defpackage #:colleen-user
   (:nicknames #:org.shirakumo.colleen.user)
