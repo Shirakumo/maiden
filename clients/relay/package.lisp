@@ -7,6 +7,6 @@
 (in-package #:colleen-user)
 (define-module #:colleen-relay
   (:nicknames #:org.shirakumo.colleen.clients.relay)
-  (:use #:cl #:colleen)
+  (:use #:cl #:colleen #:colleen-serialize)
   ;; 
   (:export))

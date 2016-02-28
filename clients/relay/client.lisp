@@ -37,7 +37,6 @@
 
 (defmethod make-tcp-server-client ((server tcp-server) socket)
   (make-instance 'relay-client
-                 :initiating NIL
                  :server server
                  :socket socket
                  :host (usocket:get-peer-address socket)
@@ -69,52 +68,55 @@
              (relay event relay))))
 
 (define-command (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
-  (start (make-instance 'relay-client
+  (start (make-instance 'relay-client-initiator
                         :server relay
                         :port port
                         :host host)))
 
-(define-consumer relay-client (reconnecting-client tcp-server-client)
-  ((remote :initform NIL :accessor remote)
-   (initiating :initarg :initiating :accessor initiating))
-  (:default-initargs
-   :initiating T))
+(define-consumer relay-client (tcp-server-client ping-client)
+  ((remote :initform NIL :accessor remote)))
 
-(defmethod handle-connection-failure (err (client relay-client))
-  (v:log :error :colleen.relay.client err)
-  (cond ((initiating client)
-         (v:info :colleen.relay.client "~a Attempting to reconnect due to failure." client)
-         (call-next-method))
-        (T
-         (v:info :colleen.relay.client "~a Closing connection due to failure." client)
-         (abort))))
+(defmethod handle-connection-error :before (err (client relay-client))
+  (v:warn :colleen.relay.client "~a Connection error: ~a" client err))
 
-(defmethod ping ((client relay-client))
-  (send '(:ping) client))
+(defmethod handle-connection ((client relay-client))
+  (handler-bind ((colleen:client-timeout-error
+                   (lambda (err)
+                     (ignore-errors (send `(:timeout ,(timeout err)) client)))))
+    (call-next-method)))
 
 (defmethod process (message (client relay-client))
   (v:info :colleen.relay.client "~a Processing ~s" client message)
   (typecase message
     (list
      (case (first message)
-       (:id (setf (remote client) (second message)))
-       (:close (close-connection client))
-       (:ping)))
+       (:id
+        (setf (remote client) (second message)))
+       (:timeout
+        (error 'colleen:client-timeout-error :client client :timeout (second message)))
+       (:close
+        (close-connection client))
+       (:ping
+        (setf (pong-time client) (get-universal-time))
+        (send '(:pong) client))
+       (:pong
+        (setf (pong-time client) (get-universal-time)))))
+    ((or deeds:event transport)
+     (relay message (server client)))
     (T
-     (relay message (server client)))))
+     (warn 'unknown-message-warning :message message :client client))))
 
 (defmethod receive ((client relay-client))
-  (colleen-serialize::deserialize (usocket:socket-stream (socket client))))
+  (deserialize (usocket:socket-stream (socket client))))
 
 (defmethod send (message (client relay-client))
-  (colleen-serialize::serialize message (usocket:socket-stream (socket client))))
+  (serialize message (usocket:socket-stream (socket client))))
 
 (defmethod issue (thing (client relay-client))
   (send thing client))
 
 (defmethod initiate-connection :after ((client relay-client))
   (broadcast 'connection-initiated :client client :loop (cores (server client)))
-  ;; Send our ID
   (send (list :id (id (server client))) client))
 
 (defmethod close-connection :before ((client relay-client))
@@ -122,6 +124,12 @@
 
 (defmethod close-connection :after ((client relay-client))
   (broadcast 'connection-closed :client client :loop (cores (server client))))
+
+(define-consumer relay-client-initiator (reconnecting-client relay-client)
+  ())
+
+(defmethod handle-connection-idle ((client relay-client-initiator))
+  (send '(:ping) client))
 
 #|
 (ql:quickload :colleen-relay)
