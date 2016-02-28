@@ -93,9 +93,10 @@
                            cl:end-of-file
                            colleen:client-timeout-error)
                         (lambda (err)
-                           (handle-connection-error err client))))
-         (with-simple-restart (abort "Exit the connection handling.")
-           (call-next-method)))
+                          (handle-connection-error err client))))
+         (with-retry-restart (continue "Retry handling the connection.")
+           (with-simple-restart (abort "Exit the connection handling.")
+             (call-next-method))))
     (close-connection client)))
 
 (defmethod receive :around ((client socket-client))
