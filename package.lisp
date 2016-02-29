@@ -61,15 +61,15 @@
    #:max-failures
    #:backoff
    #:interval
-   #:ping-client
-   #:ping-interval
-   #:ping-timeout
-   #:pong-time
+   #:timeout-client
+   #:timeout
+   #:last-received-time
    #:text-client
    #:encoding
    #:buffer
    #:tcp-client
    #:element-type
+   #:idle-interval
    #:text-tcp-client
    #:tcp-server
    #:clients

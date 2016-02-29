@@ -73,7 +73,7 @@
                         :port port
                         :host host)))
 
-(define-consumer relay-client (tcp-server-client ping-client)
+(define-consumer relay-client (tcp-server-client timeout-client)
   ((remote :initform NIL :accessor remote)))
 
 (defmethod handle-connection-error :before (err (client relay-client))

@@ -138,20 +138,18 @@
         (v:error :colleen.client.reconnection "~a Failed to reconnect: ~a" client err)
         NIL))))
 
-(define-consumer ping-client (remote-client)
-  ((ping-interval :initarg :ping-interval :accessor ping-interval)
-   (ping-timeout :initarg :ping-timeout :accessor ping-timeout)
-   (pong-time :initform NIL :accessor pong-time))
+(define-consumer timeout-client (remote-client)
+  ((timeout :initarg :timeout :accessor timeout)
+   (last-received-time :initform NIL :accessor last-received-time))
   (:default-initargs
-   :ping-interval 5
-   :ping-timeout 120))
+   :timeout 120))
 
-(defmethod receive :after ((client ping-client))
-  (setf (pong-time client) (get-universal-time)))
+(defmethod receive :after ((client timeout-client))
+  (setf (last-received-time client) (get-universal-time)))
 
-(defmethod handle-connection-idle :before ((client ping-client))
-  (when (and (pong-time client) (< (ping-timeout client) (- (get-universal-time) (pong-time client))))
-    (error 'client-timeout-error :timeout (- (get-universal-time) (pong-time client)) :client client)))
+(defmethod handle-connection-idle :before ((client timeout-client))
+  (when (and (last-received-time client) (< (timeout client) (- (get-universal-time) (last-received-time client))))
+    (error 'client-timeout-error :timeout (- (get-universal-time) (last-received-time client)) :client client)))
 
 (define-consumer text-client (socket-client)
   ((encoding :initarg :encoding :accessor encoding)
@@ -173,7 +171,10 @@
   (write-string message (usocket:socket-stream (socket client))))
 
 (define-consumer tcp-client (socket-client)
-  ((element-type :initform '(unsigned-byte 8) :reader element-type)))
+  ((element-type :initform '(unsigned-byte 8) :reader element-type)
+   (idle-interval :initarg :idle-interval :accessor idle-interval))
+  (:default-initargs
+   :idle-interval 5))
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
@@ -187,7 +188,7 @@
 
 (defmethod handle-connection ((client tcp-client))
   (with-simple-restart (continue "Discard the message and continue.")
-    (loop (loop until (nth-value 1 (usocket:wait-for-input (socket client) :timeout 5))
+    (loop (loop until (nth-value 1 (usocket:wait-for-input (socket client) :timeout (idle-interval client)))
                 do (handle-connection-idle client))
           (process (receive client) client))))
 
