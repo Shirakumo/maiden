@@ -184,11 +184,9 @@
 
 (defmethod handle-connection ((client tcp-client))
   (with-simple-restart (continue "Discard the message and continue.")
-    (loop for message = (receive client)
-          do (process message client)
-             (loop for input-available = (nth-value 1 (usocket:wait-for-input (socket client) :timeout 5))
-                   until input-available
-                   do (handle-connection-idle client)))))
+    (loop (loop until (nth-value 1 (usocket:wait-for-input (socket client) :timeout 5))
+                do (handle-connection-idle client))
+          (process (receive client) client))))
 
 (defmethod handle-connection-idle ((client tcp-client))
   client)
