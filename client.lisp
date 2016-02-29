@@ -146,6 +146,9 @@
    :ping-interval 5
    :ping-timeout 120))
 
+(defmethod receive :after ((client ping-client))
+  (setf (pong-time client) (get-universal-time)))
+
 (defmethod handle-connection-idle :before ((client ping-client))
   (when (and (pong-time client) (< (ping-timeout client) (- (get-universal-time) (pong-time client))))
     (error 'client-timeout-error :timeout (- (get-universal-time) (pong-time client)) :client client)))
