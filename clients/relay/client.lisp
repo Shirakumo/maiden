@@ -97,10 +97,8 @@
        (:close
         (close-connection client))
        (:ping
-        (setf (pong-time client) (get-universal-time))
         (send '(:pong) client))
-       (:pong
-        (setf (pong-time client) (get-universal-time)))))
+       (:pong)))
     ((or deeds:event transport)
      (relay message (server client)))
     (T
