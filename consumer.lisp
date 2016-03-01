@@ -71,6 +71,7 @@
     (push (instantiate-handler handler consumer) (handlers consumer))))
 
 ;; FIXME: parallelism
+;; FIXME: Keeping book on what's started or not and retaining that.
 (defmethod reinitialize-handlers ((consumer consumer) handlers)
   (v:info :colleen.core.consumer "~a updating handlers." consumer)
   (let ((cores (cores consumer)))
@@ -79,7 +80,7 @@
     ;; Rebuild
     (setf (handlers consumer) ())
     (dolist (handler handlers)
-      (push (instantiate-handler handler consumer) (handlers consumer)))
+      (push (start (instantiate-handler handler consumer)) (handlers consumer)))
     ;; Reregister
     (add-consumer consumer cores)))
 
