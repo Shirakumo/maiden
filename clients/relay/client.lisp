@@ -8,7 +8,6 @@
 Alright.
 
 Todo:
- - Actually route exchange, we need the packet hopping
  - Insurance that all the same modules are loaded across the
    different cores, otherwise serialising of event objects
    is going to fail.
@@ -16,9 +15,18 @@ Todo:
      require every module along the path to have the modules
      loaded and only the endpoints. The usefulness of this
      needs to be evaluated however.
+   - Additionally, some objects simply cannot be serialised
+     so there might have to be a mechanism to automate rmeoval
+     or substitution thereof.
  - Connection re-establishment should work properly now,
    but we still don't have a safe protocol for communicating
    such things.
+ - Currently the subscription system is missing
+ - Consider changing the system to not require a network on
+   the relay at all and instead have it be realised through 
+   virtual clients. This might even be absolutely necessary
+   so that virtual clients can be accessed through the core
+   from oblivious consumers.
 
 |#
 
@@ -39,6 +47,17 @@ Todo:
    (bad :initarg :bad :accessor bad))
   (:default-initargs
    :new () :bad ()))
+
+(defclass subscribe ()
+  ((to :initarg :to :accessor to)
+   (subscriber :initarg :subscriber :accessor subscriber)
+   (event-type :initarg :event-type :accessor event-type)
+   (filter :initarg :filter :accessor filter))
+  (:default-initargs
+   :to T
+   :subscriber (error "SUBSCRIBER required.")
+   :event-type (error "EVENT-TYPE required.")
+   :filter T))
 
 (define-consumer virtual-client (client)
   ())
