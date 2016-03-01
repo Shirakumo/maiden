@@ -124,8 +124,8 @@
     ;; Extend filter to match consumer.
     (when match
       (if (eql match T)
-          (setf filter `(and (eq ,consumer consumer) ,filter))
-          (setf filter `(and (eq ,consumer ,match) ,filter))))
+          (setf filter `(and (eq ,consumer consumer) ,(or filter T)))
+          (setf filter `(and (eq ,consumer ,match) ,(or filter T)))))
     (apply #'make-instance
            (target-class handler)
            :delivery-function (lambda (event) (funcall delivery consumer event))
