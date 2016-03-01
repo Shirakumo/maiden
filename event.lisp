@@ -29,3 +29,13 @@
 ;;   ((message :initarg :message :reader message :mutable T))
 ;;   (:default-initargs
 ;;    :message (error "MESSAGE required.")))
+
+(define-event consumer-added (event)
+  ((consumer :initarg :consumer))
+  (:default-initargs
+   :consumer (error "CONSUMER required.")))
+
+(define-event consumer-removed (event)
+  ((consumer :initarg :consumer))
+  (:default-initargs
+   :consumer (error "CONSUMER required.")))

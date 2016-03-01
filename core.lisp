@@ -56,6 +56,9 @@
 (defmethod add-consumer (consumer (core core))
   (pushnew consumer (consumers core) :test #'matches))
 
+(defmethod add-consumer :after (consumer (core core))
+  (issue (make-instance 'consumer-added :consumer consumer) core))
+
 (defmethod remove-consumer :around (consumer target)
   (call-next-method)
   consumer)
@@ -70,6 +73,9 @@
 
 (defmethod remove-consumer (id (core core))
   (setf (consumers core) (remove id (consumers core) :test #'matches)))
+
+(defmethod remove-consumer :after (consumer (core core))
+  (issue (make-instance 'consumer-removed :consumer consumer) core))
 
 (defmethod handler (id (core core))
   (handler id (event-loop core)))

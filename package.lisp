@@ -130,7 +130,9 @@
    #:sender-event
    #:sender
    #:message-event
-   #:message)
+   #:message
+   #:consumer-added
+   #:consumer-removed)
   ;; toolkit.lisp
   (:export
    #:kw
