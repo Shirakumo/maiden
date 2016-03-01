@@ -26,6 +26,7 @@
    #:current-module)
   ;; re-export from deeds
   (:export
+   #:event
    #:define-event
    #:do-issue
    #:issue
