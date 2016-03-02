@@ -5,9 +5,8 @@
 |#
 
 #|
-  Alright.
-
   Todo:
+- Document everything.
 - Insurance that all the same modules are loaded across the
   different cores, otherwise serialising of event objects
   is going to fail.
@@ -18,24 +17,8 @@
   - Additionally, some objects simply cannot be serialised
     so there might have to be a mechanism to automate rmeoval
     or substitution thereof.
-- Connection re-establishment should work properly now,
-  but we still don't have a safe protocol for communicating
-  such things.
-- Currently the subscription system is missing
-- Consider changing the system to not require a network on
-  the relay at all and instead have it be realised through 
-  virtual clients. This might even be absolutely necessary
-  so that virtual clients can be accessed through the core
-  from oblivious consumers.
-  - Each virtual client must have an internal list of hops
-    necessary to reach their actual client associated with
-    each possible relay client to use.
-  - Each virtual client must be removed when their network
-    is empty and re-established when they appear anew.
-  - I'm not sure whether it's better to have a client-tied
-    handler for each virtual client to intercept the events
-    (that seems natural) or for efficiency reason stick to
-    the one "global" handler for the relay.
+- Currently the subscription system is missing.
+- Connections are wonky as fuck for no reason. Investigate.
 |#
 
 (in-package #:org.shirakumo.colleen.clients.relay)
