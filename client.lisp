@@ -243,7 +243,8 @@
   (push client (clients (server client))))
 
 (defmethod close-connection :after ((client tcp-server-client))
-  ())
+  (bt:with-lock-held ((lock (server client)))
+    (setf (clients (server client)) (remove client (clients (server client))))))
 
 (defmethod handle-connection-idle :before ((client tcp-server-client))
   (unless (client-connected-p (server client))
