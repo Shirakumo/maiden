@@ -187,7 +187,7 @@
       (setf socket (usocket:socket-connect host port :element-type (element-type client))))))
 
 (defmethod handle-connection ((client tcp-client))
-  (with-simple-restart (continue "Discard the message and continue.")
+  (with-retry-restart (continue "Discard the message and continue.")
     (loop (loop until (nth-value 1 (usocket:wait-for-input (socket client) :timeout (idle-interval client)))
                 do (handle-connection-idle client))
           (process (receive client) client))))
