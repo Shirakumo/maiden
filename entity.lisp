@@ -23,6 +23,18 @@
 (defmethod matches ((a uuid:uuid) (b string))
   (matches (princ-to-string a) b))
 
+(defmethod matches ((a list) (b list))
+  (loop for (ael . arest) in a
+        for (bel . brest) in b
+        always (and (xnor arest brest)
+                    (matches a b))))
+
+(defmethod matches ((a vector) (b vector))
+  (and (= (length a) (length b))
+       (loop for ael across a
+             for bel across b
+             always (matches a b))))
+
 (defclass entity () ())
 
 (defclass named-entity (entity)
