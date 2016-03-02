@@ -46,17 +46,7 @@
 (define-event connection-closed (client-event)
   ())
 
-(defclass transport ()
-  ((event :initarg :event :accessor event)
-   (target :initarg :target :accessor target)))
-
-(defclass network-update ()
-  ((new :initarg :new :accessor new)
-   (bad :initarg :bad :accessor bad))
-  (:default-initargs
-   :new () :bad ()))
-
-(defclass subscribe ()
+(defclass subscription ()
   ((to :initarg :to :accessor to)
    (subscriber :initarg :subscriber :accessor subscriber)
    (event-type :initarg :event-type :accessor event-type)
@@ -67,15 +57,63 @@
    :event-type (error "EVENT-TYPE required.")
    :filter T))
 
+(defclass transport ()
+  ((event :initarg :event :accessor event)
+   (target :initarg :target :accessor target)))
+
+(defmethod print-object ((transport transport) stream)
+  (print-unreadable-object (transport stream :type T)
+    (format stream "~s ~s ~s" :to (target transport) (event transport))))
+
+(defclass network-update ()
+  ((new :initarg :new :accessor new)
+   (bad :initarg :bad :accessor bad))
+  (:default-initargs
+   :new () :bad ()))
+
+(defmethod print-object ((update network-update) stream)
+  (print-unreadable-object (update stream :type T)
+    (format stream "~s ~s ~s ~s" :new (new update) :bad (bad update))))
+
+(defmethod make-network-update ((new list) (bad relay))
+  (make-network-update new (mapcar #'second (network bad))))
+
+(defmethod make-network-update ((new list) (bad list))
+  (make-instance 'network-update :new new :bad bad))
+
+(defmethod make-network-update ((new network-update) (special null))
+  (make-instance 'network-update
+                 :new (loop for (hops destination) in (new new)
+                            collect (list (1+ hops) destination))
+                 :bad (bad new)))
+
 (define-consumer virtual-client (client)
-  ())
+  ((links :initarg :links :accessor links))
+  (:default-initargs
+   :links ()))
+
+(defmethod make-virtual-client ((target uuid:uuid) &optional links)
+  (make-instance 'virtual-client :id target :links links))
+
+(defmethod make-virtual-client ((target string) &optional links)
+  (make-virtual-client (uuid:make-uuid-from-string target) links))
+
+(defmethod make-virtual-client ((target named-entity) &optional links)
+  (make-virtual-client (id target) links))
 
 (define-consumer relay (tcp-server agent)
-  ((network :initform NIL :accessor network)
-   (watchers :initform NIL :accessor watchers))
+  ((watchers :initform NIL :accessor watchers))
   (:default-initargs
    :host "127.0.0.1"
    :port 9486))
+
+(defmethod make-network-update ((relay relay) (bad list))
+  (let ((clients ()))
+    (dolist (core (cores relay))
+      (dolist (consumer (consumers core))
+        (unless (typep consumer 'virtual-client)
+          (push (list 0 (id consumer)) clients))))
+    (make-network-update clients bad)))
 
 (defmethod handle-connection :before ((server tcp-server))
   (v:info :colleen.relay.server "~a waiting for clients." server))
@@ -91,71 +129,52 @@
                  :port (usocket:get-peer-port socket)
                  :name NIL))
 
-(defmethod make-network-update ((new relay) (bad list))
-  (make-network-update (mapcar #'butlast (network new)) bad))
-
-(defmethod make-network-update ((new list) (bad relay))
-  (make-network-update new (mapcar #'second (network bad))))
-
-(defmethod make-network-update ((new list) (bad list))
-  (make-instance 'network-update :new new :bad bad))
-
-(defmethod make-network-update ((new network-update) (special null))
-  (make-instance 'network-update
-                 :new (loop for (hops destination next) in (new new)
-                            collect (list (1+ hops) destination next))
-                 :bad (bad new)))
-
 (defmethod update-network ((relay relay) source update)
-  (let ((network ()))
-    (loop for link in (network relay)
-          for (hops destination next) = link
-          do (unless (and (matches next source)
-                          (find destination (bad update) :test #'matches))
-               (push link network)))
-    (loop for (hops destination) in (new update)
-          do (pushnew (list hops destination source) network :test #'equal))
-    (setf (network relay) (sort network #'< :key #'first)))
-  (v:info :colleen.relay.server "~a updated network to:~%~s" relay (network relay))
+  ;; FIXME: optimise bulk actions to a single pass if possible.
+  (dolist (core (cores relay))
+    ;; Remove links from virtual clients.
+    (loop for bad in (bad update)
+          for consumer = (consumer bad core)
+          do (when (and consumer (typep consumer 'virtual-client))
+               (setf (links consumer) (remove source (links consumer) :key #'second))))
+    ;; Insert new links and virtual clients.
+    (loop for (hops new) in (new update)
+          for consumer = (consumer new core)
+          do (cond ((typep consumer 'virtual-client)
+                 (pushnew (list hops new) (links consumer) :key #'second :test #'matches))
+                ((not consumer)
+                 (add-consumer (make-virtual-client new `((,hops ,source))) core))))
+    ;; Remove empty virtual clients
+    (dolist (consumer (consumers core))
+      (when (and (typep consumer 'virtual-client) (null (links consumer)))
+        (remove-consumer consumer core))))
+  (v:info :colleen.relay.server "~a updated network by ~a" relay update)
   relay)
 
 (defmethod update-network :after ((relay relay) source update)
-  (let ((update (make-network-update update NIL)))
-    (dolist (client (clients relay))
-      (unless (matches source (remote client))
-        (send update client)))))
-
-(defmethod find-target (id (relay relay))
-  (loop for (hops destination next) in (network relay)
-        do (when (matches id destination)
-             (return next))
-        finally (return id)))
-
-(defmethod find-target ((transport transport) (relay relay))
-  (find-target (target transport) relay))
-
-(defmethod find-target ((named-entity named-entity) (relay relay))
-  (find-target (id named-entity) relay))
+  (dolist (client (clients relay))
+    (unless (matches source (remote client))
+      (send update client))))
 
 (defmethod relay ((event client-event) (relay relay))
-  (let* ((target (find-target (client event) relay))
-         (core (find target (cores relay) :test #'matches))
-         (client (find target (clients relay) :key #'remote :test #'matches)))
-    (cond (core
-           (deeds:with-immutable-slots-unlocked ()
-             (setf (slot-value event 'client) (consumer (id (client event)) core)))
-           (issue event core))
-          (client
-           (deeds:with-immutable-slots-unlocked ()
-             (when (typep (event-loop event) 'core)
-               (setf (slot-value event 'event-loop) (id (event-loop event)))))
-           (issue event client))
-          (T (error "Don't know")))))
+  (let ((client (client event)))
+    (etypecase client
+      (virtual-client
+       (let ((remote (find (second (first (links client)))
+                           (clients relay) :key #'remote :test #'matches)))
+         (issue event remote)))
+      (client
+       (let ((core (dolist (core (cores relay))
+                     (when (find client (consumers core))
+                       (return core)))))
+         (deeds:with-immutable-slots-unlocked ()
+           (setf (slot-value event 'event-loop) core))
+         (issue event core))))))
 
 (defmethod relay ((transport transport) (relay relay))
-  (let* ((target (find-target (target transport) relay))
-         (core (find target (cores relay) :test #'matches))
-         (client (find target (clients relay) :key #'remote :test #'matches)))
+  (let* ((next (second (first (links (consumer (target transport) (cores relay))))))
+         (core (find next (cores relay) :test #'matches))
+         (client (find next (clients relay) :key #'remote :test #'matches)))
     (cond (core (issue (event transport) core))
           (client (issue transport client))
           (T (error "Don't know.")))))
@@ -174,10 +193,12 @@
   (update-network relay (id core) (make-network-update NIL (mapcar #'id (consumers core)))))
 
 (define-handler (relay consumer-added consumer-added) (relay ev consumer event-loop)
-  (update-network relay (id event-loop) (make-network-update `((0 ,(id consumer))) ())))
+  (unless (typep consumer 'virtual-client)
+    (update-network relay (id event-loop) (make-network-update `((0 ,(id consumer))) ()))))
 
 (define-handler (relay consumer-removed consumer-removed) (relay ev consumer event-loop)
-  (update-network relay (id event-loop) (make-network-update () `(,(id consumer)))))
+  (unless (typep consumer 'virtual-client)
+    (update-network relay (id event-loop) (make-network-update () `(,(id consumer))))))
 
 (define-command (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
   (start (make-instance 'relay-client-initiator
@@ -198,28 +219,35 @@
     (call-next-method)))
 
 (defmethod process (message (client relay-client))
-  ;; (v:info :colleen.relay.client "~a Processing ~s" client message)
-  (typecase message
-    (list
-     (case (first message)
-       (:id
-        (setf (remote client) (second message)))
-       (:timeout
-        (error 'colleen:client-timeout-error :client client :timeout (second message)))
-       (:close
-        (close-connection client))
-       (:ping
-        (send '(:pong) client))
-       (:pong)))
-    ((or deeds:event transport)
-     (relay message (server client)))
-    (network-update
-     (update-network (server client) (remote client) message))
-    (T
-     (warn 'unknown-message-warning :message message :client client))))
+  (warn 'unknown-message-warning :message message :client client))
+
+(defmethod process ((transport transport) (client relay-client))
+  (relay transport (server client)))
+
+(defmethod process ((event event) (client relay-client))
+  (relay event (server client)))
+
+(defmethod process ((update network-update) (client relay-client))
+  ;; Create new network update to increase hops
+  (update-network (server client) (remote client)
+                  (make-network-update update NIL)))
+
+(defmethod process ((message list) (client relay-client))
+  (case (first message)
+    (:id
+     (setf (remote client) (second message)))
+    (:timeout
+     (error 'colleen:client-timeout-error :client client :timeout (second message)))
+    (:close
+     (close-connection client))
+    (:ping
+     (send '(:pong) client))
+    (:pong)))
 
 (defmethod receive ((client relay-client))
-  (deserialize (usocket:socket-stream (socket client))))
+  (deserialize (usocket:socket-stream (socket client))
+               `((core . ,(lambda (id) (find id (cores (server client)) :test #'matches)))
+                 (consumer . ,(lambda (id) (consumer id (cores (server client))))))))
 
 (defmethod send (message (client relay-client))
   (serialize message (usocket:socket-stream (socket client))))
@@ -235,10 +263,7 @@
 (defmethod close-connection :before ((client relay-client))
   ;; Remove all links through this client.
   (update-network (server client) (remote client)
-                  (make-network-update
-                   () (loop for (hops dest next) in (network (server client))
-                            when (matches next (remote client))
-                            collect dest)))
+                  (make-network-update () (list (remote client))))
   (ignore-errors (send '(:close) client)))
 
 (defmethod close-connection :after ((client relay-client))
@@ -255,12 +280,13 @@
 (in-package :colleen-relay)
 (defvar *core-a* (start (make-instance 'core :name "core-a")))
 (defvar *core-b* (start (make-instance 'core :name "core-b")))
-(defvar *logger-a* (start (make-instance 'colleen-logger::logger :name "logger-a")))
+(defvar *logger-a* (start (make-instance 'colleen-logger:logger :name "logger-a")))
 (defvar *relay-a* (start (make-instance 'relay :name "relay-a" :port 9486)))
 (defvar *relay-b* (start (make-instance 'relay :name "relay-b" :port 9487)))
 (add-consumer *logger-a* *core-a*)
 (add-consumer *relay-a* *core-a*)
 (add-consumer *relay-b* *core-b*)
 (connect :port 9486 :loop *core-b*)
-(issue (make-instance 'colleen-logger::log-event :client (make-instance 'virtual-client :id (id *logger-a*)) :message "HI!!") *core-b*)
+(consumer (id *logger-a*) *core-b*)
+(issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-a*) *core-b*) :message "HI!!") *core-b*)
 |#
