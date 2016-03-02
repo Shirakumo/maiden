@@ -60,7 +60,9 @@
   (pushnew consumer (consumers core) :test #'matches))
 
 (defmethod add-consumer :after (consumer (core core))
-  (issue (make-instance 'consumer-added :consumer consumer) core))
+  ;; No specialisation due to class forwarding not being possible.
+  (when (typep consumer 'consumer)
+    (issue (make-instance 'consumer-added :consumer consumer) core)))
 
 (defmethod remove-consumer :around (consumer target)
   (call-next-method)
@@ -78,7 +80,9 @@
   (setf (consumers core) (remove id (consumers core) :test #'matches)))
 
 (defmethod remove-consumer :after (consumer (core core))
-  (issue (make-instance 'consumer-removed :consumer consumer) core))
+  ;; No specialisation due to class forwarding not being possible.
+  (when (typep consumer 'consumer)
+    (issue (make-instance 'consumer-removed :consumer consumer) core)))
 
 (defmethod handler (id (core core))
   (handler id (event-loop core)))
