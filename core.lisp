@@ -41,6 +41,9 @@
 (defmethod consumer (id (core core))
   (find id (consumers core) :test #'matches))
 
+(defmethod consumer (id (cores list))
+  (loop for core in cores thereis (consumer id core)))
+
 (defmethod add-consumer :around (consumer target)
   (call-next-method)
   consumer)
