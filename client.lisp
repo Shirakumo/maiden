@@ -32,7 +32,7 @@
 
 (defmethod print-object ((client remote-client) stream)
   (print-unreadable-object (client stream :type T)
-    (format stream "~a~@[ ~s~]" (name client) (when (client-connected-p client) :connected))))
+    (format stream "~:[~a~;~:*~a~*~]~@[ ~s~]" (name client) (id client) (when (client-connected-p client) :connected))))
 
 (defmethod start :after ((client remote-client))
   (unless (client-connected-p client)
@@ -50,8 +50,8 @@
 
 (defmethod print-object ((client ip-client) stream)
   (print-unreadable-object (client stream :type T)
-    (format stream "~@[~a~]~@[ ~s~] ~s ~a:~a"
-            (name client) (when (client-connected-p client) :connected) :host (host client) (port client))))
+    (format stream "~:[~a~;~:*~a~*~] ~@[~s ~]~s ~a:~a"
+            (name client) (id client) (when (client-connected-p client) :connected) :host (host client) (port client))))
 
 (define-consumer socket-client (ip-client)
   ((socket :initform NIL :accessor socket)
