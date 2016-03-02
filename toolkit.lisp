@@ -6,6 +6,14 @@
 
 (in-package #:org.shirakumo.colleen)
 
+(defun xor (a b)
+  (or (and a (not b))
+      (and (not a) b)))
+
+(defun xnor (a b)
+  (and (or (not a) b)
+       (or a (not b))))
+
 (defun kw (name)
   (intern (string name) :keyword))
 
