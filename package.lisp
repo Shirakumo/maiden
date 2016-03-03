@@ -111,6 +111,7 @@
    #:named-entity
    #:name
    #:id
+   #:find-entity
    #:core
    #:event-loop
    #:block-loop

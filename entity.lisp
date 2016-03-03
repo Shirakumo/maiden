@@ -57,3 +57,12 @@
 
 (defmethod matches (a (entity named-entity))
   (matches entity a))
+
+(defgeneric find-entity (id place))
+
+(defmethod find-entity (id (entity named-entity))
+  (when (matches id entity)
+    entity))
+
+(defmethod find-entity (id (list list))
+  (loop for item in list thereis (find-entity id item)))

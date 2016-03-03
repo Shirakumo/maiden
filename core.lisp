@@ -96,6 +96,10 @@
 (defmethod deregister-handler (handler (core core))
   (deregister-handler handler (event-loop core)))
 
+(defmethod find-entity (id (core core))
+  (or (call-next-method)
+      (consumer id core)))
+
 (defclass core-event-loop (compiled-event-loop)
   ())
 

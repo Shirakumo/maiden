@@ -104,6 +104,10 @@
   (stop (handlers consumer))
   consumer)
 
+(defmethod find-entity (id (consumer consumer))
+  (or (call-next-method)
+      (find-entity id (cores consumer))))
+
 (defclass abstract-handler ()
   ((target-class :initarg :target-class :accessor target-class)
    (options :initarg :options :accessor options)
