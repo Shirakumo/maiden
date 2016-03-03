@@ -17,7 +17,6 @@
   - Additionally, some objects simply cannot be serialised
     so there might have to be a mechanism to automate rmeoval
     or substitution thereof.
-- Currently the subscription system is missing.
 |#
 
 (in-package #:org.shirakumo.colleen.clients.relay)
@@ -48,7 +47,7 @@
     (format stream "~s ~s ~s" :to (target transport) (event transport))))
 
 (defmethod make-transport ((event event) target)
-  (make-instance 'make-transport :event event :target target))
+  (make-instance 'transport :event event :target target))
 
 (defclass network-update ()
   ((new :initarg :new :accessor new)
@@ -93,12 +92,13 @@
    :port 9486))
 
 (defmethod make-network-update ((relay relay) (bad list))
-  (let ((clients ()))
+  (let ((links ()))
     (dolist (core (cores relay))
+      (push (list 0 (id core)) links)
       (dolist (consumer (consumers core))
         (unless (typep consumer 'virtual-client)
-          (push (list 0 (id consumer)) clients))))
-    (make-network-update clients bad)))
+          (push (list 0 (id consumer)) links))))
+    (make-network-update links bad)))
 
 (defmethod handle-connection :before ((server tcp-server))
   (v:info :colleen.relay.server "~a waiting for clients." server))
@@ -175,14 +175,25 @@
                    (matches (subscriber subscription) source))
          (send subscription client))))))
 
+(defmethod relay (message (target null) relay)
+  (error "Cannot relay ~a to nothing over ~a" message relay))
+
+(defmethod relay (message target relay)
+  (relay message (or (find-entity target relay)
+                     (error "No suitable target found for ~a on ~a" target relay)) relay))
+
 (defmethod relay ((event event) (core core) (relay relay))
   (deeds:with-immutable-slots-unlocked ()
     (setf (slot-value event 'event-loop) core))
   (issue event core))
 
+(defmethod relay ((transport transport) (core core) (relay relay))
+  (relay (event transport) core relay))
+
 (defmethod relay (message (client virtual-client) (relay relay))
   (let ((remote (find (second (first (links client)))
                       (clients relay) :key #'remote :test #'matches)))
+    (unless remote (error "NO TARGET FOR ~a" client))
     (issue message remote)))
 
 (defmethod relay ((event event) (client virtual-client) (relay relay))
@@ -258,7 +269,7 @@
   (relay event (client event) (server client)))
 
 (defmethod process ((subscription subscription) (client relay-client))
-  (update-subscriptions subscription (remote client) (server client)))
+  (update-subscriptions (server client) (remote client) subscription))
 
 (defmethod process ((update network-update) (client relay-client))
   ;; Create new network update to increase hops
@@ -268,7 +279,11 @@
 (defmethod process ((message list) (client relay-client))
   (case (first message)
     (:id
-     (setf (remote client) (second message)))
+     (destructuring-bind (id version) (cdr message)
+       (unless (equal version (asdf:component-version (asdf:find-system :colleen)))
+         ;; FIXME
+         (warn "VERSION MISMATCH"))
+       (setf (remote client) id)))
     (:timeout
      (error 'colleen:client-timeout-error :client client :timeout (second message)))
     (:close
@@ -290,7 +305,7 @@
 
 (defmethod initiate-connection :after ((client relay-client))
   (broadcast 'connection-initiated :client client :loop (cores (server client)))
-  (send (list :id (id (server client))) client)
+  (send (list :id (id (server client)) (asdf:component-version (asdf:find-system :colleen))) client)
   (send (make-network-update (server client) ()) client))
 
 (defmethod close-connection :before ((client relay-client))
@@ -322,6 +337,13 @@
 (add-consumer *relay-a* *core-a*)
 (add-consumer *relay-b* *core-b*)
 (connect :port 9486 :loop *core-b*)
-(consumer (id *logger-a*) *core-b*)
+
 (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-a*) *core-b*) :message "HI!!") *core-b*)
+
+(deeds:define-handler (foo deeds:info-event) (ev)
+  :loop (event-loop *core-b*)
+  (v:info :test "~a" (deeds:message ev)))
+(subscribe 'deeds:info-event T T *core-b*)
+(issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
+(issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
 |#
