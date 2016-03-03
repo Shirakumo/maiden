@@ -18,7 +18,6 @@
     so there might have to be a mechanism to automate rmeoval
     or substitution thereof.
 - Currently the subscription system is missing.
-- Connections are wonky as fuck for no reason. Investigate.
 |#
 
 (in-package #:org.shirakumo.colleen.clients.relay)
@@ -30,12 +29,12 @@
   ())
 
 (defclass subscription ()
-  ((to :initarg :to :accessor to)
+  ((target :initarg :target :accessor target)
    (subscriber :initarg :subscriber :accessor subscriber)
    (event-type :initarg :event-type :accessor event-type)
    (filter :initarg :filter :accessor filter))
   (:default-initargs
-   :to T
+   :target T
    :subscriber (error "SUBSCRIBER required.")
    :event-type (error "EVENT-TYPE required.")
    :filter T))
@@ -47,6 +46,9 @@
 (defmethod print-object ((transport transport) stream)
   (print-unreadable-object (transport stream :type T)
     (format stream "~s ~s ~s" :to (target transport) (event transport))))
+
+(defmethod make-transport ((event event) target)
+  (make-instance 'make-transport :event event :target target))
 
 (defclass network-update ()
   ((new :initarg :new :accessor new)
@@ -85,7 +87,7 @@
   (make-virtual-client (id target) links))
 
 (define-consumer relay (tcp-server agent)
-  ((watchers :initform NIL :accessor watchers))
+  ((subscriptions :initform NIL :accessor subscriptions))
   (:default-initargs
    :host "127.0.0.1"
    :port 9486))
@@ -112,10 +114,24 @@
                  :port (usocket:get-peer-port socket)
                  :name NIL))
 
+(defmethod routable-p (target (relay relay))
+  (loop for core in (cores relay)
+        thereis (or (matches target core)
+                    (find target (consumers core) :test #'matches))))
+
+(defmethod routable-p ((subscription subscription) (relay relay))
+  (routable-p (subscriber subscription) relay))
+
+(defmethod routable-p ((transport transport) (relay relay))
+  (routable-p (target transport) relay))
+
+(defmethod routable-p ((event client-event) (relay relay))
+  (routable-p (client event) relay))
+
 (defmethod update-network ((relay relay) source update)
   ;; FIXME: optimise bulk actions to a single pass if possible.
+  ;; Remove links from virtual clients.  
   (dolist (core (cores relay))
-    ;; Remove links from virtual clients.
     (loop for bad in (bad update)
           for consumer = (consumer bad core)
           do (when (and consumer (typep consumer 'virtual-client))
@@ -131,43 +147,58 @@
     (dolist (consumer (consumers core))
       (when (and (typep consumer 'virtual-client) (null (links consumer)))
         (remove-consumer consumer core))))
+  ;; Remove unroutable subscriptions
+  (setf (subscriptions relay)
+        (remove-if-not (lambda (sub) (routable-p sub relay)) (subscriptions relay)))
   (v:info :colleen.relay.server "~a updated network by ~a" relay update)
   relay)
 
 (defmethod update-network :after ((relay relay) source update)
   (dolist (client (clients relay))
-    (unless (matches source (remote client))
+    (unless (matches (remote client) source)
       (send update client))))
 
-(defmethod relay ((event client-event) (relay relay))
-  (let ((client (client event)))
-    (etypecase client
-      (virtual-client
-       (let ((remote (find (second (first (links client)))
-                           (clients relay) :key #'remote :test #'matches)))
-         (issue event remote)))
-      (client
-       (let ((core (dolist (core (cores relay))
-                     (when (find client (consumers core))
-                       (return core)))))
-         (deeds:with-immutable-slots-unlocked ()
-           (setf (slot-value event 'event-loop) core))
-         (issue event core))))))
+(defmethod update-subscriptions ((relay relay) (self null) (subscription subscription))
+  (pushnew subscription (subscriptions relay)))
 
-(defmethod relay ((transport transport) (relay relay))
-  (let* ((next (second (first (links (consumer (target transport) (cores relay))))))
-         (core (find next (cores relay) :test #'matches))
-         (client (find next (clients relay) :key #'remote :test #'matches)))
-    (cond (core (issue (event transport) core))
-          (client (issue transport client))
-          (T (error "Don't know.")))))
+(defmethod update-subscriptions ((relay relay) source (subscription subscription))
+  (etypecase (target subscription)
+    (null)
+    (virtual-client
+     (relay subscription (target subscription) relay))
+    (relay
+     (update-subscriptions (target subscription) NIL subscription))
+    ((eql T)
+     (update-subscriptions relay NIL subscription)
+     (dolist (client (clients relay))
+       (unless (or (matches (remote client) source)
+                   (matches (subscriber subscription) source))
+         (send subscription client))))))
 
-(define-handler (relay relay deeds:event) (relay event)
-  (when (and (typep event 'client-event) (typep (client event) 'virtual-client))
-    (relay event relay))
-  (loop for (event-type filter target) in (watchers relay)
-        do (when (and (typep event event-type) (deeds:test-filter filter event))
-             (relay (make-instance 'transport :target target :event event) relay))))
+(defmethod relay ((event event) (core core) (relay relay))
+  (deeds:with-immutable-slots-unlocked ()
+    (setf (slot-value event 'event-loop) core))
+  (issue event core))
+
+(defmethod relay (message (client virtual-client) (relay relay))
+  (let ((remote (find (second (first (links client)))
+                      (clients relay) :key #'remote :test #'matches)))
+    (issue message remote)))
+
+(defmethod relay ((event event) (client virtual-client) (relay relay))
+  (if (typep event 'client-event)
+      (call-next-method)
+      (relay (make-transport event client) client relay)))
+
+(defmethod relay (message (consumer consumer) (relay relay))
+  (let ((core (dolist (core (cores relay))
+                (when (find consumer (consumers core))
+                  (return core)))))
+    (relay message core relay)))
+
+(defmethod relay (message (all (eql T)) (relay relay))
+  (dolist (client (clients relay))
+    (send message client)))
 
 (defmethod add-consumer :after ((relay relay) (core core))
   (update-network relay (id core) (make-network-update (loop for c in (consumers core) collect (list 0 (id c))) ())))
@@ -183,11 +214,27 @@
   (unless (typep consumer 'virtual-client)
     (update-network relay (id event-loop) (make-network-update () `(,(id consumer))))))
 
+(define-handler (relay relay deeds:event) (relay event)
+  (when (and (typep event 'client-event)
+             (typep (client event) 'virtual-client))
+    (relay event (client event) relay))
+  (loop for subscription in (subscriptions relay)
+        do (when (and (typep event (event-type subscription))
+                      (deeds:test-filter (filter subscription) event))
+             (relay event (subscriber subscription) relay))))
+
 (define-command (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
   (start (make-instance 'relay-client-initiator
                         :server relay
                         :port port
                         :host host)))
+
+(define-command (relay subscribe) (relay ev event-type filter &optional (target T))
+  (relay (make-instance 'subscription :event-type event-type
+                                      :filter filter
+                                      :subscriber (event-loop ev)
+                                      :target target)
+         T relay))
 
 (define-consumer relay-client (tcp-server-client timeout-client)
   ((remote :initform NIL :accessor remote)))
@@ -205,10 +252,13 @@
   (warn 'unknown-message-warning :message message :client client))
 
 (defmethod process ((transport transport) (client relay-client))
-  (relay transport (server client)))
+  (relay transport (target transport) (server client)))
 
-(defmethod process ((event event) (client relay-client))
-  (relay event (server client)))
+(defmethod process ((event client-event) (client relay-client))
+  (relay event (client event) (server client)))
+
+(defmethod process ((subscription subscription) (client relay-client))
+  (update-subscriptions subscription (remote client) (server client)))
 
 (defmethod process ((update network-update) (client relay-client))
   ;; Create new network update to increase hops
@@ -257,6 +307,8 @@
 
 (defmethod handle-connection-idle ((client relay-client-initiator))
   (send '(:ping) client))
+
+;; FIXME: On connection re-establishment, subscriptions need to be re-sent
 
 #|
 (ql:quickload '(colleen-logger colleen-relay))
