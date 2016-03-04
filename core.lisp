@@ -33,6 +33,7 @@
     (setf (slot-value event 'event-loop) core)))
 
 (defmethod issue ((event event) (core core))
+  (v:trace :colleen.core.event "~a Issuing event ~a" core event)
   (issue event (event-loop core)))
 
 (defmethod handle ((event event) (core core))
@@ -57,12 +58,11 @@
     (add-consumer consumer target)))
 
 (defmethod add-consumer (consumer (core core))
-  (pushnew consumer (consumers core) :test #'matches))
-
-(defmethod add-consumer :after (consumer (core core))
-  ;; No specialisation due to class forwarding not being possible.
-  (when (typep consumer 'consumer)
-    (issue (make-instance 'consumer-added :consumer consumer) core)))
+  (loop for current in (consumers core)
+        do (when (matches current consumer) (return current))
+        finally (push consumer (consumers core))
+                (when (typep consumer 'consumer)
+                  (issue (make-instance 'consumer-added :consumer consumer) core))))
 
 (defmethod remove-consumer :around (consumer target)
   (call-next-method)
@@ -77,12 +77,12 @@
     (remove-consumer consumer target)))
 
 (defmethod remove-consumer (id (core core))
-  (setf (consumers core) (remove id (consumers core) :test #'matches)))
-
-(defmethod remove-consumer :after (consumer (core core))
-  ;; No specialisation due to class forwarding not being possible.
-  (when (typep consumer 'consumer)
-    (issue (make-instance 'consumer-removed :consumer consumer) core)))
+  (setf (consumers core)
+        (loop for consumer in (consumers core)
+              if (matches consumer id)
+              do (when (typep consumer 'consumer)
+                   (issue (make-instance 'consumer-removed :consumer consumer) core))
+              else collect consumer)))
 
 (defmethod handler (id (core core))
   (handler id (event-loop core)))
@@ -105,7 +105,4 @@
 
 (defclass core-block-loop (event-loop)
   ())
-
-(defmethod handle :before ((event event) (event-loop core-event-loop))
-  (v:trace :colleen.event "Handling event ~a" event))
 
