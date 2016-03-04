@@ -34,12 +34,11 @@
   (relay event (client event) (server client)))
 
 (defmethod process ((subscription subscription) (client relay-client))
-  (update-subscriptions (server client) (remote client) subscription))
+  (update (server client) (remote client) subscription))
 
 (defmethod process ((update network-update) (client relay-client))
   ;; Create new network update to increase hops
-  (update-network (server client) (remote client)
-                  (make-network-update update NIL)))
+  (update (server client) (remote client) (make-network-update update NIL)))
 
 (defmethod process ((message list) (client relay-client))
   (case (first message)
@@ -74,8 +73,7 @@
 
 (defmethod close-connection :before ((client relay-client))
   ;; Remove all links through this client.
-  (update-network (server client) (remote client)
-                  (make-network-update () (list (remote client))))
+  (update (server client) (remote client) (make-network-update () (list (remote client))))
   (ignore-errors (send '(:close) client)))
 
 (defmethod close-connection :after ((client relay-client))

@@ -37,7 +37,7 @@ Todo:
           (push (list 0 (id consumer)) links))))
     (make-network-update links bad)))
 
-(defmethod make-network-update ((new list) (bad relay))
+(defmethod make-network-update ((new list) (relay relay))
   (let ((links ()))
     (dolist (core (cores relay))
       (push (list 0 (id core)) links)
@@ -77,9 +77,9 @@ Todo:
 (defmethod routable-p ((event client-event) (relay relay))
   (routable-p (client event) relay))
 
-(defgeneric update-network (relay update-source update))
+(defgeneric update (relay update-source update))
 
-(defmethod update-network ((relay relay) source update)
+(defmethod update ((relay relay) source (update network-update))
   ;; FIXME: optimise bulk actions to a single pass if possible.
   ;; Remove links from virtual clients.  
   (dolist (core (cores relay))
@@ -104,25 +104,23 @@ Todo:
   (v:info :colleen.relay.server "~a updated network by ~a" relay update)
   relay)
 
-(defmethod update-network :after ((relay relay) source update)
+(defmethod update :after ((relay relay) source (update network-update))
   (dolist (client (clients relay))
     (unless (matches (remote client) source)
       (send update client))))
 
-(defgeneric update-subscriptions (relay update-source update))
-
-(defmethod update-subscriptions ((relay relay) (self null) (subscription subscription))
+(defmethod update ((relay relay) (self null) (subscription subscription))
   (pushnew subscription (subscriptions relay) :test #'matches :key #'id))
 
-(defmethod update-subscriptions ((relay relay) source (subscription subscription))
+(defmethod update ((relay relay) source (subscription subscription))
   (etypecase (target subscription)
     (null)
     (virtual-client
      (relay subscription (target subscription) relay))
     (relay
-     (update-subscriptions (target subscription) NIL subscription))
+     (update (target subscription) NIL subscription))
     ((eql T)
-     (update-subscriptions relay NIL subscription)
+     (update relay NIL subscription)
      (dolist (client (clients relay))
        (unless (or (matches (remote client) source)
                    (matches (subscriber subscription) source))
@@ -135,7 +133,7 @@ Todo:
 
 (defmethod relay (message target relay)
   (relay message (or (find-entity target relay)
-                     (error 'relay-route-not-found :message message :target target :client client)) relay))
+                     (error 'relay-route-not-found :message message :target target :client relay)) relay))
 
 (defmethod relay ((event event) (core core) (relay relay))
   (deeds:with-immutable-slots-unlocked ()
@@ -148,7 +146,7 @@ Todo:
 (defmethod relay (message (client virtual-client) (relay relay))
   (let ((remote (find (second (first (links client)))
                       (clients relay) :key #'remote :test #'matches)))
-    (unless remote (error 'relay-link-not-found :message message :target target :client client))
+    (unless remote (error 'relay-link-not-found :message message :target client :client relay))
     (issue message remote)))
 
 (defmethod relay ((event event) (client virtual-client) (relay relay))
@@ -167,18 +165,18 @@ Todo:
     (send message client)))
 
 (defmethod add-consumer :after ((relay relay) (core core))
-  (update-network relay (id core) (make-network-update (loop for c in (consumers core) collect (list 0 (id c))) ())))
+  (update relay (id core) (make-network-update (loop for c in (consumers core) collect (list 0 (id c))) ())))
 
 (defmethod remove-consumer :after ((relay relay) (core core))
-  (update-network relay (id core) (make-network-update NIL (mapcar #'id (consumers core)))))
+  (update relay (id core) (make-network-update NIL (mapcar #'id (consumers core)))))
 
 (define-handler (relay consumer-added consumer-added) (relay ev consumer event-loop)
   (unless (typep consumer 'virtual-client)
-    (update-network relay (id event-loop) (make-network-update `((0 ,(id consumer))) ()))))
+    (update relay (id event-loop) (make-network-update `((0 ,(id consumer))) ()))))
 
 (define-handler (relay consumer-removed consumer-removed) (relay ev consumer event-loop)
   (unless (typep consumer 'virtual-client)
-    (update-network relay (id event-loop) (make-network-update () `(,(id consumer))))))
+    (update relay (id event-loop) (make-network-update () `(,(id consumer))))))
 
 (define-handler (relay relay deeds:event) (relay event)
   (when (and (typep event 'client-event)
