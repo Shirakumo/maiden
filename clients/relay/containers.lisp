@@ -27,6 +27,8 @@
   (print-unreadable-object (transport stream :type T)
     (format stream "~s ~s ~s" :to (target transport) (event transport))))
 
+(defgeneric make-transport (event target))
+
 (defmethod make-transport ((event event) target)
   (make-instance 'transport :event event :target target))
 
@@ -40,8 +42,7 @@
   (print-unreadable-object (update stream :type T)
     (format stream "~s ~s ~s ~s" :new (new update) :bad (bad update))))
 
-(defmethod make-network-update ((new list) (bad relay))
-  (make-network-update new (mapcar #'second (network bad))))
+(defgeneric make-network-update (new bad))
 
 (defmethod make-network-update ((new list) (bad list))
   (make-instance 'network-update :new new :bad bad))
@@ -56,6 +57,8 @@
   ((links :initarg :links :accessor links))
   (:default-initargs
    :links ()))
+
+(defgeneric make-virtual-client (target &optional links))
 
 (defmethod make-virtual-client ((target uuid:uuid) &optional links)
   (make-instance 'virtual-client :id target :links links))

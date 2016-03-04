@@ -37,19 +37,33 @@ Todo:
           (push (list 0 (id consumer)) links))))
     (make-network-update links bad)))
 
+(defmethod make-network-update ((new list) (bad relay))
+  (let ((links ()))
+    (dolist (core (cores relay))
+      (push (list 0 (id core)) links)
+      (dolist (consumer (consumers core))
+        (unless (typep consumer 'virtual-client)
+          (push (id consumer) links))))
+    (make-network-update new links)))
+
 (defmethod handle-connection :before ((server tcp-server))
   (v:info :colleen.relay.server "~a waiting for clients." server))
 
 (defmethod accept :before (socket (server tcp-server))
   (v:info :colleen.relay.server "~a accepting client." server))
 
-(defmethod make-tcp-server-client ((server tcp-server) socket)
+(defmethod make-tcp-server-client ((server relay) socket)
   (make-instance 'relay-client
                  :server server
                  :socket socket
                  :host (usocket:get-peer-address socket)
                  :port (usocket:get-peer-port socket)
                  :name NIL))
+
+(defgeneric routable-p (target network))
+
+(defmethod routable-p (a b)
+  NIL)
 
 (defmethod routable-p (target (relay relay))
   (find-entity target relay))
@@ -62,6 +76,8 @@ Todo:
 
 (defmethod routable-p ((event client-event) (relay relay))
   (routable-p (client event) relay))
+
+(defgeneric update-network (relay update-source update))
 
 (defmethod update-network ((relay relay) source update)
   ;; FIXME: optimise bulk actions to a single pass if possible.
@@ -93,6 +109,8 @@ Todo:
     (unless (matches (remote client) source)
       (send update client))))
 
+(defgeneric update-subscriptions (relay update-source update))
+
 (defmethod update-subscriptions ((relay relay) (self null) (subscription subscription))
   (pushnew subscription (subscriptions relay) :test #'matches :key #'id))
 
@@ -109,6 +127,8 @@ Todo:
        (unless (or (matches (remote client) source)
                    (matches (subscriber subscription) source))
          (send subscription client))))))
+
+(defgeneric relay (message target relay))
 
 (defmethod relay (message (target null) relay)
   (error 'no-relay-target-specified :message message :client relay))
