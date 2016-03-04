@@ -84,5 +84,3 @@
 
 (defmethod handle-connection-idle ((client relay-client-initiator))
   (send '(:ping) client))
-
-;; FIXME: On connection re-establishment, subscriptions need to be re-sent

@@ -118,11 +118,24 @@
           do (cond ((typep consumer 'virtual-client)
                     (pushnew (list hops new) (links consumer) :key #'second :test #'matches))
                    ((not consumer)
-                    (add-consumer (make-virtual-client new `((,hops ,source))) core))))
+                    (add-consumer (make-virtual-client new `((,hops ,source))) core)
+                    ;; Since we discovered a new client we have to check if it
+                    ;; might need to be notified of one of our subscriptions
+                    ;; and if so tell it about it.
+                    (dolist (subscription (my-subscriptions relay))
+                      (when (or (eql T (target subscription))
+                                (matches new (target subscription)))
+                        (relay subscription new relay))))))
     ;; Remove empty virtual clients
     (dolist (consumer (consumers core))
       (when (and (typep consumer 'virtual-client) (null (links consumer)))
-        (remove-consumer consumer core))))
+        (remove-consumer consumer core)
+        ;; If the client was associated with any subscriptions then we
+        ;; can no longer reach it anyway and should thus remove the
+        ;; subscription.
+        (setf (subscriptions relay)
+              (remove-if (lambda (sub) (matches (subscriber sub) consumer))
+                         (subscriptions relay))))))
   ;; Remove unroutable subscriptions
   (setf (subscriptions relay)
         (remove-if-not (lambda (sub) (routable-p sub relay)) (subscriptions relay)))
