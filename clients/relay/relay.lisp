@@ -195,12 +195,14 @@
   (update relay (id core) (make-network-update NIL (mapcar #'id (consumers core)))))
 
 (define-handler (relay consumer-added consumer-added) (relay ev consumer event-loop)
-  (unless (typep consumer 'virtual-client)
-    (update relay (id event-loop) (make-network-update `((0 ,(id consumer))) ()))))
+  (etypecase consumer
+    ((or virtual-client relay))
+    (consumer (update relay (id event-loop) (make-network-update `((0 ,(id consumer))) ())))))
 
 (define-handler (relay consumer-removed consumer-removed) (relay ev consumer event-loop)
-  (unless (typep consumer 'virtual-client)
-    (update relay (id event-loop) (make-network-update () `(,(id consumer))))))
+  (etypecase consumer
+    ((or virtual-client relay))
+    (consumer (update relay (id event-loop) (make-network-update () `(,(id consumer)))))))
 
 (define-handler (relay relay deeds:event) (relay event)
   (when (and (typep event 'client-event)
