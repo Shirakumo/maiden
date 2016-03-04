@@ -35,7 +35,15 @@
   (:default-initargs
    :consumer (error "CONSUMER required.")))
 
+(defmethod print-object ((event consumer-added) stream)
+  (print-unreadable-object (event stream :type T :identity T)
+    (format stream "~a" (slot-value event 'consumer))))
+
 (define-event consumer-removed (event)
   ((consumer :initarg :consumer))
   (:default-initargs
    :consumer (error "CONSUMER required.")))
+
+(defmethod print-object ((event consumer-removed) stream)
+  (print-unreadable-object (event stream :type T :identity T)
+    (format stream "~a" (slot-value event 'consumer))))
