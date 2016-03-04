@@ -222,7 +222,11 @@
              (typep (client event) 'virtual-client))
     (relay event (client event) relay))
   (loop for subscription in (subscriptions relay)
-        do (when (and (typep event (event-type subscription))
+        do (when (and (or (eql T (target subscription))
+                          (matches (event-loop event) (target subscription)))
+                      (not (matches (event-loop event) (subscriber subscription)))
+                      ;; Perform actual event test.
+                      (typep event (event-type subscription))
                       (deeds:test-filter (filter subscription) event))
              (relay event (subscriber subscription) relay))))
 
