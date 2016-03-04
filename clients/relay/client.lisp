@@ -33,7 +33,7 @@
 (defmethod process ((event client-event) (client relay-client))
   (relay event (client event) (server client)))
 
-(defmethod process ((subscription subscription) (client relay-client))
+(defmethod process ((subscription subscription-update) (client relay-client))
   (update (server client) (remote client) subscription))
 
 (defmethod process ((update network-update) (client relay-client))
