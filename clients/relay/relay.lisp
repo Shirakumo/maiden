@@ -148,11 +148,6 @@
   (setf (subscriptions relay) (remove unsubscription (subscriptions relay) :test #'matches))
   (setf (my-subscriptions relay) (remove unsubscription (my-subscriptions relay) :test #'matches)))
 
-(defmethod update ((relay relay) (self relay) (subscription subscription-update))
-  (when (eql relay self)
-    (update relay NIL subscription)
-    (relay subscription T relay)))
-
 (defmethod update ((relay relay) source (subscription subscription-update))
   (etypecase (target subscription)
     (null)
