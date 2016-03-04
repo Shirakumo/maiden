@@ -47,7 +47,8 @@
 |#
 
 (define-consumer relay (tcp-server agent)
-  ((subscriptions :initform NIL :accessor subscriptions))
+  ((subscriptions :initform NIL :accessor subscriptions)
+   (my-subscriptions :initform NIL :accessor my-subscriptions))
   (:default-initargs
    :host "127.0.0.1"
    :port 9486))
@@ -134,9 +135,18 @@
       (send update client))))
 
 (defmethod update ((relay relay) (self null) (subscription subscription))
-  (pushnew subscription (subscriptions relay) :test #'matches :key #'id))
+  (pushnew subscription (subscriptions relay) :test #'matches))
 
-(defmethod update ((relay relay) source (subscription subscription))
+(defmethod update ((relay relay) (self null) (unsubscription unsubscription))
+  (setf (subscriptions relay) (remove unsubscription (subscriptions relay) :test #'matches))
+  (setf (my-subscriptions relay) (remove unsubscription (my-subscriptions relay) :test #'matches)))
+
+(defmethod update ((relay relay) (self relay) (subscription subscription-update))
+  (when (eql relay self)
+    (update relay NIL subscription)
+    (relay subscription T relay)))
+
+(defmethod update ((relay relay) source (subscription subscription-update))
   (etypecase (target subscription)
     (null)
     (virtual-client
@@ -147,7 +157,8 @@
      (update relay NIL subscription)
      (dolist (client (clients relay))
        (unless (or (matches (remote client) source)
-                   (matches (subscriber subscription) source))
+                   (and (typep subscription 'subscription)
+                        (matches (subscriber subscription) source)))
          (send subscription client))))))
 
 (defgeneric relay (message target relay))
@@ -220,8 +231,14 @@
                         :host host)))
 
 (define-command (relay subscribe) (relay ev event-type filter &optional (target T))
-  (relay (make-instance 'subscription :event-type event-type
-                                      :filter filter
-                                      :subscriber (event-loop ev)
-                                      :target target)
-         T relay))
+  (update relay relay (make-instance 'subscription :event-type event-type
+                                                   :filter filter
+                                                   :subscriber (event-loop ev)
+                                                   :target target)))
+
+(define-command (relay unsubscribe) (relay ev subscription)
+  (let ((subscription (or (typecase subscription
+                            (subscription subscription)
+                            (uuid:uuid (find subscription (my-subscriptions relay) :test #'matches)))
+                          (error "No matching subscription found for ~a" subscription))))
+    (update relay relay (make-instance 'unsubscription :target (target subscription) :id (id subscription)))))

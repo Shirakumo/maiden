@@ -6,18 +6,22 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(defclass subscription ()
-  ((id :initarg :id :accessor id)
-   (target :initarg :target :accessor target)
-   (subscriber :initarg :subscriber :accessor subscriber)
-   (event-type :initarg :event-type :accessor event-type)
+(defclass subscription-update (entity)
+  ((target :initarg :target :accessor target)
+   (subscriber :initarg :subscriber :accessor subscriber))
+  (:default-initargs
+   :target T
+   :subscriber (error "SUBSCRIBER required.")))
+
+(defclass subscription (subscription-update)
+  ((event-type :initarg :event-type :accessor event-type)
    (filter :initarg :filter :accessor filter))
   (:default-initargs
-   :id (uuid:make-v4-uuid)
-   :target T
-   :subscriber (error "SUBSCRIBER required.")
    :event-type (error "EVENT-TYPE required.")
    :filter T))
+
+(defclass unsubscription (subscription-update)
+  ())
 
 (defclass transport ()
   ((event :initarg :event :accessor event)
