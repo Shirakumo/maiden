@@ -16,6 +16,9 @@
   :homepage "https://github.com/Shinmera/colleen"
   :serial T
   :components ((:file "package")
+               (:file "conditions")
+               (:file "containers")
+               (:file "relay")
                (:file "client")
                (:file "documentation"))
   :depends-on (:usocket
