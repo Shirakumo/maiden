@@ -61,7 +61,7 @@
 
 (defmethod print-object ((named-entity named-entity) stream)
   (print-unreadable-object (named-entity stream :type T)
-    (format stream "~:[~a~;~:*~a~]" (name named-entity) (id named-entity))))
+    (format stream "~@[~a ~]~a" (name named-entity) (id named-entity))))
 
 (defmethod matches ((entity named-entity) b)
   (or (call-next-method)
