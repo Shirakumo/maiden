@@ -35,28 +35,37 @@
              for bel across b
              always (matches a b))))
 
-(defclass entity () ())
+(defclass entity ()
+  ((id :initarg :id :accessor id))
+  (:default-initargs
+   :id (uuid:make-v4-uuid)))
+
+(defmethod print-object ((entity entity) stream)
+  (print-unreadable-object (entity stream :type T)
+    (format stream "~a" (id entity))))
+
+(defmethod matches ((a entity) (b entity))
+  (or (eq a b)
+      (matches (id a) (id b))))
+
+(defmethod matches ((entity entity) b)
+  (matches (id entity) b))
+
+(defmethod matches (a (entity entity))
+  (matches entity a))
 
 (defclass named-entity (entity)
-  ((name :initarg :name :accessor name)
-   (id :initarg :id :accessor id))
+  ((name :initarg :name :accessor name))
   (:default-initargs
-   :name NIL
-   :id (uuid:make-v4-uuid)))
+   :name NIL))
 
 (defmethod print-object ((named-entity named-entity) stream)
   (print-unreadable-object (named-entity stream :type T)
     (format stream "~:[~a~;~:*~a~]" (name named-entity) (id named-entity))))
 
-(defmethod matches ((a named-entity) (b named-entity))
-  (eq a b))
-
 (defmethod matches ((entity named-entity) b)
-  (or (matches (id entity) b)
+  (or (call-next-method)
       (matches (name entity) b)))
-
-(defmethod matches (a (entity named-entity))
-  (matches entity a))
 
 (defgeneric find-entity (id place))
 
