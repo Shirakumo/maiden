@@ -86,26 +86,3 @@
   (send '(:ping) client))
 
 ;; FIXME: On connection re-establishment, subscriptions need to be re-sent
-
-#|
-(ql:quickload '(colleen-logger colleen-relay))
-(in-package :colleen-relay)
-(defvar *core-a* (start (make-instance 'core :name "core-a")))
-(defvar *core-b* (start (make-instance 'core :name "core-b")))
-(defvar *logger-a* (start (make-instance 'colleen-logger:logger :name "logger-a")))
-(defvar *relay-a* (start (make-instance 'relay :name "relay-a" :port 9486)))
-(defvar *relay-b* (start (make-instance 'relay :name "relay-b" :port 9487)))
-(add-consumer *logger-a* *core-a*)
-(add-consumer *relay-a* *core-a*)
-(add-consumer *relay-b* *core-b*)
-(connect :port 9486 :loop *core-b*)
-
-(issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-a*) *core-b*) :message "HI!!") *core-b*)
-
-(deeds:define-handler (foo deeds:info-event) (ev)
-  :loop (event-loop *core-b*)
-  (v:info :test "~a" (deeds:message ev)))
-(subscribe 'deeds:info-event T T *core-b*)
-(issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
-(issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
-|#
