@@ -129,13 +129,7 @@
     ;; Remove empty virtual clients
     (dolist (consumer (consumers core))
       (when (and (typep consumer 'virtual-client) (null (links consumer)))
-        (remove-consumer consumer core)
-        ;; If the client was associated with any subscriptions then we
-        ;; can no longer reach it anyway and should thus remove the
-        ;; subscription.
-        (setf (subscriptions relay)
-              (remove-if (lambda (sub) (matches (subscriber sub) consumer))
-                         (subscriptions relay))))))
+        (remove-consumer consumer core))))
   ;; Remove unroutable subscriptions
   (setf (subscriptions relay)
         (remove-if-not (lambda (sub) (routable-p sub relay)) (subscriptions relay)))
