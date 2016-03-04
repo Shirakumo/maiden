@@ -21,5 +21,4 @@
                (:file "relay")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:usocket
-               :colleen-serialize))
+  :depends-on (:colleen-serialize))
