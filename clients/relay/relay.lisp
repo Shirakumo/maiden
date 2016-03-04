@@ -214,12 +214,12 @@
 
 (define-handler (relay consumer-added consumer-added) (relay ev consumer event-loop)
   (etypecase consumer
-    ((or virtual-client relay))
+    ((or relay virtual-client))
     (consumer (update relay (id event-loop) (make-network-update `((0 ,(id consumer))) ())))))
 
 (define-handler (relay consumer-removed consumer-removed) (relay ev consumer event-loop)
   (etypecase consumer
-    ((or virtual-client relay))
+    ((or relay virtual-client))
     (consumer (update relay (id event-loop) (make-network-update () `(,(id consumer)))))))
 
 (define-handler (relay relay deeds:event) (relay event)
