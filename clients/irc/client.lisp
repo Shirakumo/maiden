@@ -48,17 +48,18 @@
                        (v:warn :colleen.client.irc.connection "Parse error: ~a" err))))
       (call-next-method))))
 
-(defmethod process ((client client) message)
+(defmethod process (message (client client))
   (let ((events (when (and message (string/= message ""))
                   (parse-reply client message))))
-    (dolist (event events)
-      (broadcast event :loop (cores client)))))
+    (dolist (core (cores client))
+      (dolist (event events)
+        (issue event core)))))
 
-(defmethod send ((client client) message)
+(defmethod send ((message string) (client client))
   (let ((message (format NIL "~a~c~c" message #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
       (warn 'message-too-long-warning :message message))
-    (call-next-method client message))
+    (call-next-method message client))
   client)
 
 (defmethod receive ((client client))
@@ -80,7 +81,7 @@
 
 (define-handler (client sender send-event) (client ev)
   :match-consumer 'client
-  (send client (message ev)))
+  (send (message ev) client))
 
 (define-handler (client ping irc:rpl-ping) (client ev server other-server)
   :match-consumer 'client
