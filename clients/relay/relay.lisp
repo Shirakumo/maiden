@@ -147,8 +147,7 @@
   (pushnew subscription (subscriptions relay) :test #'matches))
 
 (defmethod update ((relay relay) (self null) (unsubscription unsubscription))
-  (setf (subscriptions relay) (remove unsubscription (subscriptions relay) :test #'matches))
-  (setf (my-subscriptions relay) (remove unsubscription (my-subscriptions relay) :test #'matches)))
+  (setf (subscriptions relay) (remove unsubscription (subscriptions relay) :test #'matches)))
 
 (defmethod update ((relay relay) source (subscription subscription-update))
   (etypecase (target subscription)
@@ -239,14 +238,17 @@
                         :host host)))
 
 (define-command (relay subscribe) (relay ev event-type filter &optional (target T))
-  (update relay relay (make-instance 'subscription :event-type event-type
+  (let ((subscription (make-instance 'subscription :event-type event-type
                                                    :filter filter
                                                    :subscriber (event-loop ev)
                                                    :target target)))
+    (push subscription (my-subscriptions relay))
+    (update relay relay subscription)))
 
 (define-command (relay unsubscribe) (relay ev subscription)
   (let ((subscription (or (typecase subscription
                             (subscription subscription)
                             (uuid:uuid (find subscription (my-subscriptions relay) :test #'matches)))
                           (error "No matching subscription found for ~a" subscription))))
+    (setf (my-subscriptions relay) (remove subscription (my-subscriptions relay)))
     (update relay relay (make-instance 'unsubscription :target (target subscription) :id (id subscription)))))
