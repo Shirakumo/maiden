@@ -175,7 +175,9 @@
     (string (read-sequence (buffer client) (usocket:socket-stream (socket client))))))
 
 (defmethod send ((message string) (client text-client))
-  (write-string message (usocket:socket-stream (socket client))))
+  (let ((stream (usocket:socket-stream (socket client))))
+    (write-string message stream)
+    (finish-output stream)))
 
 (define-consumer tcp-client (socket-client)
   ((element-type :initform '(unsigned-byte 8) :reader element-type)
