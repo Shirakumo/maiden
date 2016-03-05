@@ -23,14 +23,13 @@
                `(,name ,value))))
     (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-          (loop (gensym "LOOP"))
           (client (gensym "CLIENT")))
       (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :key key) args
         (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
           (destructuring-bind (&key superclasses) options
-            (cond (key (push loop key))
-                  (optional (push loop optional))
-                  (T (push loop key)))
+            (cond (key (push 'loop key))
+                  (optional (push 'loop optional))
+                  (T (push 'loop key)))
             `(progn
                (define-event ,name (deeds:command-event send-event ,@superclasses)
                  (,@(mapcar #'make-req-field required)
@@ -41,7 +40,7 @@
                              ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
                              ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
                  (do-issue ,name
-                   :loop (or ,loop (first (cores ,client))) :client ,client
+                   :loop (or loop (first (cores ,client))) :client ,client
                    ,@(loop for var in pure-args collect (kw var) collect var)))
                (defmethod message ((ev ,name))
                  (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
@@ -71,11 +70,11 @@
 
 (define-irc-command join (channels)
   "JOIN ~{~a~^,~} ~{~a~^,~}"
-  (loop for chan in channels collect (if (listp chan) (first chan) chan))
-  (loop for chan in channels collect (if (listp chan) (second chan) "")))
+  (loop for chan in (ensure-list channels) collect (if (listp chan) (first chan) chan))
+  (loop for chan in (ensure-list channels) collect (if (listp chan) (second chan) "")))
 
 (define-irc-command part (channels)
-  "PART ~{~a~^,~}" channels)
+  "PART ~{~a~^,~}" (ensure-list channels))
 
 (define-irc-command mode (target mode &key limit user ban-mask)
   "MODE ~a ~a~@[ ~a~@[ ~a~@[ ~a~]~]~]" target mode limit user ban-mask)
@@ -84,7 +83,7 @@
   "TOPIC ~a~@[ :~a~]" channel topic)
 
 (define-irc-command names (channels)
-  "NAMES ~{~a~^,~}" channels)
+  "NAMES ~{~a~^,~}" (ensure-list channels))
 
 (define-irc-command list (channels &key server)
   "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (ensure-list channels) server)
@@ -165,7 +164,7 @@
   "WALLOPS :~a" message)
 
 (define-irc-command userhost (nicknames)
-  "USERHOST~{ ~a~}" nicknames)
+  "USERHOST~{ ~a~}" (ensure-list nicknames))
 
 (define-irc-command ison (nicknames)
-  "ISON~{ ~a~}" nicknames)
+  "ISON~{ ~a~}" (ensure-list nicknames))
