@@ -15,6 +15,15 @@
 (define-consumer relay-client (tcp-server-client timeout-client)
   ((remote :initform NIL :accessor remote)))
 
+(defmethod make-network-update ((new list) (client relay-client))
+  (let ((bad ()))
+    (dolist (core (cores (server client)))
+      (dolist (consumer (consumers core))
+        (when (and (typep consumer 'virtual-client)
+                   (find (remote client) (links consumer) :test #'matches :key #'second))
+          (push (id consumer) bad))))
+    (make-network-update new bad)))
+
 (defmethod handle-connection-error :before (err (client relay-client))
   (v:warn :colleen.relay.client "~a Connection error: ~a" client err))
 
@@ -73,7 +82,7 @@
 
 (defmethod close-connection :before ((client relay-client))
   ;; Remove all links through this client.
-  (update (server client) (remote client) (make-network-update () (list (remote client))))
+  (update (server client) (remote client) (make-network-update () client))
   (ignore-errors (send '(:close) client)))
 
 (defmethod close-connection :after ((client relay-client))
