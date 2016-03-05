@@ -23,9 +23,9 @@
    :port 6667
    :services :unknown))
 
-(defmethod initialise-instance :after ((client client) &key)
+(defmethod initialize-instance :after ((client client) &key)
   (unless (slot-boundp client 'intended-nickname)
-    (setf (intended-nickname) (nickname client))))
+    (setf (intended-nickname client) (nickname client))))
 
 (defmethod initiate-connection :after ((client client))
   (with-slots (nickname username password realname) client
@@ -43,7 +43,7 @@
                      (lambda (err)
                        (v:error :colleen.client.irc.connection "Parse error: ~a" err)
                        (invoke-restart 'continue)))
-                   (unknown-message-event-warning
+                   (unknown-message-warning
                      (lambda (err)
                        (v:warn :colleen.client.irc.connection "Parse error: ~a" err))))
       (call-next-method))))
@@ -52,14 +52,13 @@
   (let ((events (when (and message (string/= message ""))
                   (parse-reply client message))))
     (dolist (event events)
-      (broadcast event (cores client)))))
+      (broadcast event :loop (cores client)))))
 
 (defmethod send ((client client) message)
   (let ((message (format NIL "~a~c~c" message #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
       (warn 'message-too-long-warning :message message))
-    (call-next-method client message)
-    (finish-output stream))
+    (call-next-method client message))
   client)
 
 (defmethod receive ((client client))
@@ -76,28 +75,27 @@
                       (unread-char char stream))))
                (T (write-char char out))))))
 
-(define-handler (client ping irc:rpl-ping) (client ev server other-server)
-  :match-consumer client
-  (setf (last-pong client) (get-universal-time))
-  (irc:pong client server other-server))
-
-(define-handler (client pong irc:rpl-pong) (client ev)
-  :match-consumer client
-  (setf (last-pong client) (get-universal-time)))
-
 (defmethod handle-connection-idle ((client client))
   (irc:ping client (host client)))
 
+(define-handler (client sender send-event) (client ev)
+  :match-consumer 'client
+  (send client (message ev)))
+
+(define-handler (client ping irc:rpl-ping) (client ev server other-server)
+  :match-consumer 'client
+  (irc:pong client server other-server))
+
 (define-handler (client nick-change irc:rpl-nick) (client ev sender nickname)
-  :match-consumer client
+  :match-consumer 'client
   (when (string-equal sender (nickname client))
     (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
 
 (define-handler (client yank-nick irc:rpl-quit) (client ev sender)
-  :match-consumer client
+  :match-consumer 'client
   (when (and (string-equal sender (intended-nickname client))
-             (not (string-equal sender (nick client))))
+             (not (string-equal sender (nickname client))))
     (v:info :colleen.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)
     (irc:nick client sender)))
 
@@ -106,13 +104,14 @@
     (:unknown
      NIL)
     (:anope
-     (with-response
-         (irc:privmsg :receivers "NickServ" :message (format NIL "STATUS ~a" nick) :client client)
-         (irc:rpl-notice ev message)
-         (:filter '(eql 0 (search "STATUS" message))
-          :timeout 5)
-       (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
-         (and (string= nick status-nick)
-              (string= code "3")))))
+     ;; (with-response
+     ;;     (irc:privmsg client "NickServ" (format NIL "STATUS ~a" nick))
+     ;;     (irc:rpl-notice ev message)
+     ;;     (:filter '(eql 0 (search "STATUS" message))
+     ;;      :timeout 5)
+     ;;   (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
+     ;;     (and (string= nick status-nick)
+     ;;          (string= code "3"))))
+     )
     ((NIL)
      T)))

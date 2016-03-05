@@ -6,10 +6,7 @@
 
 (in-package #:org.shirakumo.colleen.clients.irc)
 
-(define-condition message-condition (condition)
-  ((message :initarg :message :reader message)))
-
-(define-condition message-too-long-warning (warning message-condition)
+(define-condition message-too-long-warning (message-condition client-warning)
   ()
   (:report (lambda (c s)
              (declare (ignore c))

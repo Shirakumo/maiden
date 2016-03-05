@@ -20,6 +20,5 @@
                (:file "commands")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:usocket
-               :babel
+  :depends-on (:babel
                :cl-ppcre))

@@ -9,9 +9,6 @@
 (define-event send-event (irc-event)
   ((message :initarg :message :reader message)))
 
-(define-handler (client sender send-event) (client ev)
-  (send-connection client (message ev)))
-
 (defmacro define-irc-command (name args &body options-and-body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
            (make-req-field (a)
@@ -25,23 +22,26 @@
                (declare (ignore kargs))
                `(,name ,value))))
     (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
-          (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args))))
-      (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
+          (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
+          (loop (gensym "LOOP"))
+          (client (gensym "CLIENT")))
+      (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :key key) args
         (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
-          (destructuring-bind (&key superclasses (loop '*event-loop*)) options
+          (destructuring-bind (&key superclasses) options
+            (cond (key (push loop key))
+                  (optional (push loop optional))
+                  (T (push loop key)))
             `(progn
                (define-event ,name (deeds:command-event send-event ,@superclasses)
                  (,@(mapcar #'make-req-field required)
                   ,@(mapcar #'make-opt-field optional)
-                  ,@(when rest (list (make-req-field rest)))
                   ,@(mapcar #'make-opt-field key)))
-               (defun ,name (client
+               (defun ,name (,client
                              ,@(mapcar #'unlist required)
                              ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
-                             ,@(when rest `(&rest ,rest))
                              ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
-                 (do-issue ,name 
-                   :loop ,loop :client client
+                 (do-issue ,name
+                   :loop (or ,loop (first (cores ,client))) :client ,client
                    ,@(loop for var in pure-args collect (kw var) collect var)))
                (defmethod message ((ev ,name))
                  (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
@@ -69,12 +69,12 @@
 (define-irc-command squit (server comment)
   "SQUIT ~a :~a" server comment)
 
-(define-irc-command join (&rest channels)
+(define-irc-command join (channels)
   "JOIN ~{~a~^,~} ~{~a~^,~}"
   (loop for chan in channels collect (if (listp chan) (first chan) chan))
   (loop for chan in channels collect (if (listp chan) (second chan) "")))
 
-(define-irc-command part (&rest channels)
+(define-irc-command part (channels)
   "PART ~{~a~^,~}" channels)
 
 (define-irc-command mode (target mode &key limit user ban-mask)
@@ -83,7 +83,7 @@
 (define-irc-command topic (channel &optional topic)
   "TOPIC ~a~@[ :~a~]" channel topic)
 
-(define-irc-command names (&rest channels)
+(define-irc-command names (channels)
   "NAMES ~{~a~^,~}" channels)
 
 (define-irc-command list (channels &key server)
@@ -164,8 +164,8 @@
 (define-irc-command wallops (message)
   "WALLOPS :~a" message)
 
-(define-irc-command userhost (&rest nicknames)
+(define-irc-command userhost (nicknames)
   "USERHOST~{ ~a~}" nicknames)
 
-(define-irc-command ison (&rest nicknames)
+(define-irc-command ison (nicknames)
   "ISON~{ ~a~}" nicknames)
