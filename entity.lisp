@@ -65,7 +65,8 @@
 
 (defmethod matches ((entity named-entity) b)
   (or (call-next-method)
-      (matches (name entity) b)))
+      (and (name entity)
+           (matches (name entity) b))))
 
 (defgeneric find-entity (id place))
 
