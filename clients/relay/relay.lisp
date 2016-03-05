@@ -23,30 +23,57 @@
 
 ## Testing Code
 :: common-lisp
-(ql:quickload :verbose)
-(setf (v:repl-level) :trace)
-(ql:quickload '(colleen-logger colleen-relay))
-(in-package :colleen-relay)
-(defvar *core-a* (start (make-instance 'core :name "core-a")))
-(defvar *core-b* (start (make-instance 'core :name "core-b")))
-(defvar *relay-a* (start (make-instance 'relay :name "relay-a" :port 9486)))
-(defvar *relay-b* (start (make-instance 'relay :name "relay-b" :port 9487)))
-(add-consumer *relay-a* *core-a*)
-(add-consumer *relay-b* *core-b*)
-(connect :port 9486 :loop *core-b*)
-
-(defvar *logger-a* (start (make-instance 'colleen-logger:logger :name "logger-a")))
-(add-consumer *logger-a* *core-a*)
-(issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-a*) *core-b*) :message "HI!!") *core-b*)
-
-(deeds:define-handler (foo deeds:info-event) (ev)
-  :loop (event-loop *core-b*)
-  (v:info :test "~a" (deeds:message ev)))
-(subscribe 'deeds:info-event T T *core-b*)
-(issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
-(issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
+ (ql:quickload :verbose)
+ (setf (v:repl-level) :trace)
+ (ql:quickload '(colleen-logger colleen-relay))
+ (in-package :colleen-relay)
+ 
+ ;; A - B - C*
+ (macrolet ((define-relay (name port)
+             `(let ((core (start (make-instance 'core :name ,(string name))))
+                    (relay (start (make-instance 'relay :name ,(string name) :port ,port))))
+                (add-consumer relay core)
+                (defvar ,(intern (format NIL "*CORE-~a*" name)) core)
+                (defvar ,(intern (format NIL "*RELAY-~a*" name)) relay))))
+  (define-relay "A" 9486)
+  (define-relay "B" 9487)
+  (define-relay "C" 9488))
+ (connect :loop *core-a* :port (port *relay-b*))
+ (connect :loop *core-b* :port (port *relay-c*))
+ (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
+ (add-consumer *logger-c* *core-c*)
+ 
+ ;;  A - B
+ ;;   \ /
+ ;;    C*
+ (macrolet ((define-relay (name port)
+              `(let ((core (start (make-instance 'core :name ,(string name))))
+                     (relay (start (make-instance 'relay :name ,(string name) :port ,port))))
+                 (add-consumer relay core)
+                 (defvar ,(intern (format NIL "*CORE-~a*" name)) core)
+                 (defvar ,(intern (format NIL "*RELAY-~a*" name)) relay))))
+   (define-relay "A" 9486)
+   (define-relay "B" 9487)
+   (define-relay "C" 9488))
+ (connect :loop *core-a* :port (port *relay-b*))
+ (connect :loop *core-b* :port (port *relay-c*))
+ (connect :loop *core-c* :port (port *relay-a*))
+ (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
+ (add-consumer *logger-c* *core-c*)
+ 
+ ;; Test logger
+ (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*)
+ ;; Test subscriptions
+ (deeds:define-handler (foo deeds:info-event) (ev)
+   :loop (event-loop *core-c*)
+   (v:info :test "~a" (deeds:message ev)))
+ (subscribe 'deeds:info-event T T *core-c*)
+ (issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
+ (issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
 ::
 |#
+
+
 
 (define-consumer relay (tcp-server agent)
   ((subscriptions :initform NIL :accessor subscriptions)
