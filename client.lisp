@@ -162,6 +162,13 @@
   (with-default-encoding ((encoding client))
     (call-next-method)))
 
+(defmethod receive :around ((client text-client))
+  (handler-bind (#+sbcl (sb-int:stream-decoding-error
+                          (lambda (err)
+                            (v:log :warning :colleen.client.receive err)
+                            (invoke-restart 'sb-int:attempt-resync))))
+    (call-next-method)))
+
 (defmethod receive ((client text-client))
   (etypecase (buffer client)
     ((eql :line) (read-line (usocket:socket-stream (socket client))))
