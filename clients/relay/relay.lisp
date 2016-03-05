@@ -113,7 +113,7 @@
     (loop for bad in (bad update)
           for consumer = (consumer bad core)
           do (when (and consumer (typep consumer 'virtual-client))
-               (setf (links consumer) (remove source (links consumer) :key #'second))))
+               (setf (links consumer) (remove source (links consumer) :key #'second :test #'matches))))
     ;; Insert new links and virtual clients.
     (loop for (hops new) in (new update)
           for consumer = (consumer new core)
