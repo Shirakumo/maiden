@@ -29,11 +29,14 @@
         always (and (xnor arest brest)
                     (matches a b))))
 
+(defmethod matches ((a string) (b string))
+  (string= a b))
+
 (defmethod matches ((a vector) (b vector))
   (and (= (length a) (length b))
        (loop for ael across a
              for bel across b
-             always (matches a b))))
+             always (matches ael bel))))
 
 (defclass entity ()
   ((id :initarg :id :accessor id))
