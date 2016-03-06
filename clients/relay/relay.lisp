@@ -188,7 +188,7 @@
      (dolist (client (clients relay))
        (unless (or (matches (remote client) source)
                    (and (typep subscription 'subscription)
-                        (matches (subscriber subscription) source)))
+                        (matches (remote client) (subscriber subscription))))
          (send subscription client))))))
 
 (defgeneric relay (message target relay))
