@@ -52,46 +52,46 @@
    #:ison)
   ;; events.lisp
   (:export
-   #:rpl-pass
-   #:rpl-nick
-   #:rpl-user
-   #:rpl-server
-   #:rpl-oper
-   #:rpl-quit
-   #:rpl-squit
-   #:rpl-join
-   #:rpl-part
-   #:rpl-mode
-   #:rpl-topic
-   #:rpl-names
-   #:rpl-list
-   #:rpl-invite
-   #:rpl-kick
-   #:rpl-version
-   #:rpl-stats
-   #:rpl-links
-   #:rpl-time
-   #:rpl-connect
-   #:rpl-trace
-   #:rpl-admin
-   #:rpl-info
-   #:rpl-privmsg
-   #:rpl-notice
-   #:rpl-who
-   #:rpl-whois
-   #:rpl-whowas
-   #:rpl-kill
-   #:rpl-ping
-   #:rpl-pong
-   #:rpl-error
-   #:rpl-away
-   #:rpl-rehash
-   #:rpl-restart
-   #:rpl-summon
-   #:rpl-users
-   #:rpl-wallops
-   #:rpl-userhost
-   #:rpl-ison
+   #:msg-pass
+   #:msg-nick
+   #:msg-user
+   #:msg-server
+   #:msg-oper
+   #:msg-quit
+   #:msg-squit
+   #:msg-join
+   #:msg-part
+   #:msg-mode
+   #:msg-topic
+   #:msg-names
+   #:msg-list
+   #:msg-invite
+   #:msg-kick
+   #:msg-version
+   #:msg-stats
+   #:msg-links
+   #:msg-time
+   #:msg-connect
+   #:msg-trace
+   #:msg-admin
+   #:msg-info
+   #:msg-privmsg
+   #:msg-notice
+   #:msg-who
+   #:msg-whois
+   #:msg-whowas
+   #:msg-kill
+   #:msg-ping
+   #:msg-pong
+   #:msg-error
+   #:msg-away
+   #:msg-rehash
+   #:msg-restart
+   #:msg-summon
+   #:msg-users
+   #:msg-wallops
+   #:msg-userhost
+   #:msg-ison
    #:rpl-welcome
    #:rpl-yourhost
    #:rpl-created
@@ -430,5 +430,29 @@
   (:nicknames #:org.shirakumo.colleen.clients.irc)
   (:use #:cl #:colleen)
   (:shadow #:client)
-  ;; 
-  (:export))
+  ;; client.lisp
+  (:export
+   #:client
+   #:nickname
+   #:username
+   #:password
+   #:realname
+   #:intended-nickname
+   #:services)
+  ;; commands.lisp
+  (:export
+   #:send-event
+   #:message
+   #:define-irc-command)
+  ;; conditions.lisp
+  (:export
+   #:message-too-long-warning)
+  ;; events.lisp
+  (:export
+   #:irc-event
+   #:reply-event
+   #:sender
+   #:sender-user
+   #:sender-host
+   #:unknown-event
+   #:define-irc-reply))

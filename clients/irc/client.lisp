@@ -83,17 +83,17 @@
   :match-consumer 'client
   (send (message ev) client))
 
-(define-handler (client ping irc:rpl-ping) (client ev server other-server)
+(define-handler (client ping irc:msg-ping) (client ev server other-server)
   :match-consumer 'client
   (irc:pong client server other-server))
 
-(define-handler (client nick-change irc:rpl-nick) (client ev sender nickname)
+(define-handler (client nick-change irc:msg-nick) (client ev sender nickname)
   :match-consumer 'client
   (when (string-equal sender (nickname client))
     (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
 
-(define-handler (client yank-nick irc:rpl-quit) (client ev sender)
+(define-handler (client yank-nick irc:msg-quit) (client ev sender)
   :match-consumer 'client
   (when (and (string-equal sender (intended-nickname client))
              (not (string-equal sender (nickname client))))
