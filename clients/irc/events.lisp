@@ -460,3 +460,7 @@
                 ,@(loop for (code name regex args) in *reply-descriptors*
                         collect `(define-irc-reply ,name ,code (,regex ,@args))))))
   (define-all-irc-replies))
+
+(defmethod respond ((event irc:rpl-privmsg) &key (message (error "MESSAGE required.")) &allow-other-keys)
+  (deeds:with-fuzzy-slot-bindings (client receivers) (event irc:rpl-privmsg)
+    (irc:privmsg client receivers message)))
