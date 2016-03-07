@@ -118,6 +118,7 @@
    :interval 2))
 
 (defmethod handle-connection-error (err (client reconnecting-client))
+  (v:log :debug :colleen.client.reconnection err)
   (v:warn :colleen.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
   ;; We don't care if it fails to close gracefully.
   (ignore-errors (usocket:socket-close (socket client)))
