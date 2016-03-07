@@ -119,7 +119,10 @@
 (defmethod initialize-instance :after ((handler abstract-handler) &rest args &key &allow-other-keys)
   (let ((class (getf args :target-class)))
     (when class (setf (target-class handler) class))
-    (setf (options handler) (deeds::removef args :target-class :options))))
+    ;; We have to remove the name because handlers cannot exist twice on the same
+    ;; loop with different names. If we propagated the name it would not work with
+    ;; multiple instances of a consumer!
+    (setf (options handler) (deeds::removef args :target-class :name :options))))
 
 (defmethod instantiate-handler ((handler abstract-handler) (consumer consumer))
   (let* ((options (options handler))
