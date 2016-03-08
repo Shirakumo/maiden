@@ -127,9 +127,14 @@
 (defmethod handle-connection-error (err (client reconnecting-client))
   (v:log :debug :colleen.client.reconnection err)
   (v:warn :colleen.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
-  ;; We don't care if it fails to close gracefully.
-  (ignore-errors (usocket:socket-close (socket client)))
-  (setf (socket client) NIL)
+  (cond ((eq (bt:current-thread) (read-thread client))
+         ;; We cannot call CLOSE-CONNECTION as it would end
+         ;; our own thread with the restart invocation.
+         ;; We don't care if it fails to close gracefully.
+         (ignore-errors (usocket:socket-close (socket client)))
+         (setf (socket client) NIL))
+        (T
+         (close-connection client)))
   (loop
     (when (< (max-failures client) (failures client))
       (error 'client-reconnection-exceeded-error :client client))
