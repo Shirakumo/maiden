@@ -82,6 +82,10 @@
    :host "127.0.0.1"
    :port 9486))
 
+(defmethod initiate-connection :around ((relay relay))
+  (when (and (host relay) (port relay))
+    (call-next-method)))
+
 (defmethod make-network-update ((relay relay) (bad list))
   (let ((links ()))
     (dolist (core (cores relay))
