@@ -53,6 +53,11 @@
   (:report (lambda (c s) (format s "Client ~a exceeded its reconnection attempts."
                                  (client c)))))
 
+(define-condition client-connection-closed-uncleanly-warning (client-condition warning)
+  ((closing-error :initarg :closing-error :reader closing-error))
+  (:report (lambda (c s) (format s "Error ~s encountered while closing connection of ~a."
+                                 (closing-error c) (client c)))))
+
 (define-condition client-timeout-error (client-condition error)
   ((timeout :initarg :timeout :reader timeout))
   (:default-initargs :timeout NIL)

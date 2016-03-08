@@ -82,7 +82,8 @@
 
 (defmethod close-connection :before ((client relay-client))
   ;; Remove all links through this client.
-  (update (server client) (remote client) (make-network-update () client))
+  (with-simple-restart (continue "Ignore the update.")
+    (update (server client) (remote client) (make-network-update () client)))
   (ignore-errors (send '(:close) client)))
 
 (defmethod close-connection :after ((client relay-client))

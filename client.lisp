@@ -68,6 +68,13 @@
       (setf read-thread (bt:make-thread (lambda () (handle-connection client))))))
   client)
 
+(defmethod close-connection :around ((client socket-client))
+  (handler-bind ((error (lambda (err)
+                          (warn 'client-connection-closed-uncleanly-warning :client client :closing-error err)
+                          (when (find-restart 'continue)
+                            (continue)))))
+    (call-next-method)))
+
 (defmethod close-connection ((client socket-client))
   (with-slots (socket read-thread) client
     (unwind-protect

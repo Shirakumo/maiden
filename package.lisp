@@ -91,6 +91,8 @@
    #:client
    #:client-connection-failed-error
    #:client-still-connected-error
+   #:client-connection-closed-uncleanly-warning
+   #:closing-error
    #:client-timeout-error
    #:timeout
    #:message-condition
