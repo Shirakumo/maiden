@@ -64,10 +64,14 @@
   (make-network-update new `(,(id bad))))
 
 (defmethod make-network-update ((new core) bad)
-  (make-network-update (loop for c in (consumers new) collect `(0 ,(id c) ,(name c))) bad))
+  (make-network-update (loop for c in (consumers new)
+                             unless (typep c 'agent)
+                             collect `(0 ,(id c) ,(name c))) bad))
 
 (defmethod make-network-update (new (bad core))
-  (make-network-update (loop for c in (consumers bad) collect (id c)) bad))
+  (make-network-update new (loop for c in (consumers bad)
+                                 unless (typep c 'agent)
+                                 collect (id c))))
 
 (define-consumer virtual-client (client)
   ((links :initarg :links :accessor links))
