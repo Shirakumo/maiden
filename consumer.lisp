@@ -180,32 +180,28 @@
                    (declare (ignore kargs))
                    `(,name ,value)))))
     (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body body)
-      (destructuring-bind (&rest options &key superclasses class-options &allow-other-keys) options
-        (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) (cddr args)
-          (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-                 (pure-options (deeds::removef options :superclasses :class-options))
-                 (fun-args (append (mapcar #'unlist required)
-                                   (when optional (list* '&optional (mapcar #'make-arg optional)))
-                                   (when key (list* '&key (mapcar #'make-arg key)))))
-                 (fun-kargs (loop for arg in (cddr pure-args) collect (kw arg) collect arg))
-                 (slot-args (append (mapcar #'make-req-field required)
-                                    (mapcar #'make-opt-field optional)
-                                    (when rest (list (make-req-field rest)))
-                                    (mapcar #'make-opt-field key))))
-            (unless (or (find '&key fun-args)
-                        (find '&optional fun-args))
-              (setf (cdr (last fun-args)) '(&key)))
-            (setf (cdr (last fun-args)) '(loop))
-            (setf (cdr (last fun-kargs)) '(:loop loop))
-            `(progn
-               (define-event ,event-type (command-event ,@superclasses)
-                 ,slot-args
-                 ,@class-options)
-               (define-handler (,consumer ,event-type ,event-type) ,pure-args
-                 ,@pure-options
-                 ,@body)
-               (defun ,event-type ,fun-args
-                 (broadcast ',event-type ,@fun-kargs)))))))))
+      (destructuring-bind (consumer-var event-var &rest args) args
+        (destructuring-bind (&rest options &key superclasses class-options &allow-other-keys) options
+          (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
+            (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
+                   (pure-options (deeds::removef options :superclasses :class-options))
+                   (fun-args (append (mapcar #'unlist required)
+                                     (when optional (list* '&optional (mapcar #'make-arg optional)))
+                                     (when key (list* '&key (mapcar #'make-arg key)))))
+                   (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
+                   (slot-args (append (mapcar #'make-req-field required)
+                                      (mapcar #'make-opt-field optional)
+                                      (when rest (list (make-req-field rest)))
+                                      (mapcar #'make-opt-field key))))
+              `(progn
+                 (define-event ,event-type (command-event ,@superclasses)
+                   ,slot-args
+                   ,@class-options)
+                 (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
+                   ,@pure-options
+                   ,@body)
+                 (defun ,event-type (core ,@fun-args)
+                   (broadcast ',event-type :loop core ,@fun-kargs))))))))))
 
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses

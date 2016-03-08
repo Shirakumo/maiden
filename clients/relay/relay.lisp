@@ -38,8 +38,8 @@
   (define-relay "A" 9486)
   (define-relay "B" 9487)
   (define-relay "C" 9488))
- (connect :loop *core-a* :port (port *relay-b*))
- (connect :loop *core-b* :port (port *relay-c*))
+ (connect *core-a* :port (port *relay-b*))
+ (connect *core-b* :port (port *relay-c*))
  (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
  (add-consumer *logger-c* *core-c*)
  
@@ -55,9 +55,9 @@
    (define-relay "A" 9486)
    (define-relay "B" 9487)
    (define-relay "C" 9488))
- (connect :loop *core-a* :port (port *relay-b*))
- (connect :loop *core-b* :port (port *relay-c*))
- (connect :loop *core-c* :port (port *relay-a*))
+ (connect *core-a* :port (port *relay-b*))
+ (connect *core-b* :port (port *relay-c*))
+ (connect *core-c* :port (port *relay-a*))
  (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
  (add-consumer *logger-c* *core-c*)
  
@@ -67,7 +67,7 @@
  (deeds:define-handler (foo deeds:info-event) (ev)
    :loop (event-loop *core-c*)
    (v:info :test "~a" (deeds:message ev)))
- (subscribe 'deeds:info-event T T *core-c*)
+ (subscribe *core-c* 'deeds:info-event T T)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
 ::
