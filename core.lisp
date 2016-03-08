@@ -18,6 +18,13 @@
    :event-loop (make-instance 'core-event-loop)
    :block-loop (make-instance 'core-block-loop)))
 
+(defmethod initialize-instance :after ((core core) &key)
+  (register-handler
+   (with-handler core-instruction-event (ev)
+     :name 'core-instruction-executor
+     (execute-instruction ev :core core))
+   core))
+
 (defmethod start ((core core))
   (start (event-loop core))
   (start (block-loop core))
@@ -107,4 +114,3 @@
 
 (defclass core-block-loop (event-loop)
   ())
-

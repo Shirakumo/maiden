@@ -140,8 +140,19 @@
    #:sender
    #:message-event
    #:message
+   #:core-event
    #:consumer-added
-   #:consumer-removed)
+   #:consumer-removed
+   #:instruction-event
+   #:execute-instruction
+   #:core-instruction-event
+   #:add-consumer
+   #:consumer-type
+   #:name
+   #:initargs
+   #:remove-consumer
+   #:name
+   #:stop)
   ;; toolkit.lisp
   (:export
    #:kw
