@@ -73,8 +73,6 @@
 ::
 |#
 
-
-
 (define-consumer relay (tcp-server agent)
   ((subscriptions :initform NIL :accessor subscriptions)
    (my-subscriptions :initform NIL :accessor my-subscriptions))
@@ -86,16 +84,16 @@
   (when (and (host relay) (port relay))
     (call-next-method)))
 
-(defmethod make-network-update ((relay relay) (bad list))
+(defmethod make-network-update ((relay relay) bad)
   (let ((links ()))
     (dolist (core (cores relay))
       (push (list 0 (id core)) links)
       (dolist (consumer (consumers core))
         (unless (typep consumer 'virtual-client)
-          (push (list 0 (id consumer)) links))))
+          (push `(0 ,(id consumer) ,(name consumer)) links))))
     (make-network-update links bad)))
 
-(defmethod make-network-update ((new list) (relay relay))
+(defmethod make-network-update (new (relay relay))
   (let ((links ()))
     (dolist (core (cores relay))
       (push (list 0 (id core)) links)
@@ -146,12 +144,12 @@
           do (when (and consumer (typep consumer 'virtual-client))
                (setf (links consumer) (remove source (links consumer) :key #'second :test #'matches))))
     ;; Insert new links and virtual clients.
-    (loop for (hops new) in (new update)
+    (loop for (hops new name) in (new update)
           for consumer = (consumer new core)
           do (cond ((typep consumer 'virtual-client)
                     (pushnew (list hops new) (links consumer) :key #'second :test #'matches))
                    ((not consumer)
-                    (add-consumer (make-virtual-client new `((,hops ,source))) core)
+                    (add-consumer (make-virtual-client new :name name :links `((,hops ,source))) core)
                     ;; Since we discovered a new client we have to check if it
                     ;; might need to be notified of one of our subscriptions
                     ;; and if so tell it about it.
@@ -234,20 +232,20 @@
     (send message client)))
 
 (defmethod add-consumer :after ((relay relay) (core core))
-  (update relay (id core) (make-network-update (loop for c in (consumers core) collect (list 0 (id c))) ())))
+  (update relay (id core) (make-network-update core ())))
 
 (defmethod remove-consumer :after ((relay relay) (core core))
-  (update relay (id core) (make-network-update NIL (mapcar #'id (consumers core)))))
+  (update relay (id core) (make-network-update () core)))
 
 (define-handler (relay consumer-added consumer-added) (relay ev consumer event-loop)
   (etypecase consumer
     ((or relay virtual-client))
-    (consumer (update relay (id event-loop) (make-network-update `((0 ,(id consumer))) ())))))
+    (consumer (update relay (id event-loop) (make-network-update consumer ())))))
 
 (define-handler (relay consumer-removed consumer-removed) (relay ev consumer event-loop)
   (etypecase consumer
     ((or relay virtual-client))
-    (consumer (update relay (id event-loop) (make-network-update () `(,(id consumer)))))))
+    (consumer (update relay (id event-loop) (make-network-update () consumer)))))
 
 (define-handler (relay relay deeds:event) (relay event)
   (when (and (typep event 'client-event)

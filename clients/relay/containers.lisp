@@ -53,22 +53,34 @@
 
 (defmethod make-network-update ((new network-update) (special null))
   (make-instance 'network-update
-                 :new (loop for (hops destination) in (new new)
-                            collect (list (1+ hops) destination))
+                 :new (loop for (hops destination name) in (new new)
+                            collect (list (1+ hops) destination name))
                  :bad (bad new)))
+
+(defmethod make-network-update ((new consumer) bad)
+  (make-network-update `((0 ,(id new) ,(name new))) bad))
+
+(defmethod make-network-update (new (bad consumer))
+  (make-network-update new `(,(id bad))))
+
+(defmethod make-network-update ((new core) bad)
+  (make-network-update (loop for c in (consumers new) collect `(0 ,(id c) ,(name c))) bad))
+
+(defmethod make-network-update (new (bad core))
+  (make-network-update (loop for c in (consumers bad) collect (id c)) bad))
 
 (define-consumer virtual-client (client)
   ((links :initarg :links :accessor links))
   (:default-initargs
    :links ()))
 
-(defgeneric make-virtual-client (target &optional links))
+(defgeneric make-virtual-client (target &key name links))
 
-(defmethod make-virtual-client ((target uuid:uuid) &optional links)
-  (make-instance 'virtual-client :id target :links links))
+(defmethod make-virtual-client ((target uuid:uuid) &key name links)
+  (make-instance 'virtual-client :id target :name name :links links))
 
-(defmethod make-virtual-client ((target string) &optional links)
-  (make-virtual-client (uuid:make-uuid-from-string target) links))
+(defmethod make-virtual-client ((target string) &key name links)
+  (make-virtual-client (uuid:make-uuid-from-string target) :name name :links links))
 
-(defmethod make-virtual-client ((target named-entity) &optional links)
-  (make-virtual-client (id target) links))
+(defmethod make-virtual-client ((target named-entity) &key (name (name target)) links)
+  (make-virtual-client (id target) :name name :links links))
