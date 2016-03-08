@@ -205,7 +205,8 @@
 
 (defmethod relay ((event event) (core core) (relay relay))
   (deeds:with-immutable-slots-unlocked ()
-    (setf (slot-value event 'event-loop) core))
+    (setf (slot-value event 'event-loop) core)
+    (setf (slot-value event 'deeds:origin) 'relay))
   (issue event core))
 
 (defmethod relay ((transport transport) (core core) (relay relay))
@@ -249,6 +250,7 @@
     (consumer (update relay (id event-loop) (make-network-update () consumer)))))
 
 (define-handler (relay relay deeds:event) (relay event)
+  :filter '(not (eql origin 'relay))
   (when (and (typep event 'client-event)
              (typep (client event) 'virtual-client))
     (relay event (client event) relay))
