@@ -55,8 +55,7 @@
 
 (define-consumer socket-client (ip-client)
   ((socket :initform NIL :accessor socket)
-   (read-thread :initform NIL :accessor read-thread)
-   (lock :initform (bt:make-recursive-lock) :accessor lock)))
+   (read-thread :initform NIL :accessor read-thread)))
 
 (defmethod client-connected-p ((client socket-client))
   (socket client))

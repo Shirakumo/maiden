@@ -105,6 +105,7 @@
    #:handlers
    #:consumer
    #:cores
+   #:lock
    #:start
    #:stop
    #:define-handler

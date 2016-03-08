@@ -62,7 +62,8 @@
 
 (defclass consumer (named-entity)
   ((handlers :initform () :accessor handlers)
-   (cores :initform () :accessor cores))
+   (cores :initform () :accessor cores)
+   (lock :initform (bt:make-recursive-lock) :accessor lock))
   (:metaclass consumer-class))
 
 (defmethod initialize-instance :after ((consumer consumer) &key)
@@ -70,7 +71,10 @@
   (dolist (handler (handlers (class-of consumer)))
     (push (instantiate-handler handler consumer) (handlers consumer))))
 
-;; FIXME: parallelism
+(defmethod reinitialize-handlers :around ((consumer consumer) handlers)
+  (bt:with-recursive-lock-held ((lock consumer))
+    (call-next-method)))
+
 ;; FIXME: Keeping book on what's started or not and retaining that.
 (defmethod reinitialize-handlers ((consumer consumer) handlers)
   (v:info :colleen.core.consumer "~a updating handlers." consumer)
