@@ -59,7 +59,9 @@
 
 (defmethod add-consumer (consumer (core core))
   (loop for current in (consumers core)
-        do (when (matches current consumer) (return current))
+        do (when (matches (id current) (id consumer)) (return current))
+           (when (and (name consumer) (matches (name current) (name consumer)))
+             (warn 'consumer-name-duplicated-warning :new-consumer consumer :existing-consumer current :core core))
         finally (push consumer (consumers core))
                 (when (typep consumer 'consumer)
                   (issue (make-instance 'consumer-added :consumer consumer) core))))

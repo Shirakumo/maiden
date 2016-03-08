@@ -81,7 +81,7 @@
    #:colleen-condition
    #:core-condition
    #:core
-   #:consumer-name-duplicated
+   #:consumer-name-duplicated-warning
    #:existing-consumer
    #:new-consumer
    #:agent-condition

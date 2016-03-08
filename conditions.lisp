@@ -13,7 +13,7 @@
   ((core :initarg :core :reader core))
   (:default-initargs :core (error "CORE required.")))
 
-(define-condition consumer-name-duplicated (core-condition)
+(define-condition consumer-name-duplicated-warning (core-condition warning)
   ((existing-consumer :initarg :existing-consumer :reader existing-consumer)
    (new-consumer :initarg :new-consumer :reader new-consumer))
   (:default-initargs
