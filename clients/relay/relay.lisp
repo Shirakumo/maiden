@@ -169,7 +169,8 @@
 
 (defmethod update :after ((relay relay) source (update network-update))
   (dolist (client (clients relay))
-    (unless (matches (remote client) source)
+    (when (and (client-connected-p client)
+               (not (matches (remote client) source)))
       (send update client))))
 
 (defmethod update ((relay relay) (self null) (subscription subscription))
