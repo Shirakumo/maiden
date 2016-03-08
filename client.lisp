@@ -233,7 +233,8 @@
 (defmethod close-connection :after ((server tcp-server))
   (loop for client = (car (clients server))
         while client
-        do (loop while (client-connected-p client)
+        do (close-connection client)
+           (loop while (client-connected-p client)
                  do (sleep 0.1))
            (pop (clients server))))
 
@@ -266,7 +267,3 @@
 (defmethod close-connection :after ((client tcp-server-client))
   (bt:with-lock-held ((lock (server client)))
     (setf (clients (server client)) (remove client (clients (server client))))))
-
-(defmethod handle-connection-idle :before ((client tcp-server-client))
-  (unless (client-connected-p (server client))
-    (close-connection client)))
