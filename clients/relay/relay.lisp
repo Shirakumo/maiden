@@ -89,7 +89,7 @@
     (dolist (core (cores relay))
       (push (list 0 (id core)) links)
       (dolist (consumer (consumers core))
-        (unless (typep consumer 'virtual-client)
+        (unless (typep consumer '(or agent virtual-client))
           (push `(0 ,(id consumer) ,(name consumer)) links))))
     (make-network-update links bad)))
 
@@ -98,7 +98,7 @@
     (dolist (core (cores relay))
       (push (list 0 (id core)) links)
       (dolist (consumer (consumers core))
-        (unless (typep consumer 'virtual-client)
+        (unless (typep consumer '(or agent virtual-client))
           (push (id consumer) links))))
     (make-network-update new links)))
 
