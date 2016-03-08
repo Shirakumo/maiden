@@ -70,7 +70,9 @@
                  `((core . ,finder) (consumer . ,finder)))))
 
 (defmethod send (message (client relay-client))
-  (serialize message (usocket:socket-stream (socket client))))
+  (let ((socket (usocket:socket-stream (socket client))))
+    (when socket
+      (serialize message socket))))
 
 (defmethod issue (thing (client relay-client))
   (send thing client))
