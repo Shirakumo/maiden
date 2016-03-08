@@ -79,12 +79,16 @@
   ;; conditions.lisp
   (:export
    #:colleen-condition
+   #:core-condition
+   #:core
+   #:consumer-name-duplicated
+   #:existing-consumer
+   #:new-consumer
+   #:agent-condition
+   #:agent-already-exists-error
+   #:existing-agent
    #:client-condition
    #:client
-   #:client-error
-   #:client-warning
-   #:client-already-exists-error
-   #:existing-client
    #:client-connection-failed-error
    #:client-still-connected-error
    #:client-timeout-error

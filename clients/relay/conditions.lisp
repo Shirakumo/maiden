@@ -16,19 +16,19 @@
   ((target :initarg :target :reader target))
   (:default-initargs :target (error "TARGET required.")))
 
-(define-condition no-relay-target-specified (carrier-condition client-error)
+(define-condition no-relay-target-specified (carrier-condition error)
   ()
   (:report (lambda (c s) (format s "Cannot relay ~s to nothing over ~a.
 Somewhere a target was not properly specified."
                                  (message c) (client c)))))
 
-(define-condition relay-route-not-found (carrier-condition target-condition client-error)
+(define-condition relay-route-not-found (carrier-condition target-condition error)
   ()
   (:report (lambda (c s) (format s "No route found to ~a over ~a for ~s.
 Either the network is temporarily unstable or the target is unreachable."
                                  (target c) (client c) (message c)))))
 
-(define-condition relay-link-not-found (carrier-condition target-condition client-error)
+(define-condition relay-link-not-found (carrier-condition target-condition error)
   ()
   (:report (lambda (c s) (format s "No link found to ~a over ~a for ~s.
 
@@ -37,7 +37,7 @@ A complete restarting of the local relay and re-establishment of the connections
 should fix this problem."
                                  (target c) (client c) (message c)))))
 
-(define-condition client-version-mismatch (relay-condition client-warning)
+(define-condition client-version-mismatch (relay-condition warning)
   ((remote-version :initarg :remote-version :reader remote-version))
   (:report (lambda (c s) (format s "The version of the framework at the remote relay ~a (~a) does not match ours (~a)."
                                  (remote (client c)) (remote-version c) (asdf:component-version (asdf:find-system :colleen))))))

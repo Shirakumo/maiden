@@ -9,6 +9,21 @@
 (define-condition colleen-condition (condition)
   ())
 
+(define-condition core-condition (colleen-condition)
+  ((core :initarg :core :reader core))
+  (:default-initargs :core (error "CORE required.")))
+
+(define-condition consumer-name-duplicated (core-condition)
+  ((existing-consumer :initarg :existing-consumer :reader existing-consumer)
+   (new-consumer :initarg :new-consumer :reader new-consumer))
+  (:default-initargs
+   :existing-consumer (error "EXISTING-CONSUMER required.")
+   :new-consumer (error "NEW-CONSUMER required."))
+  (:report (lambda (c s) (format s "A consumer with the name ~s (~a) ~
+                                    already exists when adding ~a to ~a."
+                                 (name (existing-consumer c)) (existing-consumer c)
+                                 (new-consumer c) (core c)))))
+
 (define-condition agent-condition (colleen-condition)
   ((agent :initarg :agent :reader agent))
   (:default-initargs :agent (error "AGENT required.")))
@@ -23,34 +38,22 @@
   ((client :initarg :client :reader client))
   (:default-initargs :client (error "CLIENT required.")))
 
-(define-condition client-error (error client-condition)
-  ())
-
-(define-condition client-warning (warning client-condition)
-  ())
-
-(define-condition client-already-exists-error (client-error)
-  ((existing-client :initarg :existing-client :reader existing-client))
-  (:default-initargs :existing-client (error "EXISTING-CLIENT required."))
-  (:report (lambda (c s) (format s "A client with the same name ~s (~a) already exists."
-                                 (name (client c)) (existing-client c)))))
-
-(define-condition client-connection-failed-error (client-error)
+(define-condition client-connection-failed-error (client-condition error)
   ()
   (:report (lambda (c s) (format s "Client ~a failed to connect."
                                  (client c)))))
 
-(define-condition client-still-connected-error (client-error)
+(define-condition client-still-connected-error (client-condition error)
   ()
   (:report (lambda (c s) (format s "The client ~a is still connected!"
                                  (client c)))))
 
-(define-condition client-reconnection-exceeded-error (client-error)
+(define-condition client-reconnection-exceeded-error (client-condition error)
   ()
   (:report (lambda (c s) (format s "Client ~a exceeded its reconnection attempts."
                                  (client c)))))
 
-(define-condition client-timeout-error (client-error)
+(define-condition client-timeout-error (client-condition error)
   ((timeout :initarg :timeout :reader timeout))
   (:default-initargs :timeout NIL)
   (:report (lambda (c s) (format s "Client ~a timed out~@[ after ~d seconds~]."
@@ -60,12 +63,12 @@
   ((message :initarg :message :reader message))
   (:default-initargs :message (error "MESSAGE required.")))
 
-(define-condition message-parse-error (message-condition client-error)
+(define-condition message-parse-error (message-condition client-condition error)
   ()
   (:report (lambda (c s) (format s "Failed to parse ~s from ~a."
                                  (message c) (client c)))))
 
-(define-condition unknown-message-warning (message-condition client-warning)
+(define-condition unknown-message-warning (message-condition client-condition warning)
   ()
   (:report (lambda (c s) (format s "Don't know what to do for ~s from ~a."
                                  (message c) (client c)))))
