@@ -11,7 +11,7 @@ Next you have to start up everything, which can be done by the `init` function. 
 
 Once the init is done, you can `connect` to an IRC server like so: `(connect *core* 'freenode "irc.freenode.net" "CircTest")`. The `*core*` argument is necessary due to the way Colleen3 automatically creates commands, which has to support the scenario of multiple cores in the same image.
 
-After that, you can use the `j`, `r`, `p`, `w`, and `wl` functions to go about as usual in a client:
+After that, you can use the `j`, `r`, `p`, `w`, and `lw` functions to go about as usual in a client:
 
 ```
 (j "#lisp")
