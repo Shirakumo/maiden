@@ -17,7 +17,7 @@ After that, you can use the `j`, `r`, `p`, `w`, and `wl` functions to go about a
 (j "#lisp")
 (r "Good morning, #lisp.")
 (j "#clasp")
-(wl)
+(lw)
 (w "#lisp")
 (r "Oh boy.")
 (p "#lisp" "#clasp")
