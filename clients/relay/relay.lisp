@@ -43,24 +43,6 @@
  (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
  (add-consumer *logger-c* *core-c*)
  
- ;;  A - B
- ;;   \ /
- ;;    C*
- (macrolet ((define-relay (name port)
-              `(let ((core (start (make-instance 'core :name ,(string name))))
-                     (relay (start (make-instance 'relay :name ,(string name) :port ,port))))
-                 (add-consumer relay core)
-                 (defvar ,(intern (format NIL "*CORE-~a*" name)) core)
-                 (defvar ,(intern (format NIL "*RELAY-~a*" name)) relay))))
-   (define-relay "A" 9486)
-   (define-relay "B" 9487)
-   (define-relay "C" 9488))
- (connect *core-a* :port (port *relay-b*))
- (connect *core-b* :port (port *relay-c*))
- (connect *core-c* :port (port *relay-a*))
- (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
- (add-consumer *logger-c* *core-c*)
- 
  ;; Test logger
  (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*)
  ;; Test subscriptions
