@@ -1,35 +1,12 @@
-(ql:quickload '(colleen-irc))
+(ql:quickload '(colleen-irc colleen-relay))
 
 (defpackage #:circ
-  (:use #:cl #:colleen))
+  (:use #:cl #:colleen)
+  (:shadow #:server))
 (in-package #:circ)
 
 (defvar *nothing* (gensym "NOTHING"))
-(defvar *core* (make-instance 'core :name 'core))
-
-(define-consumer circ (agent)
-  ((window :initform NIL :accessor window)
-   (windows :initform NIL :accessor windows)))
-
-(defun init ()
-  (start *core*)
-  (start (add-consumer (make-instance 'circ) *core*)))
-
-(defun connect (conn &rest initargs)
-  (let ((client (apply #'make-instance 'colleen-irc:client :name conn initargs)))
-    (add-consumer client *core*)
-    (start client)
-    (setf (window (circ)) (cons client NIL))
-    (push (cons client NIL) (windows (circ)))
-    client))
-
-(defun disconnect (conn)
-  (let ((client (consumer conn *core*)))
-    (assert (not (null client)))
-    (stop (consumer conn *core*))
-    (remove-consumer conn *core*)
-    (setf (windows (circ)) (remove client (windows (circ)) :key #'car))
-    client))
+(defvar *core* (make-instance 'core))
 
 (defun format-name (stream arg &rest extra)
   (declare (ignore extra))
@@ -49,6 +26,10 @@
 (defun record (user message)
   (format T "~&<~/circ::format-name/> ~a~%" user message))
 
+(define-consumer circ (agent)
+  ((window :initform NIL :accessor window)
+   (windows :initform NIL :accessor windows)))
+
 (defun circ ()
   (consumer 'circ *core*))
 
@@ -57,6 +38,51 @@
 
 (defun channel ()
   (cdr (window (circ))))
+
+(defun init (&key relay remote)
+  (start *core*)
+  (start (add-consumer (make-instance 'circ) *core*))
+  (destructuring-bind (&optional (host "127.0.0.1") (port 9486))
+      (etypecase (or relay remote)
+        ((eql T) ()) (list (or relay remote)))
+    (cond (relay
+           (add-consumer (start (make-instance 'colleen-relay:relay :name 'relay :host host :port port)) *core*)
+           (colleen-relay:subscribe *core* 'connect T)
+           (colleen-relay:subscribe *core* 'disconnect T))
+          (remote
+           (add-consumer (start (make-instance 'colleen-relay:relay :name 'remote :host NIL)) *core*)
+           ;; (colleen-relay:subscribe *core* 'colleen-irc:reply-event T)
+           (colleen-relay:connect *core* :host host :port port)))))
+
+(define-command (circ connect) (circ ev name host nickname &key
+                                               (port 6667)
+                                               (username (machine-instance))
+                                               (realname (machine-instance)))
+  (unless (or (consumer 'remote *core*)
+              (consumer name *core*))
+    (start (add-consumer (make-instance 'colleen-irc:client
+                                        :name name
+                                        :host host :port port
+                                        :nickname nickname
+                                        :username username
+                                        :realname realname) *core*))))
+
+(define-command (circ disconnect) (circ ev name)
+  (unless (or (consumer 'remote *core*)
+              (not (consumer name *core*)))
+    (remove-consumer (stop (consumer name *core*)) *core*)))
+
+(define-handler (circ consumer-added consumer-added) (circ ev consumer)
+  :filter '(typep consumer 'colleen-irc:client) ;;sigh.. virtual clients
+  (setf (window (circ)) (cons consumer NIL))
+  (push (cons consumer NIL) (windows (circ))))
+
+(define-handler (circ consumer-removed consumer-removed) (circ ev consumer)
+  :filter '(typep consumer 'colleen-irc:client)
+  (setf (windows (circ)) (remove consumer (windows (circ)) :key #'car))
+  (when (eql (server) consumer)
+    (let ((window (first (windows (circ)))))
+      (w (cdr window) (car window)))))
 
 (define-handler (circ privmsg irc:msg-privmsg) (circ ev sender receivers message)
   (when (or (find (channel) receivers :test #'string-equal)
