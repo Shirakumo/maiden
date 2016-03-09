@@ -52,6 +52,9 @@
  (subscribe *core-c* 'deeds:info-event T T)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
+ ;; Test client subscriptions
+ (subscribe *core-b* 'colleen-logger:log-event T T)
+ (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*) 
 ::
 |#
 
