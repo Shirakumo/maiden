@@ -185,6 +185,9 @@
   (relay message (or (find-entity target relay)
                      (error 'relay-route-not-found :message message :target target :client relay)) relay))
 
+(defmethod relay (message (target entity) relay)
+  (error "Don't know how to relay ~s to ~a over ~a" message target relay))
+
 (defmethod relay ((event event) (core core) (relay relay))
   (deeds:with-immutable-slots-unlocked ()
     (setf (slot-value event 'event-loop) core)
