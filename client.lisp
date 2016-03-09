@@ -42,6 +42,12 @@
   (when (client-connected-p client)
     (close-connection client)))
 
+(defmethod initiate-connection :after ((client remote-client))
+  (broadcast 'connection-initiated :client client :loop (cores client)))
+
+(defmethod close-connection :after ((client remote-client))
+  (broadcast 'connection-closed :client client :loop (cores client)))
+
 (define-consumer ip-client (remote-client)
   ((host :initarg :host :accessor host)
    (port :initarg :port :accessor port))
@@ -131,7 +137,8 @@
          ;; our own thread with the restart invocation.
          ;; We don't care if it fails to close gracefully.
          (ignore-errors (usocket:socket-close (socket client)))
-         (setf (socket client) NIL))
+         (setf (socket client) NIL)
+         (broadcast 'connection-closed :client client :loop (cores client)))
         (T
          (close-connection client)))
   (loop

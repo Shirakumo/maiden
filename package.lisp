@@ -136,6 +136,8 @@
    #:respond
    #:client-event
    #:client
+   #:connection-initiated
+   #:connection-closed
    #:sender-event
    #:sender
    #:message-event
