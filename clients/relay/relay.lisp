@@ -246,7 +246,7 @@
                       ;; Perform actual event test.
                       (typep event (event-type subscription))
                       (deeds:test-filter (filter subscription) event))
-             (relay event (subscriber subscription) relay))))
+             (relay (make-transport event (subscriber subscription)) (subscriber subscription) relay))))
 
 (define-command (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
   (start (make-instance 'relay-client-initiator
