@@ -198,8 +198,8 @@
   (relay (event transport) core relay))
 
 (defmethod relay (message (client virtual-client) (relay relay))
-  (let ((remote (find (second (first (links client)))
-                      (clients relay) :key #'remote :test #'matches)))
+  (let ((remote (loop for (hops link) in (links client)
+                      thereis (find link (clients relay) :key #'remote :test #'matches))))
     (unless remote (error 'relay-link-not-found :message message :target client :client relay))
     (issue message remote)))
 
