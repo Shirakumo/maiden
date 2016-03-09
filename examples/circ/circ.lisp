@@ -1,9 +1,10 @@
-(ql:quickload '(colleen-irc colleen-relay))
+#|
+This file is a part of Colleen
+(c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+Author: Nicolas Hafner <shinmera@tymoon.eu>
+|#
 
-(defpackage #:circ
-  (:use #:cl #:colleen)
-  (:shadow #:server))
-(in-package #:circ)
+(in-package #:org.shirakumo.colleen.circ)
 
 (defvar *nothing* (gensym "NOTHING"))
 (defvar *core* (make-instance 'core))
@@ -42,17 +43,20 @@
 (defun init (&key relay remote)
   (start *core*)
   (start (add-consumer (make-instance 'circ) *core*))
-  (destructuring-bind (&optional (host "127.0.0.1") (port 9486))
-      (etypecase (or relay remote)
-        ((eql T) ()) (list (or relay remote)))
-    (cond (relay
-           (add-consumer (start (make-instance 'colleen-relay:relay :name 'relay :host host :port port)) *core*)
-           (colleen-relay:subscribe *core* 'connect T)
-           (colleen-relay:subscribe *core* 'disconnect T))
-          (remote
-           (add-consumer (start (make-instance 'colleen-relay:relay :name 'remote :host NIL)) *core*)
-           ;; (colleen-relay:subscribe *core* 'colleen-irc:reply-event T)
-           (colleen-relay:connect *core* :host host :port port)))))
+  (cond (relay (apply #'init-relay (when (listp relay) relay)))
+        (remote (apply #'init-remote (when (listp remote) remote)))))
+
+(defun init-relay (&optional (host "127.0.0.1") (port 9486))
+  (add-consumer (start (make-instance 'colleen-relay:relay :name 'relay :host host :port port)) *core*)
+  (colleen-relay:subscribe *core* 'connect T)
+  (colleen-relay:subscribe *core* 'disconnect T))
+
+(defun init-remote (&optional (host "127.0.0.1") (port 9486))
+  (add-consumer (start (make-instance 'colleen-relay:relay :name 'remote :host NIL)) *core*)
+  (colleen-relay:subscribe *core* 'colleen-irc:reply-event T)
+  (colleen-relay:subscribe *core* 'connection-initiated T)
+  (colleen-relay:subscribe *core* 'connection-closed T)
+  (colleen-relay:connect *core* :host host :port port))
 
 (define-command (circ connect) (circ ev name host nickname &key
                                                (port 6667)
@@ -72,15 +76,15 @@
               (not (consumer name *core*)))
     (remove-consumer (stop (consumer name *core*)) *core*)))
 
-(define-handler (circ consumer-added consumer-added) (circ ev consumer)
-  :filter '(typep consumer 'colleen-irc:client) ;;sigh.. virtual clients
-  (setf (window (circ)) (cons consumer NIL))
-  (push (cons consumer NIL) (windows (circ))))
+(define-handler (circ connection-initiated connection-initiated) (circ ev client)
+  ;;:filter '(typep client 'colleen-irc:client) ; sigh.. virtual clients
+  (push (cons client NIL) (windows (circ)))
+  (w NIL client))
 
-(define-handler (circ consumer-removed consumer-removed) (circ ev consumer)
-  :filter '(typep consumer 'colleen-irc:client)
-  (setf (windows (circ)) (remove consumer (windows (circ)) :key #'car))
-  (when (eql (server) consumer)
+(define-handler (circ connection-closed connection-closed) (circ ev client)
+  ;;:filter '(typep client 'colleen-irc:client)
+  (setf (windows (circ)) (remove client (windows (circ)) :key #'car))
+  (when (eql (server) client)
     (let ((window (first (windows (circ)))))
       (w (cdr window) (car window)))))
 
