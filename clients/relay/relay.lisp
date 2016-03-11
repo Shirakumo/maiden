@@ -25,7 +25,7 @@
 :: common-lisp
  (ql:quickload :verbose)
  (setf (v:repl-level) :trace)
- (ql:quickload '(colleen-logger colleen-relay))
+ (ql:quickload :colleen-relay)
  (in-package :colleen-relay)
  
  ;; A - B - C*
@@ -40,11 +40,13 @@
   (define-relay "C" 9488))
  (connect *core-a* :port (port *relay-b*))
  (connect *core-b* :port (port *relay-c*))
- (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
- (add-consumer *logger-c* *core-c*)
  
  ;; Test logger
+ (ql:quickload :colleen-logger)
+ (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
+ (add-consumer *logger-c* *core-c*)
  (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*)
+
  ;; Test subscriptions
  (deeds:define-handler (foo deeds:info-event) (ev)
    :loop (event-loop *core-c*)
@@ -52,9 +54,16 @@
  (subscribe *core-c* 'deeds:info-event T T)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-b*)
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
+
  ;; Test client subscriptions
  (subscribe *core-b* 'colleen-logger:log-event T T)
  (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*) 
+
+ ;; Test slot access
+ (define-consumer magic-client (client)
+   ((magic :initform "Whoah!!")))
+ (add-consumer (make-instance 'magic-client :name 'magic) *core-c*)
+ (slot-value (consumer 'magic *core-a*) 'magic)
 ::
 |#
 
