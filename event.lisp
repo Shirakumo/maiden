@@ -62,6 +62,9 @@
 
 (defgeneric execute-instruction (instruction &key))
 
+(defmethod execute-instruction :before (instruction &rest args &key)
+  (v:debug :colleen.event.instruction "Executing ~a with ~s") instruction args)
+
 (define-event core-instruction-event (core-event instruction-event)
   ())
 
