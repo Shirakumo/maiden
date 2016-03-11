@@ -6,6 +6,9 @@
 
 (in-package #:org.shirakumo.colleen)
 
+;; Forwarding class definition
+(defclass core () ())
+
 (defclass consumer-class (standard-class)
   ((direct-handlers :initform () :accessor direct-handlers)
    (handlers :initform () :accessor handlers)

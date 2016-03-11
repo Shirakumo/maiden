@@ -64,14 +64,13 @@
   (dolist (target targets)
     (add-consumer consumer target)))
 
-(defmethod add-consumer (consumer (core core))
+(defmethod add-consumer ((consumer consumer) (core core))
   (loop for current in (consumers core)
         do (when (matches (id current) (id consumer)) (return current))
            (when (and (name consumer) (matches (name current) (name consumer)))
              (warn 'consumer-name-duplicated-warning :new-consumer consumer :existing-consumer current :core core))
         finally (push consumer (consumers core))
-                (when (typep consumer 'consumer)
-                  (issue (make-instance 'consumer-added :consumer consumer) core))))
+                (issue (make-instance 'consumer-added :consumer consumer) core)))
 
 (defmethod remove-consumer :around (consumer target)
   (call-next-method)
@@ -89,8 +88,7 @@
   (setf (consumers core)
         (loop for consumer in (consumers core)
               if (matches consumer id)
-              do (when (typep consumer 'consumer)
-                   (issue (make-instance 'consumer-removed :consumer consumer) core))
+              do (issue (make-instance 'consumer-removed :consumer consumer) core)
               else collect consumer)))
 
 (defmethod handler (id (core core))
