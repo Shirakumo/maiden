@@ -190,6 +190,9 @@
 
 (defgeneric relay (message target relay))
 
+(defmethod relay :before (message target relay)
+  (v:debug :colleen.relay.server "Relaying ~s to ~s over ~s." message target relay))
+
 (defmethod relay (message (target null) relay)
   (error 'no-relay-target-specified :message message :client relay))
 
@@ -206,8 +209,17 @@
     (setf (slot-value event 'deeds:origin) 'relay))
   (issue event core))
 
+(defmethod relay ((event relay-instruction-event) target (relay relay))
+  (execute-instruction event :relay relay))
+
+(defmethod relay ((event relay-instruction-event) (client virtual-client) (relay relay))
+  (relay (make-transport event client) client relay))
+
 (defmethod relay ((transport transport) (core core) (relay relay))
   (relay (event transport) core relay))
+
+(defmethod relay ((transport transport) (null null) (relay relay))
+  (relay transport (target transport) relay))
 
 (defmethod relay (message (client virtual-client) (relay relay))
   (let ((remote (loop for (hops link) in (links client)

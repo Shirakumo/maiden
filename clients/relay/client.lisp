@@ -6,12 +6,6 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(define-event connection-initiated (client-event)
-  ())
-
-(define-event connection-closed (client-event)
-  ())
-
 (define-consumer relay-client (tcp-server-client timeout-client)
   ((remote :initform NIL :accessor remote)))
 
