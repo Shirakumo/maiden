@@ -15,6 +15,14 @@
 (defmethod matches ((a agent) (b agent))
   (eql (class-of a) (class-of b)))
 
+(defmethod matches ((a agent) (b symbol))
+  (or (call-next-method)
+      (and (find-class b NIL)
+           (typep a b))))
+
+(defmethod matches ((a symbol) (b agent))
+  (matches b a))
+
 (defmethod add-consumer :before ((agent agent) (core core))
   (let ((existing (find (name agent) (consumers core) :test #'matches :key #'name)))
     (when (and existing (not (eql existing agent)))
