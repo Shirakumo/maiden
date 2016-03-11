@@ -114,3 +114,19 @@
 
 (defclass core-block-loop (event-loop)
   ())
+
+(defmacro with-awaiting (response (core &rest args &key filter timeout) setup-form &body body)
+  (declare (ignore filter timeout))
+  `(deeds:with-awaiting ,response (:loop ,core ,@args)
+                        ,setup-form
+     ,@body))
+
+(defmacro with-response (issue response (core &rest args &key filter timeout) &body body)
+  (declare (ignore filter timeout))
+  (let ((core-g (gensym "CORE")))
+    `(let ((,core-g ,core))
+       (deeds:with-response
+           ,issue
+           ,response
+           (:issue-loop (event-loop ,core-g) :response-loop (block-loop ,core-g) ,@args)
+         ,@body))))

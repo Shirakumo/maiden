@@ -9,7 +9,7 @@
 (modularize:define-module #:colleen
   (:nicknames #:org.shirakumo.colleen)
   (:use #:cl #:modularize #:deeds)
-  (:shadow #:define-handler #:define-command)
+  (:shadow #:define-handler #:define-command #:with-response #:with-awaiting)
   ;; re-export from modularize
   (:export
    #:virtual-module
@@ -130,7 +130,9 @@
    #:register-handler
    #:deregister-handler
    #:core-event-loop
-   #:core-block-loop)
+   #:core-block-loop
+   #:with-awaiting
+   #:with-response)
   ;; event.lisp
   (:export
    #:respond
