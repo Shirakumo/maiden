@@ -138,6 +138,7 @@
    #:respond
    #:client-event
    #:client
+   #:connection-event
    #:connection-initiated
    #:connection-closed
    #:sender-event

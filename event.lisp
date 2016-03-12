@@ -20,10 +20,13 @@
   (issue (apply #'make-instance class :client (client event) args)
          (event-loop event)))
 
-(define-event connection-initiated (client-event)
+(define-event connection-event (client-event)
   ())
 
-(define-event connection-closed (client-event)
+(define-event connection-initiated (connection-event)
+  ())
+
+(define-event connection-closed (connection-event)
   ())
 
 (define-event sender-event (client-event)
