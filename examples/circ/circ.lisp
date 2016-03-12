@@ -29,7 +29,8 @@
 
 (define-consumer circ (agent)
   ((window :initform NIL :accessor window)
-   (windows :initform NIL :accessor windows)))
+   (windows :initform () :accessor windows)
+   (nicks :initform () :accessor nicks)))
 
 (defun circ ()
   (consumer 'circ *core*))
@@ -39,6 +40,10 @@
 
 (defun channel ()
   (cdr (window (circ))))
+
+(defun nick (server)
+  (or (cdr (assoc (name server) (nicks (circ))))
+      "?"))
 
 (defun init (&key relay remote)
   (start *core*)
@@ -54,14 +59,14 @@
 (defun init-remote (&optional (host "127.0.0.1") (port 9486))
   (add-consumer (start (make-instance 'colleen-relay:relay :name 'remote :host NIL)) *core*)
   (colleen-relay:subscribe *core* 'colleen-irc:reply-event T)
-  (colleen-relay:subscribe *core* 'connection-initiated T)
-  (colleen-relay:subscribe *core* 'connection-closed T)
+  (colleen-relay:subscribe *core* 'connection-event T)
   (colleen-relay:connect *core* :host host :port port))
 
 (define-command (circ connect) (circ ev name host nickname &key
                                                (port 6667)
                                                (username (machine-instance))
                                                (realname (machine-instance)))
+  (push (cons name nickname) (nicks circ))
   (unless (or (consumer 'remote *core*)
               (consumer name *core*))
     (start (add-consumer (make-instance 'colleen-irc:client
@@ -77,13 +82,12 @@
     (remove-consumer (stop (consumer name *core*)) *core*)))
 
 (define-handler (circ connection-initiated connection-initiated) (circ ev client)
-  ;;:filter '(typep client 'colleen-irc:client) ; sigh.. virtual clients
   (push (cons client NIL) (windows (circ)))
   (w NIL client))
 
 (define-handler (circ connection-closed connection-closed) (circ ev client)
-  ;;:filter '(typep client 'colleen-irc:client)
   (setf (windows (circ)) (remove client (windows (circ)) :key #'car))
+  (setf (nicks (circ)) (remove (name client) (nicks (circ)) :key #'car))
   (when (eql (server) client)
     (let ((window (first (windows (circ)))))
       (w (cdr window) (car window)))))
@@ -132,6 +136,11 @@
   (when (eql (server) client)
     (status "~a notice: ~a" sender message)))
 
+(define-handler (circ nick irc:msg-nick) (circ ev client sender nickname)
+  (when (string-equal (nick client) sender)
+    (status "Changing nick ~a -> ~a" sender nickname)
+    (setf (cdr (assoc (name client) (nicks circ))) nickname)))
+
 (defun p (&rest channels)
   (status "Parting ~{~a~^, ~}" channels)
   (irc:part (server) channels)
@@ -169,8 +178,33 @@
          (status "No windows open right now.")))
   *nothing*)
 
+(defun n (new-nick)
+  (irc:nick (server) new-nick)
+  *nothing*)
+
 (defun r (message)
-  (record (colleen-irc:nickname (server)) message)
+  ;; We have to be careful here. There's three ways to get the nick.
+  ;; 
+  ;; First by explicit method call. This is "dangerous" in the general
+  ;; case since the client must not necessarily be an actual irc-client
+  ;; instance. As such, we need to define a wrapper first if we want
+  ;; to make this plausible while taking relays into account. Either way
+  ;; it is still not a great idea, since the client may be yet something
+  ;; else that we cannot anticipate. Either way, the approach is listed
+  ;; for completeness:
+  ;; (colleen-relay:define-virtual-client-method colleen-irc::nickname
+  ;;     ((client colleen-relay:virtual-client)))
+  ;; (colleen-irc:nickname (server))
+  ;; 
+  ;; Second by slot-value access. This is automatically solved for
+  ;; virtual-clients by the relay for us, so it should be "safe" in that
+  ;; case by default, but again it is not great to assume a type of the
+  ;; client. Again, for completeness:
+  ;; (slot-value (server) 'colleen-irc:nickname)
+  ;;
+  ;; Third by recording the nick ourselves via events. We choose this
+  ;; approach here, as it is the only sure-fire one.
+  (record (nick (server)) message)
   (irc:privmsg (server) (channel) message)
   *nothing*)
 
