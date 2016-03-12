@@ -59,5 +59,5 @@
                                             unless (find arg lambda-list-keywords)
                                             collect (if (listp arg) (first arg) arg))))
               (,event-g (make-instance 'generic-call-event :source (first (cores ,client)) :form ,form-g)))
-         (with-response-event (,response-g ,event-g ,client)
+         (with-response-event ((,response-g response) ,event-g ,client)
            ,response-g)))))
