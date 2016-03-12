@@ -63,7 +63,10 @@
    #:my-subscriptions
    #:routable-p
    #:update
-   #:relay)
+   #:relay
+   #:connect
+   #:subscribe
+   #:unsubscribe)
   ;; virtual-client.lisp
   (:export
    #:virtual-client
