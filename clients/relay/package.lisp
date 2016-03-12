@@ -10,14 +10,12 @@
   (:use #:cl #:colleen #:colleen-serialize)
   ;; client.lisp
   (:export
-   #:connection-initiated
-   #:connection-closed
    #:relay-client
    #:remote
-   #:relay-client-initiator)
+   #:process)
   ;; conditions.lisp
   (:export
-   #:relay-condition   
+   #:relay-condition
    #:carrier-condition
    #:message
    #:target-condition
@@ -25,7 +23,8 @@
    #:no-relay-target-specified
    #:relay-route-not-found
    #:relay-link-not-found
-   #:client-version-mismatch)
+   #:client-version-mismatch
+   #:remote-version)
   ;; containers.lisp
   (:export
    #:subscription-update
@@ -35,17 +34,28 @@
    #:event-type
    #:filter
    #:unsubscription
-   #:transport
-   #:event
-   #:target
-   #:make-transport
    #:network-update
    #:new
    #:bad
    #:make-network-update
-   #:virtual-client
-   #:links
-   #:make-virtual-clients)
+   #:transport
+   #:make-transport)
+  ;; events.lisp
+  (:export
+   #:relay-instruction-event
+   #:query-event
+   #:source
+   #:response-event
+   #:response
+   #:slot-event
+   #:slot
+   #:object
+   #:slot-value-event
+   #:slot-setf-event
+   #:slot-makunbound-event
+   #:slot-boundp-event
+   #:generic-call-event
+   #:form)
   ;; relay.lisp
   (:export
    #:relay
@@ -53,7 +63,10 @@
    #:my-subscriptions
    #:routable-p
    #:update
-   #:relay
-   #:connect
-   #:subscribe
-   #:unsubscribe))
+   #:relay)
+  ;; virtual-client.lisp
+  (:export
+   #:virtual-client
+   #:links
+   #:make-virtual-client
+   #:define-virtual-client-method))
