@@ -75,4 +75,4 @@
    :form (error "FORM required.")))
 
 (defmethod execute-instruction ((event generic-call-event) &key)
-  (funcall (compile NIL (form event))))
+  (apply #'funcall (form event)))
