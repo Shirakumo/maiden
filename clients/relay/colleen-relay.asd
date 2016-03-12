@@ -18,6 +18,8 @@
   :components ((:file "package")
                (:file "conditions")
                (:file "containers")
+               (:file "events")
+               (:file "virtual-client")
                (:file "relay")
                (:file "client")
                (:file "documentation"))

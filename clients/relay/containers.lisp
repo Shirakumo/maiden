@@ -6,77 +6,6 @@
 
 (in-package #:org.shirakumo.colleen.clients.relay)
 
-(define-event connection-initiated (client-event)
-  ())
-
-(define-event connection-closed (client-event)
-  ())
-
-(define-event relay-instruction-event (instruction-event)
-  ())
-
-(define-event query-event (deeds:identified-event relay-instruction-event)
-  ((source :initarg :source :reader source))
-  (:default-initargs
-   :source (error "SOURCE required.")
-   :identifier (uuid:make-v4-uuid)))
-
-(defmethod execute-instruction :around ((event query-event) &key relay)
-  (relay (make-transport
-          (make-instance 'response-event
-                         :response (call-next-method)
-                         :identifier (deeds:identifier event))
-          (source event))
-         (source event)
-         relay))
-
-(define-event response-event (deeds:identified-event)
-  ((response :initarg :response :reader response))
-  (:default-initargs
-   :response (error "RESPONSE required.")
-   :identifier (error "IDENTIFIER required.")))
-
-(define-event slot-event (query-event relay-instruction-event)
-  ((slot :initarg :slot :reader slot)
-   (object :initarg :object :reader object))
-  (:default-initargs
-   :slot (error "SLOT required.")
-   :object (error "OBJECT required.")))
-
-(define-event slot-value-event (slot-event)
-  ())
-
-(defmethod execute-instruction ((event slot-value-event) &key)
-  (slot-value (object event) (slot event)))
-
-(define-event slot-setf-event (slot-event)
-  ((value :initarg :value :reader value))
-  (:default-initargs
-   :value NIL))
-
-(defmethod execute-instruction ((event slot-setf-event) &key)
-  (setf (slot-value (object event) (slot event)) (value event)))
-
-(define-event slot-makunbound-event (slot-event)
-  ())
-
-(defmethod execute-instruction ((event slot-makunbound-event) &key)
-  (slot-makunbound (object event) (slot event)))
-
-(define-event slot-boundp-event (slot-event)
-  ())
-
-(defmethod execute-instruction ((event slot-boundp-event) &key)
-  (slot-boundp (object event) (slot event)))
-
-(define-event generic-call-event (query-event relay-instruction-event)
-  ((form :initarg :form :reader form))
-  (:default-initargs
-   :form (error "FORM required.")))
-
-(defmethod execute-instruction ((event generic-call-event) &key)
-  (funcall (compile NIL (form event))))
-
 (defclass subscription-update (entity)
   ((target :initarg :target :accessor target)
    (subscriber :initarg :subscriber :accessor subscriber))
@@ -130,36 +59,6 @@
   (make-network-update new (loop for c in (consumers bad)
                                  unless (typep c 'agent)
                                  collect (id c))))
-
-(define-consumer virtual-client (client)
-  ((links :initarg :links :accessor links))
-  (:default-initargs
-   :links ()))
-
-(defmethod slot-missing (class (client virtual-client) slot operation &optional value)
-  (let* ((core (first (cores client)))
-         (event (ecase operation
-                  (setf (make-instance 'slot-setf-event :source core :object client :slot slot :value value))
-                  (slot-makunbound (make-instance 'slot-makunbound-event :source core :object client :slot slot))
-                  (slot-value (make-instance 'slot-value-event :source core :object client :slot slot))
-                  (slot-boundp (make-instance 'slot-boundp-event :source core :object client :slot slot)))))
-    (with-awaiting (response-event re response)
-        ((first (cores client))
-         :filter `(uuid:uuid= deeds:identifier ,(deeds:identifier event))
-         :timeout 60)
-        (relay event client (consumer 'relay core))
-      response)))
-
-(defgeneric make-virtual-client (target &key name links))
-
-(defmethod make-virtual-client ((target uuid:uuid) &key name links)
-  (make-instance 'virtual-client :id target :name name :links links))
-
-(defmethod make-virtual-client ((target string) &key name links)
-  (make-virtual-client (uuid:make-uuid-from-string target) :name name :links links))
-
-(defmethod make-virtual-client ((target named-entity) &key (name (name target)) links)
-  (make-virtual-client (id target) :name name :links links))
 
 (defclass transport ()
   ((event :initarg :event :accessor event)
