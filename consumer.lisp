@@ -149,62 +149,63 @@
 
 (defmacro define-handler ((consumer name event-type) args &body body)
   (destructuring-bind (compvar event &rest args) args
-    (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body body)
-      (let ((class (or (getf options :class) 'queued-handler))
-            (options (deeds::removef options :class)))
-        `(progn
-           (update-handler
-            (make-instance
-             'abstract-handler
-             :target-class ',class
-             :name ',name
-             :event-type ',event-type
-             :delivery-function (lambda (,compvar ,event)
-                                  (declare (ignorable ,compvar ,event))
-                                  (with-origin (',name)
-                                    (with-fuzzy-slot-bindings ,args (,event ,event-type)
-                                      ,@body)))
-             ,@options)
-            ',consumer)
-           (list ',consumer ',name))))))
+    (with-body-kargs (body options class) body
+      `(progn
+         (update-handler
+          (make-instance
+           'abstract-handler
+           :target-class ',class
+           :name ',name
+           :event-type ',event-type
+           :delivery-function (lambda (,compvar ,event)
+                                (declare (ignorable ,compvar ,event))
+                                (with-origin (',name)
+                                  (with-fuzzy-slot-bindings ,args (,event ,event-type)
+                                    ,@body)))
+           ,@options)
+          ',consumer)
+         (list ',consumer ',name)))))
+
+(defun slot-args->slots (args)
+  (flet ((make-req-field (a)
+           (destructuring-bind (name &rest kargs) (ensure-list a)
+             `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
+         (make-opt-field (a)
+           (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+             `(,name :initarg ,(kw name) :initform ,value ,@kargs))))
+    (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
+      (append (mapcar #'make-req-field required)
+              (mapcar #'make-opt-field optional)
+              (when rest (list (make-req-field rest)))
+              (mapcar #'make-opt-field key)))))
+
+(defun slot-args->args (args)
+  (loop with in-opts = NIL
+        for arg in args
+        collect (cond ((find arg lambda-list-keywords)
+                       (setf in-opts T) arg)
+                      (in-opts
+                       (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+                         (declare (ignore kargs))
+                         `(,name ,value)))
+                      (T
+                       (unlist arg)))))
 
 (defmacro define-command ((consumer event-type) args &body body)
-  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
-           (make-req-field (a)
-             (destructuring-bind (name &rest kargs) (ensure-list a)
-               `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
-           (make-opt-field (a)
-             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
-               `(,name :initarg ,(kw name) :initform ,value ,@kargs)))
-           (make-arg (a)
-             (if (lambda-keyword-p a)
-                 a
-                 (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
-                   (declare (ignore kargs))
-                   `(,name ,value)))))
-    (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body body)
+  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
+    (with-body-kargs (body options superclasses class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
-        (destructuring-bind (&rest options &key superclasses class-options &allow-other-keys) options
-          (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
-            (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-                   (pure-options (deeds::removef options :superclasses :class-options))
-                   (fun-args (append (mapcar #'unlist required)
-                                     (when optional (list* '&optional (mapcar #'make-arg optional)))
-                                     (when key (list* '&key (mapcar #'make-arg key)))))
-                   (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
-                   (slot-args (append (mapcar #'make-req-field required)
-                                      (mapcar #'make-opt-field optional)
-                                      (when rest (list (make-req-field rest)))
-                                      (mapcar #'make-opt-field key))))
-              `(progn
-                 (define-event ,event-type (command-event ,@superclasses)
-                   ,slot-args
-                   ,@class-options)
-                 (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
-                   ,@pure-options
-                   ,@body)
-                 (defun ,event-type (core ,@fun-args)
-                   (broadcast ',event-type :loop core ,@fun-kargs))))))))))
+        (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
+               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg)))
+          `(progn
+             (define-event ,event-type (command-event ,@superclasses)
+               ,(slot-args->slots args)
+               ,@class-options)
+             (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
+               ,@options
+               ,@body)
+             (defun ,event-type (core ,@(slot-args->args args))
+               (broadcast ',event-type :loop core ,@fun-kargs))))))))
 
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
