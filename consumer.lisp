@@ -185,7 +185,7 @@
         collect (cond ((find arg lambda-list-keywords)
                        (setf in-opts T) arg)
                       (in-opts
-                       (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+                       (destructuring-bind (name &optional value &rest kargs) (ensure-list arg)
                          (declare (ignore kargs))
                          `(,name ,value)))
                       (T
