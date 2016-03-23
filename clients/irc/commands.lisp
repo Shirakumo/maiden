@@ -14,7 +14,7 @@
     (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
           (client (gensym "CLIENT")))
-      (colleen::with-body-kargs (body options superclasses) options-and-body
+      (form-fiddle:with-body-options (body options superclasses) options-and-body
         (cond (key (push 'loop key))
               (optional (push 'loop optional))
               (T (push 'loop key)))

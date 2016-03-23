@@ -36,4 +36,5 @@
                :pathname-utils
                :closer-mop
                :uuid
-               :usocket))
+               :usocket
+               :form-fiddle))

@@ -149,7 +149,7 @@
 
 (defmacro define-handler ((consumer name event-type) args &body body)
   (destructuring-bind (compvar event &rest args) args
-    (with-body-kargs (body options class) body
+    (form-fiddle:with-body-options (body options class) body
       `(progn
          (update-handler
           (make-instance
@@ -193,7 +193,7 @@
 
 (defmacro define-command ((consumer event-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (with-body-kargs (body options superclasses class-options) body
+    (form-fiddle:with-body-options (body options superclasses class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg)))
@@ -209,7 +209,7 @@
 
 (defmacro define-query ((consumer event-type event-response-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (with-body-kargs (body options superclasses class-options) body
+    (form-fiddle:with-body-options (body options superclasses class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))

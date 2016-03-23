@@ -50,11 +50,3 @@
                    :report (lambda (,stream)
                              (format ,stream ,format-string ,@format-args))
                    (go ,tag)))))))
-
-(defmacro with-body-kargs ((body other-options &rest opts) form &body body-forms)
-  (let ((options (gensym "OPTIONS"))
-        (kopts (loop for opt in opts collect (kw (unlist opt)))))
-    `(multiple-value-bind (,options ,body) (deeds::parse-into-kargs-and-body ,form)
-       (destructuring-bind (&key ,@opts) ,options
-         (let ((,other-options (deeds::removef ,options ,@kopts)))
-           ,@body-forms)))))

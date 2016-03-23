@@ -21,4 +21,5 @@
                (:file "client")
                (:file "documentation"))
   :depends-on (:babel
-               :cl-ppcre))
+               :cl-ppcre
+               :form-fiddle))
