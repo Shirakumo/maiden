@@ -10,41 +10,24 @@
   ((message :initarg :message :reader message)))
 
 (defmacro define-irc-command (name args &body options-and-body)
-  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords))
-           (make-req-field (a)
-             (destructuring-bind (name &rest kargs) (ensure-list a)
-               `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
-           (make-opt-field (a)
-             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
-               `(,name :initarg ,(kw name) :initform ,value ,@kargs)))
-           (make-opt-arg (a)
-             (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
-               (declare (ignore kargs))
-               `(,name ,value))))
+  (flet ((lambda-keyword-p (a) (find a lambda-list-keywords)))
     (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
           (client (gensym "CLIENT")))
-      (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :key key) args
-        (multiple-value-bind (options body) (deeds::parse-into-kargs-and-body options-and-body)
-          (destructuring-bind (&key superclasses) options
-            (cond (key (push 'loop key))
-                  (optional (push 'loop optional))
-                  (T (push 'loop key)))
-            `(progn
-               (define-event ,name (deeds:command-event send-event ,@superclasses)
-                 (,@(mapcar #'make-req-field required)
-                  ,@(mapcar #'make-opt-field optional)
-                  ,@(mapcar #'make-opt-field key)))
-               (defun ,name (,client
-                             ,@(mapcar #'unlist required)
-                             ,@(when optional `(&optional ,@(mapcar #'make-opt-arg optional)))
-                             ,@(when key `(&key ,@(mapcar #'make-opt-arg key))))
-                 (do-issue ,name
-                   :loop (or loop (first (cores ,client))) :client ,client
-                   ,@(loop for var in pure-args collect (kw var) collect var)))
-               (defmethod message ((ev ,name))
-                 (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
-                   (format NIL ,@body))))))))))
+      (colleen::with-body-kargs (body options superclasses) options-and-body
+        (cond (key (push 'loop key))
+              (optional (push 'loop optional))
+              (T (push 'loop key)))
+        `(progn
+           (define-event ,name (deeds:command-event send-event ,@superclasses)
+             ,(colleen::slot-args->slots args))
+           (defun ,name (,client ,@(colleen::slot-args->args args))
+             (do-issue ,name
+               :loop (or loop (first (cores ,client))) :client ,client
+               ,@(loop for var in pure-args collect (kw var) collect var)))
+           (defmethod message ((ev ,name))
+             (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
+               (format NIL ,@body))))))))
 
 (define-irc-command pass (password)
   "PASS ~a" password)
