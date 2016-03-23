@@ -207,6 +207,31 @@
              (defun ,event-type (core ,@(slot-args->args args))
                (broadcast ',event-type :loop core ,@fun-kargs))))))))
 
+(defmacro define-query ((consumer event-type event-response-type) args &body body)
+  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
+    (with-body-kargs (body options superclasses class-options) body
+      (destructuring-bind (consumer-var event-var &rest args) args
+        (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
+               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
+               (thunk (gensym "THUNK"))
+               (event (gensym "EVENT")))
+          `(progn
+             (define-event ,event-type (command-event identified-event ,@superclasses)
+               ,(slot-args->slots args)
+               ,@class-options)
+             (define-event ,event-response-type (payload-event identified-event) ())
+             (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
+               ,@options
+               (flet ((,thunk ()
+                        ,@body))
+                 (respond ,event-var :payload (multiple-value-list (,thunk)))))
+             (defun ,event-type (core ,@(slot-args->args args))
+               (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@fun-kargs)))
+                 (with-awaiting (,event-response-type payload)
+                     (core :filter `(matches identifier ,(identifier ,event)))
+                     (issue ,event core)
+                   (values-list payload))))))))))
+
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
               never (c2mop:subclassp (find-class super) (find-class 'consumer)))

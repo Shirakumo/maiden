@@ -110,6 +110,7 @@
    #:stop
    #:define-handler
    #:define-command
+   #:define-query
    #:define-consumer)
   ;; core.lisp
   (:export
