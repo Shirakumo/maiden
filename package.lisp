@@ -137,6 +137,8 @@
   ;; event.lisp
   (:export
    #:respond
+   #:query-event
+   #:response-event
    #:client-event
    #:client
    #:connection-event

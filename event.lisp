@@ -11,6 +11,17 @@
     (issue (apply #'make-instance class args)
            (event-loop event))))
 
+(define-event query-event (identified-event command-event)
+  ())
+
+(defmethod respond ((event query-event) &key payload)
+  (issue (make-instance 'response-event :payload payload)
+         (event-loop event)))
+
+(define-event response-event (identified-event payload-event)
+  ()
+  (:default-initargs :identifier (error "IDENTIFIER required.")))
+
 (define-event client-event ()
   ((client :initarg :client :reader client))
   (:default-initargs

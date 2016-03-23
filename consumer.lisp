@@ -207,7 +207,7 @@
              (defun ,event-type (core ,@(slot-args->args args))
                (broadcast ',event-type :loop core ,@fun-kargs))))))))
 
-(defmacro define-query ((consumer event-type event-response-type) args &body body)
+(defmacro define-query ((consumer event-type &optional event-response-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
     (form-fiddle:with-body-options (body options superclasses class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
@@ -216,10 +216,14 @@
                (thunk (gensym "THUNK"))
                (event (gensym "EVENT")))
           `(progn
-             (define-event ,event-type (command-event identified-event ,@superclasses)
+             (define-event ,event-type (query-event ,@superclasses)
                ,(slot-args->slots args)
                ,@class-options)
-             (define-event ,event-response-type (payload-event identified-event) ())
+             ,@(when event-response-type
+                 `((define-event ,event-response-type (response-event) ())
+                   (defmethod respond ((event ,event-type) &key payload)
+                     (issue (make-instance ',event-response-type :payload payload :identifier (identifier event))
+                            (event-loop event)))))
              (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
                ,@options
                (flet ((,thunk ()
@@ -227,7 +231,7 @@
                  (respond ,event-var :payload (multiple-value-list (,thunk)))))
              (defun ,event-type (core ,@(slot-args->args args))
                (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@fun-kargs)))
-                 (with-awaiting (,event-response-type payload)
+                 (with-awaiting (,(or event-response-type 'response-event) response payload)
                      (core :filter `(matches identifier ,(identifier ,event)))
                      (issue ,event core)
                    (values-list payload))))))))))
