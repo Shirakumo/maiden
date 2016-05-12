@@ -116,20 +116,18 @@
       (find-entity id (cores consumer))))
 
 (defclass abstract-handler ()
-  ((target-class :initarg :target-class :accessor target-class)
+  ((target-class :initform 'queued-handler :accessor target-class)
    (options :initarg :options :accessor options)
    (name :initarg :name :accessor name))
   (:default-initargs
-   :target-class 'queued-handler
    :options ()))
 
-(defmethod initialize-instance :after ((handler abstract-handler) &rest args &key &allow-other-keys)
-  (let ((class (getf args :target-class)))
-    (when class (setf (target-class handler) class))
-    ;; We have to remove the name because handlers cannot exist twice on the same
-    ;; loop with different names. If we propagated the name it would not work with
-    ;; multiple instances of a consumer!
-    (setf (options handler) (deeds::removef args :target-class :name :options))))
+(defmethod initialize-instance :after ((handler abstract-handler) &rest args &key target-class &allow-other-keys)
+  (when target-class (setf (target-class handler) target-class))
+  ;; We have to remove the name because handlers cannot exist twice on the same
+  ;; loop with different names. If we propagated the name it would not work with
+  ;; multiple instances of a consumer!
+  (setf (options handler) (deeds::removef args :target-class :name :options)))
 
 (defmethod instantiate-handler ((handler abstract-handler) (consumer consumer))
   (let* ((options (options handler))
@@ -154,7 +152,7 @@
          (update-handler
           (make-instance
            'abstract-handler
-           :target-class ',class
+           :target-class ',(or class 'deeds:queued-handler)
            :name ',name
            :event-type ',event-type
            :delivery-function (lambda (,compvar ,event)
