@@ -15,12 +15,10 @@
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
           (client (gensym "CLIENT")))
       (form-fiddle:with-body-options (body options superclasses) options-and-body
-        (cond (key (push 'loop key))
-              (optional (push 'loop optional))
-              (T (push 'loop key)))
         `(progn
            (define-event ,name (deeds:command-event send-event ,@superclasses)
-             ,(colleen::slot-args->slots args))
+             ,(colleen::slot-args->slots args)
+             ,@options)
            (defun ,name (,client ,@(colleen::slot-args->args args))
              (do-issue ,name
                :loop (or loop (first (cores ,client))) :client ,client
