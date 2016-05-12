@@ -21,7 +21,7 @@
              ,@options)
            (defun ,name (,client ,@(colleen::slot-args->args args))
              (do-issue ,name
-               :loop (or loop (first (cores ,client))) :client ,client
+               :loop (first (cores ,client)) :client ,client
                ,@(loop for var in pure-args collect (kw var) collect var)))
            (defmethod message ((ev ,name))
              (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
