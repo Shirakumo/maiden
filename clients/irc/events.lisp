@@ -9,9 +9,8 @@
 (define-event irc-event (client-event)
   ())
 
-(define-event reply-event (irc-event)
-  ((sender :initarg :sender :reader sender)
-   (sender-user :initarg :sender-user :reader sender-user)
+(define-event reply-event (irc-event sender-event)
+  ((sender-user :initarg :sender-user :reader sender-user)
    (sender-host :initarg :sender-host :reader sender-host)
    (code :initarg :code)
    (args :initarg :args)))
