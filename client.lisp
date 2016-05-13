@@ -6,7 +6,11 @@
 
 (in-package #:org.shirakumo.maiden)
 
+(defgeneric users (client))
+(defgeneric user (name client))
 (defgeneric authenticate (sender client))
+(defgeneric channels (client))
+(defgeneric channel (name client))
 (defgeneric client-connected-p (client))
 (defgeneric close-connection (client))
 (defgeneric initiate-connection (client))
@@ -24,8 +28,36 @@
 (define-consumer user-client (client)
   ())
 
-(defmethod authenticate (sender (client user-client))
+(defclass user (named-entity)
+  ((client :initarg :client :accessor client))
+  (:default-initargs
+   :client (error "CLIENT required.")))
+
+(defmethod user (name (client user-client))
   NIL)
+
+(defmethod users ((client user-client))
+  ())
+
+(defmethod authenticate (user (client user-client))
+  NIL)
+
+(define-consumer channel-client (client)
+  ())
+
+(defclass channel (named-entity)
+  ((client :initarg :client :accessor client))
+  (:default-initargs
+   :client (error "CLIENT required.")))
+
+(defmethod channels ((client channel-client))
+  ())
+
+(defmethod channel (name (client channel-client))
+  NIL)
+
+(defmethod users ((channel channel))
+  ())
 
 (define-consumer remote-client (client)
   ())
