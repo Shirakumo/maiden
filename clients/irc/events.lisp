@@ -38,7 +38,7 @@
                events)))
    (error 'message-parse-error :client client :message message)))
 
-(defmacro define-irc-reply (name code (&optional regex &rest args))
+(defmacro define-irc-reply (name code (&optional regex &rest args) &optional direct-superclasses)
   (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
         (code (etypecase code
                 (symbol (string code))
@@ -47,7 +47,7 @@
         (instance (gensym "INSTANCE"))
         (rest (gensym "REST")))
     `(progn
-       (define-event ,name (reply-event)
+       (define-event ,name (reply-event ,@direct-superclasses)
          ,(loop for arg in args
                 for (name delim) = (ensure-list arg NIL)
                 when name
@@ -93,7 +93,7 @@
 (define-irc-reply MSG-TRACE TRACE ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-ADMIN ADMIN ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-INFO INFO ("([^ ]+)?" SERVER))
-(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (RECEIVERS #\,) MESSAGE))
+(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (RECEIVERS #\,) MESSAGE) (message-event))
 (define-irc-reply MSG-NOTICE NOTICE ("([^ ]+)? ?:(.*)" NICKNAME MESSAGE))
 (define-irc-reply MSG-WHO WHO ("(([^ ]+)( o)?)?" NIL NAME OPERS-ONLY))
 (define-irc-reply MSG-WHOIS WHOIS ("(([^ ]+) )?([^ ]+)" NIL SERVER (NICKMASKS #\,)))
