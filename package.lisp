@@ -31,6 +31,11 @@
    #:do-issue
    #:issue
    #:broadcast)
+  (:shadow
+   #:message-event
+   #:info-event
+   #:warning-event
+   #:error-event)
   ;; agent.lisp
   (:export
    #:agent)

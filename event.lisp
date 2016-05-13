@@ -45,10 +45,10 @@
   (:default-initargs
    :sender (error "SENDER required.")))
 
-;; (define-event message-event (sender-event)
-;;   ((message :initarg :message :reader message :mutable T))
-;;   (:default-initargs
-;;    :message (error "MESSAGE required.")))
+(define-event message-event (sender-event)
+  ((message :initarg :message :reader message :mutable T))
+  (:default-initargs
+   :message (error "MESSAGE required.")))
 
 (define-event core-event ()
   ())
