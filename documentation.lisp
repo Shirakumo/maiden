@@ -6,3 +6,4 @@
 
 (in-package #:org.shirakumo.colleen)
 
+(docs:define-docs)

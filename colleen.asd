@@ -37,4 +37,5 @@
                :closer-mop
                :uuid
                :usocket
-               :form-fiddle))
+               :form-fiddle
+               :documentation-utils))
