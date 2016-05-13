@@ -1,5 +1,5 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
@@ -8,7 +8,7 @@
 
 (pushnew :deeds-no-startup *features*)
 
-(asdf:defsystem colleen
+(asdf:defsystem maiden
   :defsystem-depends-on (:modularize)
   :class "modularize:module"
   :version "3.0.0"
@@ -16,7 +16,7 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A modern and extensible chat bot framework."
-  :homepage "https://github.com/Shinmera/colleen"
+  :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
                (:file "toolkit")

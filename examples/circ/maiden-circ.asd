@@ -1,22 +1,22 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (in-package #:cl-user)
 
-(asdf:defsystem colleen-circ
+(asdf:defsystem maiden-circ
   :defsystem-depends-on (:modularize)
   :class "modularize:module"
   :version "1.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "A simple IRC client example using Colleen3"
-  :homepage "https://github.com/Shinmera/colleen"
+  :description "A simple IRC client example using Maiden3"
+  :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
                (:file "circ"))
-  :depends-on (:colleen-relay
-               :colleen-irc))
+  :depends-on (:maiden-relay
+               :maiden-irc))

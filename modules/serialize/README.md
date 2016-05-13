@@ -1,4 +1,4 @@
-## About Colleen-Serialize
+## About Maiden-Serialize
 This module is useful to serialise data, especially events. The bulk of the work is handled by cl-store. Additionally, the data is compressed using gzip.
 
 ## How To

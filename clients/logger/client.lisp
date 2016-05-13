@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.logger)
+(in-package #:org.shirakumo.maiden.clients.logger)
 
 (define-event log-event (client-event deeds:message-event)
   ())

@@ -1,12 +1,12 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:colleen-user)
-(define-module #:colleen-accounts
-  (:nicknames #:org.shirakumo.colleen.agents.accounts)
-  (:use #:cl #:colleen)
+(in-package #:maiden-user)
+(define-module #:maiden-accounts
+  (:nicknames #:org.shirakumo.maiden.agents.accounts)
+  (:use #:cl #:maiden)
   ;; 
   (:export))

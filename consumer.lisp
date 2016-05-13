@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen)
+(in-package #:org.shirakumo.maiden)
 
 ;; Forwarding class definition
 (defclass core () ())
@@ -80,7 +80,7 @@
 
 ;; FIXME: Keeping book on what's started or not and retaining that.
 (defmethod reinitialize-handlers ((consumer consumer) handlers)
-  (v:info :colleen.core.consumer "~a updating handlers." consumer)
+  (v:info :maiden.core.consumer "~a updating handlers." consumer)
   (let ((cores (cores consumer)))
     ;; Deregister
     (remove-consumer consumer cores)

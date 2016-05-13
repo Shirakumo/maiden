@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen)
+(in-package #:org.shirakumo.maiden)
 
 (defgeneric authenticate (sender client))
 (defgeneric client-connected-p (client))
@@ -103,7 +103,7 @@
                            usocket:connection-reset-error
                            usocket:connection-aborted-error
                            cl:end-of-file
-                           colleen:client-timeout-error)
+                           maiden:client-timeout-error)
                         (lambda (err)
                           (handle-connection-error err client))))
          (with-retry-restart (continue "Retry handling the connection.")
@@ -130,8 +130,8 @@
    :interval 2))
 
 (defmethod handle-connection-error (err (client reconnecting-client))
-  (v:log :debug :colleen.client.reconnection err)
-  (v:warn :colleen.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
+  (v:log :debug :maiden.client.reconnection err)
+  (v:warn :maiden.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
   (cond ((eq (bt:current-thread) (read-thread client))
          ;; We cannot call CLOSE-CONNECTION as it would end
          ;; our own thread with the restart invocation.
@@ -154,7 +154,7 @@
                (setf (failures client) 0)
                (continue))
       (error (err)
-        (v:error :colleen.client.reconnection "~a Failed to reconnect: ~a" client err)
+        (v:error :maiden.client.reconnection "~a Failed to reconnect: ~a" client err)
         NIL))))
 
 (define-consumer timeout-client (remote-client)
@@ -184,7 +184,7 @@
 (defmethod receive :around ((client text-client))
   (handler-bind (#+sbcl (sb-int:stream-decoding-error
                           (lambda (err)
-                            (v:log :warning :colleen.client.receive err)
+                            (v:log :warning :maiden.client.receive err)
                             (invoke-restart 'sb-int:attempt-resync))))
     (call-next-method)))
 

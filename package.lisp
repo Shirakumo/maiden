@@ -1,13 +1,13 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (in-package #:cl-user)
 
-(modularize:define-module #:colleen
-  (:nicknames #:org.shirakumo.colleen)
+(modularize:define-module #:maiden
+  (:nicknames #:org.shirakumo.maiden)
   (:use #:cl #:modularize #:deeds)
   (:shadow #:define-handler #:define-command #:with-response #:with-awaiting)
   ;; re-export from modularize
@@ -78,7 +78,7 @@
    #:server)
   ;; conditions.lisp
   (:export
-   #:colleen-condition
+   #:maiden-condition
    #:core-condition
    #:core
    #:consumer-name-duplicated-warning
@@ -169,6 +169,6 @@
    #:with-default-encoding
    #:with-retry-restart))
 
-(defpackage #:colleen-user
-  (:nicknames #:org.shirakumo.colleen.user)
-  (:use #:cl #:colleen))
+(defpackage #:maiden-user
+  (:nicknames #:org.shirakumo.maiden.user)
+  (:use #:cl #:maiden))

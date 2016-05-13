@@ -1,12 +1,12 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:colleen-user)
-(define-module #:colleen-irc-events
-  (:nicknames #:irc #:org.shirakumo.colleen.clients.irc.events)
+(in-package #:maiden-user)
+(define-module #:maiden-irc-events
+  (:nicknames #:irc #:org.shirakumo.maiden.clients.irc.events)
   (:use)
   ;; commands.lisp
   (:export
@@ -426,9 +426,9 @@
    #:err-texttooshort
    #:err-numeric-err))
 
-(defpackage #:colleen-irc
-  (:nicknames #:org.shirakumo.colleen.clients.irc)
-  (:use #:cl #:colleen)
+(defpackage #:maiden-irc
+  (:nicknames #:org.shirakumo.maiden.clients.irc)
+  (:use #:cl #:maiden)
   (:shadow #:client)
   ;; client.lisp
   (:export

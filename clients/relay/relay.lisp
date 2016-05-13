@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.relay)
+(in-package #:org.shirakumo.maiden.clients.relay)
 
 #|
 ## Todo:
@@ -25,8 +25,8 @@
 :: common-lisp
  (ql:quickload :verbose)
  (setf (v:repl-level) :trace)
- (ql:quickload :colleen-relay)
- (in-package :colleen-relay)
+ (ql:quickload :maiden-relay)
+ (in-package :maiden-relay)
  
  ;; A - B - C*
  (macrolet ((define-relay (name port)
@@ -42,10 +42,10 @@
  (connect *core-b* :port (port *relay-c*))
  
  ;; Test logger
- (ql:quickload :colleen-logger)
- (defvar *logger-c* (start (make-instance 'colleen-logger:logger :name "logger-c")))
+ (ql:quickload :maiden-logger)
+ (defvar *logger-c* (start (make-instance 'maiden-logger:logger :name "logger-c")))
  (add-consumer *logger-c* *core-c*)
- (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*)
+ (issue (make-instance 'maiden-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*)
 
  ;; Test subscriptions
  (deeds:define-handler (foo deeds:info-event) (ev)
@@ -56,8 +56,8 @@
  (issue (make-instance 'deeds:info-event :message "Hrm.") *core-a*)
 
  ;; Test client subscriptions
- (subscribe *core-b* 'colleen-logger:log-event T T)
- (issue (make-instance 'colleen-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*) 
+ (subscribe *core-b* 'maiden-logger:log-event T T)
+ (issue (make-instance 'maiden-logger:log-event :client (consumer (id *logger-c*) *core-a*) :message "HI!!") *core-a*) 
 
  ;; Test slot access
  (define-consumer magic-client (client)
@@ -97,10 +97,10 @@
     (make-network-update new links)))
 
 (defmethod handle-connection :before ((server tcp-server))
-  (v:info :colleen.relay.server "~a waiting for clients." server))
+  (v:info :maiden.relay.server "~a waiting for clients." server))
 
 (defmethod accept :before (socket (server tcp-server))
-  (v:info :colleen.relay.server "~a accepting client." server))
+  (v:info :maiden.relay.server "~a accepting client." server))
 
 (defmethod make-tcp-server-client ((server relay) socket)
   (make-instance 'relay-client
@@ -158,7 +158,7 @@
   ;; Remove unroutable subscriptions
   (setf (subscriptions relay)
         (remove-if-not (lambda (sub) (routable-p sub relay)) (subscriptions relay)))
-  (v:info :colleen.relay.server "~a updated network by ~a" relay update)
+  (v:info :maiden.relay.server "~a updated network by ~a" relay update)
   relay)
 
 (defmethod update :after ((relay relay) source (update network-update))
@@ -191,7 +191,7 @@
 (defgeneric relay (message target relay))
 
 (defmethod relay :before (message target relay)
-  (v:debug :colleen.relay.server "Relaying ~s to ~s over ~s." message target relay))
+  (v:debug :maiden.relay.server "Relaying ~s to ~s over ~s." message target relay))
 
 (defmethod relay (message (target null) relay)
   (error 'no-relay-target-specified :message message :client relay))

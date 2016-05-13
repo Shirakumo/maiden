@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.relay)
+(in-package #:org.shirakumo.maiden.clients.relay)
 
 (define-condition relay-condition (client-condition) ())
 
@@ -40,4 +40,4 @@ should fix this problem."
 (define-condition client-version-mismatch (relay-condition warning)
   ((remote-version :initarg :remote-version :reader remote-version))
   (:report (lambda (c s) (format s "The version of the framework at the remote relay ~a (~a) does not match ours (~a)."
-                                 (remote (client c)) (remote-version c) (asdf:component-version (asdf:find-system :colleen))))))
+                                 (remote (client c)) (remote-version c) (asdf:component-version (asdf:find-system :maiden))))))

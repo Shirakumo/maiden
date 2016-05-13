@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.relay)
+(in-package #:org.shirakumo.maiden.clients.relay)
 
 (define-consumer relay-client (tcp-server-client timeout-client)
   ((remote :initform NIL :accessor remote)))
@@ -19,10 +19,10 @@
     (make-network-update new bad)))
 
 (defmethod handle-connection-error :before (err (client relay-client))
-  (v:warn :colleen.relay.client "~a Connection error: ~a" client err))
+  (v:warn :maiden.relay.client "~a Connection error: ~a" client err))
 
 (defmethod handle-connection ((client relay-client))
-  (handler-bind ((colleen:client-timeout-error
+  (handler-bind ((maiden:client-timeout-error
                    (lambda (err)
                      (ignore-errors (send `(:timeout ,(timeout err)) client)))))
     (call-next-method)))
@@ -47,11 +47,11 @@
   (case (first message)
     (:id
      (destructuring-bind (id version) (cdr message)
-       (unless (equal version (asdf:component-version (asdf:find-system :colleen)))
+       (unless (equal version (asdf:component-version (asdf:find-system :maiden)))
          (warn 'client-version-mismatch :remote-version version :client client))
        (setf (remote client) id)))
     (:timeout
-     (error 'colleen:client-timeout-error :client client :timeout (second message)))
+     (error 'maiden:client-timeout-error :client client :timeout (second message)))
     (:close
      (close-connection client))
     (:ping
@@ -73,7 +73,7 @@
 
 (defmethod initiate-connection :after ((client relay-client))
   (broadcast 'connection-initiated :client client :loop (cores (server client)))
-  (send (list :id (id (server client)) (asdf:component-version (asdf:find-system :colleen))) client)
+  (send (list :id (id (server client)) (asdf:component-version (asdf:find-system :maiden))) client)
   (send (make-network-update (server client) ()) client))
 
 (defmethod close-connection :before ((client relay-client))

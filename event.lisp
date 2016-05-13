@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen)
+(in-package #:org.shirakumo.maiden)
 
 (defgeneric respond (event &rest args &key class &allow-other-keys)
   (:method ((event event) &rest args &key (class (class-of event)) &allow-other-keys)
@@ -77,7 +77,7 @@
 (defgeneric execute-instruction (instruction &key))
 
 (defmethod execute-instruction :before (instruction &rest args &key)
-  (v:debug :colleen.event.instruction "Executing ~a with ~s" instruction args))
+  (v:debug :maiden.event.instruction "Executing ~a with ~s" instruction args))
 
 (define-event core-instruction-event (core-event instruction-event)
   ())

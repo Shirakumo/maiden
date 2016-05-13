@@ -1,25 +1,25 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.irc)
+(in-package #:org.shirakumo.maiden.clients.irc)
 
 (define-event send-event (irc-event)
   ((message :initarg :message :reader message)))
 
 (defmacro define-irc-command (name args &body options-and-body)
   (flet ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
+    (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
           (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
           (client (gensym "CLIENT")))
       (form-fiddle:with-body-options (body options superclasses) options-and-body
         `(progn
            (define-event ,name (deeds:command-event send-event ,@superclasses)
-             ,(colleen::slot-args->slots args)
+             ,(maiden::slot-args->slots args)
              ,@options)
-           (defun ,name (,client ,@(colleen::slot-args->args args))
+           (defun ,name (,client ,@(maiden::slot-args->args args))
              (do-issue ,name
                :loop (first (cores ,client)) :client ,client
                ,@(loop for var in pure-args collect (kw var) collect var)))

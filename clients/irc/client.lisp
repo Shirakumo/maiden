@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.irc)
+(in-package #:org.shirakumo.maiden.clients.irc)
 
 (defvar *send-length-limit* 512)
 
@@ -41,11 +41,11 @@
   (with-simple-restart (abort "Exit the connection handling.")
     (handler-bind ((message-parse-error
                      (lambda (err)
-                       (v:error :colleen.client.irc.connection "Parse error: ~a" err)
+                       (v:error :maiden.client.irc.connection "Parse error: ~a" err)
                        (invoke-restart 'continue)))
                    (unknown-message-warning
                      (lambda (err)
-                       (v:warn :colleen.client.irc.connection "Parse error: ~a" err))))
+                       (v:warn :maiden.client.irc.connection "Parse error: ~a" err))))
       (call-next-method))))
 
 (defmethod process (message (client client))
@@ -90,14 +90,14 @@
 (define-handler (client nick-change irc:msg-nick) (client ev sender nickname)
   :match-consumer 'client
   (when (string-equal sender (nickname client))
-    (v:info :colleen.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
+    (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
     (setf (nickname client) nickname)))
 
 (define-handler (client yank-nick irc:msg-quit) (client ev sender)
   :match-consumer 'client
   (when (and (string-equal sender (intended-nickname client))
              (not (string-equal sender (nickname client))))
-    (v:info :colleen.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)
+    (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)
     (irc:nick client sender)))
 
 (defmethod authenticate (nick (client client))

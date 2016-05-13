@@ -1,5 +1,5 @@
-## About Colleen-Relay
-The Colleen relay allows transparent event relaying across a network of cores. Optimally no other module should have to be aware that the relay is in effect. However, there must always be some source of authority that first establishes the connections and issues the proper subscriptions so that events get transmitted at all.
+## About Maiden-Relay
+The Maiden relay allows transparent event relaying across a network of cores. Optimally no other module should have to be aware that the relay is in effect. However, there must always be some source of authority that first establishes the connections and issues the proper subscriptions so that events get transmitted at all.
 
 ## How To
 In order to set your core up for accepting relay connections, simply instantiate a `relay` consumer and add it to the core. If you simply want to be able to send and receive events without allowing anyone to actually connect to you, set either `:host` or `:port` to `NIL`. Using `connect` you can then connect to a remote relay. With `subscribe` you can subscribe to events that happen on a remote relay and have them be transmitted over to your currently local core. Note that you can construct a network that bridges over several cores, but your network must never contain cycles. If a cycle is introduced, the system will immediately enter a message passing infinite loop until the cycle is broken.
@@ -11,7 +11,7 @@ Also note that remote clients get recreated locally through `virtual-client` ins
 When a relay initiates a connection with a new remote, the `client`s at both ends follow the following procedure:
 
 1. Issue a `connection-initiated` event
-2. Send the following message: `(:id relay-id colleen-version)`
+2. Send the following message: `(:id relay-id maiden-version)`
 3. Send a network update containing the local relay in its `new` slot.
 
 Plain lists are treated specially upon receiving. They indicate relay internal communication and are handled as follows:
@@ -30,7 +30,7 @@ Otherwise the following handling steps are taken depending on the type of messag
 * `transport` Call `relay` on the relay with the transport `target` and relay.
 * Otherwise signal an `unknown-message-warning`.
 
-Connection reestablishment in case of disruptions or timeouts are handled by the respective Colleen base client mixins.
+Connection reestablishment in case of disruptions or timeouts are handled by the respective Maiden base client mixins.
 
 ### Network Persistence
 The network state gets persisted through `network-update`s. An update can contain a list of `bad` links that should be removed or `new` links that should get recognised. Each entry in the `new` list is of the form `(hops client-id client-name)`, and each entry in the `bad` list is of the form `destination-id`. For each update that gets processed we must know its next stop origin, which we know by looking at which client received it. For bad links we then look at each client it lists. If it's a virtual-client, remove each link in its link table that contains this origin. If there are no more links left, remove the client entirely. For new links if the client does not exist, it is created and added to the cores of the relay. Then each link's corresponding virtual client gets a new entry with the hop count and origin saved.
@@ -50,4 +50,4 @@ When a relay client receives a client-event or a transport, it is too sent to `r
 * `(eql T)` The message is sent to all clients on the relay.
 
 ### Message Serialisation
-See `colleen-serialize`.
+See `maiden-serialize`.

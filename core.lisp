@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen)
+(in-package #:org.shirakumo.maiden)
 
 (defgeneric consumer (id target))
 (defgeneric add-consumer (consumer target))
@@ -40,7 +40,7 @@
     (setf (slot-value event 'event-loop) core)))
 
 (defmethod issue ((event event) (core core))
-  (v:trace :colleen.core.event "~a Issuing event ~a" core event)
+  (v:trace :maiden.core.event "~a Issuing event ~a" core event)
   (issue event (event-loop core)))
 
 (defmethod handle ((event event) (core core))

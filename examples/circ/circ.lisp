@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.circ)
+(in-package #:org.shirakumo.maiden.circ)
 
 (defvar *nothing* (gensym "NOTHING"))
 (defvar *core* (make-instance 'core))
@@ -52,15 +52,15 @@
         (remote (apply #'init-remote (when (listp remote) remote)))))
 
 (defun init-relay (&optional (host "127.0.0.1") (port 9486))
-  (add-consumer (start (make-instance 'colleen-relay:relay :name 'relay :host host :port port)) *core*)
-  (colleen-relay:subscribe *core* 'connect T)
-  (colleen-relay:subscribe *core* 'disconnect T))
+  (add-consumer (start (make-instance 'maiden-relay:relay :name 'relay :host host :port port)) *core*)
+  (maiden-relay:subscribe *core* 'connect T)
+  (maiden-relay:subscribe *core* 'disconnect T))
 
 (defun init-remote (&optional (host "127.0.0.1") (port 9486))
-  (add-consumer (start (make-instance 'colleen-relay:relay :name 'remote :host NIL)) *core*)
-  (colleen-relay:subscribe *core* 'colleen-irc:reply-event T)
-  (colleen-relay:subscribe *core* 'connection-event T)
-  (colleen-relay:connect *core* :host host :port port))
+  (add-consumer (start (make-instance 'maiden-relay:relay :name 'remote :host NIL)) *core*)
+  (maiden-relay:subscribe *core* 'maiden-irc:reply-event T)
+  (maiden-relay:subscribe *core* 'connection-event T)
+  (maiden-relay:connect *core* :host host :port port))
 
 (define-command (circ connect) (circ ev name host nickname &key
                                                (port 6667)
@@ -69,7 +69,7 @@
   (push (cons name nickname) (nicks circ))
   (unless (or (consumer 'remote *core*)
               (consumer name *core*))
-    (start (add-consumer (make-instance 'colleen-irc:client
+    (start (add-consumer (make-instance 'maiden-irc:client
                                         :name name
                                         :host host :port port
                                         :nickname nickname
@@ -192,15 +192,15 @@
   ;; it is still not a great idea, since the client may be yet something
   ;; else that we cannot anticipate. Either way, the approach is listed
   ;; for completeness:
-  ;; (colleen-relay:define-virtual-client-method colleen-irc::nickname
-  ;;     ((client colleen-relay:virtual-client)))
-  ;; (colleen-irc:nickname (server))
+  ;; (maiden-relay:define-virtual-client-method maiden-irc::nickname
+  ;;     ((client maiden-relay:virtual-client)))
+  ;; (maiden-irc:nickname (server))
   ;; 
   ;; Second by slot-value access. This is automatically solved for
   ;; virtual-clients by the relay for us, so it should be "safe" in that
   ;; case by default, but again it is not great to assume a type of the
   ;; client. Again, for completeness:
-  ;; (slot-value (server) 'colleen-irc:nickname)
+  ;; (slot-value (server) 'maiden-irc:nickname)
   ;;
   ;; Third by recording the nick ourselves via events. We choose this
   ;; approach here, as it is the only sure-fire one.

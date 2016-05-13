@@ -1,10 +1,10 @@
 #|
- This file is a part of Colleen
+ This file is a part of Maiden
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.colleen.clients.irc)
+(in-package #:org.shirakumo.maiden.clients.irc)
 
 (define-event irc-event (client-event)
   ())
@@ -39,7 +39,7 @@
    (error 'message-parse-error :client client :message message)))
 
 (defmacro define-irc-reply (name code (&optional regex &rest args))
-  (let ((name (intern (string name) '#:org.shirakumo.colleen.clients.irc.events))
+  (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
         (code (etypecase code
                 (symbol (string code))
                 (string code)
