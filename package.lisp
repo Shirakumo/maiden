@@ -153,6 +153,7 @@
    #:sender
    #:message-event
    #:message
+   #:reply
    #:core-event
    #:consumer-added
    #:consumer-removed

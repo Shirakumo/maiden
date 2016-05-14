@@ -50,6 +50,8 @@
   (:default-initargs
    :message (error "MESSAGE required.")))
 
+(defgeneric reply (event format-string &rest format-args))
+
 (define-event core-event ()
   ())
 
