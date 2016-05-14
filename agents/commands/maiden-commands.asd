@@ -16,5 +16,7 @@
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
+               (:file "parser")
+               (:file "interface")
                (:file "documentation"))
-  :depends-on ())
+  :depends-on (:lambda-fiddle))
