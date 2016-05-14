@@ -178,11 +178,11 @@
               (mapcar #'make-opt-field key)))))
 
 (defun slot-args->args (args)
-  (loop with in-opts = NIL
+  (loop with stage = '&req
         for arg in args
         collect (cond ((find arg lambda-list-keywords)
-                       (setf in-opts T) arg)
-                      (in-opts
+                       (setf stage arg) arg)
+                      ((find stage '(&key &optional))
                        (destructuring-bind (name &optional value &rest kargs) (ensure-list arg)
                          (declare (ignore kargs))
                          `(,name ,value)))
