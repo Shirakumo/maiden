@@ -39,7 +39,7 @@ There is an additional complication to be aware of. If we have an event that is 
 
 Additionally, the delivery function is extended through a closure that captures the consumer instance, so that it is possible to refer to it within the handler body.
 
-Finally, Maiden provides some convenience macros to make common operations easier. `define-command` is a shorthand for defining an event, a handler to execute whatever the event should do, and a matching function to broadcast the event while making it appear like a regular function call. `define-query` is like `define-command` except that its handler automatically responds with a response event that contains the multiple-values-list of the body, and the corresponding function waits for the response, thus completing the illusion of a regular function call, including return values.
+Finally, Maiden provides some convenience macros to make common operations easier. `define-instruction` is a shorthand for defining an event, a handler to execute whatever the event should do, and a matching function to broadcast the event while making it appear like a regular function call. `define-query` is like `define-instruction` except that its handler automatically responds with a response event that contains the multiple-values-list of the body, and the corresponding function waits for the response, thus completing the illusion of a regular function call, including return values.
 
 #### Agents
 The `agent` class only does three things: automatically set the name to its class if it is not explicitly given, change `matches` on agents to test against the class, and signal a `agent-already-exists-error` on `add-consumer` of an agent if an agent with the same name already exists on the core.

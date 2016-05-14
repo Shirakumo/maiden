@@ -62,7 +62,7 @@
   (maiden-relay:subscribe *core* 'connection-event T)
   (maiden-relay:connect *core* :host host :port port))
 
-(define-command (circ connect) (circ ev name host nickname &key
+(define-instruction (circ connect) (circ ev name host nickname &key
                                                (port 6667)
                                                (username (machine-instance))
                                                (realname (machine-instance)))
@@ -76,7 +76,7 @@
                                         :username username
                                         :realname realname) *core*))))
 
-(define-command (circ disconnect) (circ ev name)
+(define-instruction (circ disconnect) (circ ev name)
   (unless (or (consumer 'remote *core*)
               (not (consumer name *core*)))
     (remove-consumer (stop (consumer name *core*)) *core*)))

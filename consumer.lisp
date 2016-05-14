@@ -189,7 +189,7 @@
                       (T
                        (unlist arg)))))
 
-(defmacro define-command ((consumer event-type) args &body body)
+(defmacro define-instruction ((consumer event-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
     (form-fiddle:with-body-options (body options superclasses class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args

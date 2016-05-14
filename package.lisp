@@ -114,7 +114,7 @@
    #:start
    #:stop
    #:define-handler
-   #:define-command
+   #:define-instruction
    #:define-query
    #:define-consumer)
   ;; core.lisp

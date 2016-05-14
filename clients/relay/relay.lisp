@@ -272,13 +272,13 @@
                       (deeds:test-filter (filter subscription) event))
              (relay (make-transport event (subscriber subscription)) (subscriber subscription) relay))))
 
-(define-command (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
+(define-instruction (relay connect) (relay ev &key (host "127.0.0.1") (port 9486))
   (start (make-instance 'relay-client-initiator
                         :server relay
                         :port port
                         :host host)))
 
-(define-command (relay subscribe) (relay ev event-type filter &optional (target T))
+(define-instruction (relay subscribe) (relay ev event-type filter &optional (target T))
   (let ((subscription (make-instance 'subscription :event-type event-type
                                                    :filter filter
                                                    :subscriber (event-loop ev)
@@ -286,7 +286,7 @@
     (push subscription (my-subscriptions relay))
     (update relay relay subscription)))
 
-(define-command (relay unsubscribe) (relay ev subscription)
+(define-instruction (relay unsubscribe) (relay ev subscription)
   (let ((subscription (or (typecase subscription
                             (subscription subscription)
                             (uuid:uuid (find subscription (my-subscriptions relay) :test #'matches)))
