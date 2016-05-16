@@ -8,27 +8,50 @@
 
 (defvar *commands* ())
 
+(defvar *framework-client* (make-instance 'client :name "FRAMEWORK"))
+(defvar *framework-sender* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
+(defvar *dispatch-event* NIL)
+
+(define-event framework-message-event (message-event)
+  ()
+  (:default-initargs
+   :client *framework-client*
+   :sender *framework-sender*
+   :message ""))
+
+(defmethod reply ((event framework-message-event) format-string &rest format-args)
+  (apply #'v:info :commands format-string format-args))
+
+(define-event command-event (instruction-event)
+  ((dispatch-event :initarg :dispatch-event :accessor dispatch-event))
+  (:default-initargs
+   :dispatch-event (or *dispatch-event* (make-instance 'framework-message-event))))
+
 (define-consumer commands (agent)
   ())
 
 ;; FIXME: The command event needs to link-back to the initiating event
 ;;        in order to make the RESPOND/REPLY stuff actually work as they
 ;;        should grip on the initiating event.
-(defmacro define-command ((consumer name) args &body body)
-  (let ((fun-kargs (loop for arg in (cddr (lambda-fiddle:extract-lambda-vars args))
-                         collect (kw arg) collect arg)))
-    (form-fiddle:with-body-options (body options command) body
-      `(progn (define-instruction (,consumer ,name) ,args
-                :superclasses ()
+(defmacro define-command ((consumer name) (instance event &rest args) &body body)
+  (form-fiddle:with-body-options (body options command command-event-variable) body
+    (let ((fun-kargs (loop for arg in (lambda-fiddle:extract-lambda-vars args)
+                           collect (kw arg) collect arg))
+          (command-event-variable (or command-event-variable (gensym "COMMAND-EVENT"))))
+      `(progn (define-instruction (,consumer ,name) (,instance ,command-event-variable ,@args)
+                :superclasses (command-event)
                 ,@options
-                ,@body)
+                (let* ((,event (dispatch-event ,command-event-variable))
+                       (*dispatch-event* ,event))
+                  ,@body))
               (maiden::update-list
                (list ,(string-downcase (or command (string name)))
-                     (lambda (event message)
-                       (with-command-destructuring-bind ,(cddr args) message
-                         (issue (make-instance ',name ,@fun-kargs)
-                                (event-loop event)))))
-               *commands* :key #'first :test #'string-equal)))))
+                     (lambda (,event message)
+                       (with-command-destructuring-bind ,args message
+                         (issue (make-instance ',name :dispatch-event ,event ,@fun-kargs)
+                                (event-loop ,event)))))
+               *commands* :key #'first :test #'string-equal)
+              (list ',consumer ',name)))))
 
 (define-handler (commands processor message-event) (c ev message)
   (let ((match NIL)
@@ -86,12 +109,10 @@
                (setf (aref v0 j) (aref v1 j))))))))
 
 ;; test case
-(define-command (commands echo) (c ev &rest args)
-  (reply ev "ECHO: ~{~a~^ ~}" args))
-(defvar *core* (start (make-instance 'core)))
-(add-consumer (make-instance 'commands) *core*)
-(define-event repl-msg (message-event) ()
-  (:default-initargs :sender :repl :client :repl))
-(defmethod reply ((msg repl-msg) f &rest a)
-  (v:info :test "REPLY: ~?" f a))
-(do-issue repl-msg :loop *core* :message "echo hi")
+;; (in-package :maiden-commands)
+;; (define-command (commands echo) (c ev &rest args) (reply ev "ECHO: ~{~a~^ ~}" args))
+;; (defvar *core* (start (make-instance 'core)))
+;; (add-consumer (start (make-instance 'commands)) *core*)
+;; (define-event repl-msg (message-event) () (:default-initargs :sender :repl :client :repl))
+;; (defmethod reply ((msg repl-msg) f &rest a) (apply #'v:info :reply f a))
+;; (do-issue repl-msg :loop *core* :message "echo hi")
