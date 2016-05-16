@@ -191,13 +191,14 @@
 
 (defmacro define-instruction ((consumer event-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (form-fiddle:with-body-options (body options superclasses class-options) body
+    (form-fiddle:with-body-options (body options superclasses extra-slots class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg)))
           `(progn
-             (define-event ,event-type (command-event ,@superclasses)
-               ,(slot-args->slots args)
+             (define-event ,event-type (instruction-event ,@superclasses)
+               (,@(slot-args->slots args)
+                ,@extra-slots)
                ,@class-options)
              (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
                ,@options
