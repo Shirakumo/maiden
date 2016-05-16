@@ -72,7 +72,7 @@
   (send thing client))
 
 (defmethod initiate-connection :after ((client relay-client))
-  (broadcast 'connection-initiated :client client :loop (cores (server client)))
+  (broadcast (cores (server client)) 'connection-initiated :client client)
   (send (list :id (id (server client)) (asdf:component-version (asdf:find-system :maiden))) client)
   (send (make-network-update (server client) ()) client))
 
@@ -83,7 +83,7 @@
   (ignore-errors (send '(:close) client)))
 
 (defmethod close-connection :after ((client relay-client))
-  (broadcast 'connection-closed :client client :loop (cores (server client))))
+  (broadcast (cores (server client)) 'connection-closed :client client))
 
 (define-consumer relay-client-initiator (reconnecting-client relay-client)
   ())

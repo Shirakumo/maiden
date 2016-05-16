@@ -70,10 +70,10 @@
     (close-connection client)))
 
 (defmethod initiate-connection :after ((client remote-client))
-  (broadcast 'connection-initiated :client client :loop (cores client)))
+  (broadcast (cores client) 'connection-initiated :client client))
 
 (defmethod close-connection :after ((client remote-client))
-  (broadcast 'connection-closed :client client :loop (cores client)))
+  (broadcast (cores client) 'connection-closed :client client))
 
 (define-consumer ip-client (remote-client)
   ((host :initarg :host :accessor host)
@@ -165,7 +165,7 @@
          ;; We don't care if it fails to close gracefully.
          (ignore-errors (usocket:socket-close (socket client)))
          (setf (socket client) NIL)
-         (broadcast 'connection-closed :client client :loop (cores client)))
+         (broadcast (cores client) 'connection-closed :client client))
         (T
          (close-connection client)))
   (loop

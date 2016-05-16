@@ -20,9 +20,8 @@
              ,(maiden::slot-args->slots args)
              ,@options)
            (defun ,name (,client ,@(maiden::slot-args->args args))
-             (do-issue ,name
-               :loop (first (cores ,client)) :client ,client
-               ,@(loop for var in pure-args collect (kw var) collect var)))
+             (do-issue (first (cores ,client)) ,name
+               :client ,client ,@(loop for var in pure-args collect (kw var) collect var)))
            (defmethod message ((ev ,name))
              (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
                (format NIL ,@body))))))))

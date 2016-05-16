@@ -115,4 +115,4 @@
 ;; (add-consumer (start (make-instance 'commands)) *core*)
 ;; (define-event repl-msg (message-event) () (:default-initargs :sender :repl :client :repl))
 ;; (defmethod reply ((msg repl-msg) f &rest a) (apply #'v:info :reply f a))
-;; (do-issue repl-msg :loop *core* :message "echo hi")
+;; (do-issue *core* repl-msg :message "echo hi")

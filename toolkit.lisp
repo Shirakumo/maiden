@@ -50,3 +50,9 @@
                    :report (lambda (,stream)
                              (format ,stream ,format-string ,@format-args))
                    (go ,tag)))))))
+
+(defmacro do-issue (core event-type &rest initargs)
+  `(deeds:do-issue ,event-type :loop ,core ,@initargs))
+
+(defun broadcast (cores event-type &rest initargs)
+  (apply #'deeds:broadcast event-type :loop cores initargs))

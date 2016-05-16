@@ -28,10 +28,10 @@
   (:export
    #:event
    #:define-event
-   #:do-issue
-   #:issue
-   #:broadcast)
+   #:issue)
   (:shadow
+   #:do-issue
+   #:broadcast
    #:message-event
    #:info-event
    #:warning-event
@@ -189,11 +189,15 @@
    #:stop)
   ;; toolkit.lisp
   (:export
+   #:xor
+   #:xnor
    #:kw
    #:ensure-list
    #:unlist
    #:with-default-encoding
-   #:with-retry-restart))
+   #:with-retry-restart
+   #:do-issue
+   #:broadcast))
 
 (defpackage #:maiden-user
   (:nicknames #:org.shirakumo.maiden.user)

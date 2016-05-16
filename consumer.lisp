@@ -194,7 +194,8 @@
     (form-fiddle:with-body-options (body options superclasses extra-slots class-options) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg)))
+               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
+               (core (gensym "CORE")))
           `(progn
              (define-event ,event-type (,@superclasses instruction-event)
                (,@(slot-args->slots args)
@@ -203,8 +204,8 @@
              (define-handler (,consumer ,event-type ,event-type) (,consumer-var ,event-var ,@pure-args)
                ,@options
                ,@body)
-             (defun ,event-type (core ,@(slot-args->args args))
-               (broadcast ',event-type :loop core ,@fun-kargs))))))))
+             (defun ,event-type (,core ,@(slot-args->args args))
+               (broadcast ,core ',event-type ,@fun-kargs))))))))
 
 (defmacro define-query ((consumer event-type &optional event-response-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
