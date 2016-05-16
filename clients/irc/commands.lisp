@@ -16,7 +16,7 @@
           (client (gensym "CLIENT")))
       (form-fiddle:with-body-options (body options superclasses) options-and-body
         `(progn
-           (define-event ,name (deeds:command-event send-event ,@superclasses)
+           (define-event ,name (instruction-event send-event ,@superclasses)
              ,(maiden::slot-args->slots args)
              ,@options)
            (defun ,name (,client ,@(maiden::slot-args->args args))

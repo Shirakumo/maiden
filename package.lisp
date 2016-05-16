@@ -141,6 +141,7 @@
    #:with-response)
   ;; event.lisp
   (:export
+   #:instruction-event
    #:respond
    #:query-event
    #:response-event

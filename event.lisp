@@ -6,12 +6,15 @@
 
 (in-package #:org.shirakumo.maiden)
 
+(define-event instruction-event ()
+  ())
+
 (defgeneric respond (event &rest args &key class &allow-other-keys)
   (:method ((event event) &rest args &key (class (class-of event)) &allow-other-keys)
     (issue (apply #'make-instance class args)
            (event-loop event))))
 
-(define-event query-event (identified-event command-event)
+(define-event query-event (identified-event instruction-event)
   ())
 
 (defmethod respond ((event query-event) &key payload)
