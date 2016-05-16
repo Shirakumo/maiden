@@ -196,7 +196,7 @@
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg)))
           `(progn
-             (define-event ,event-type (instruction-event ,@superclasses)
+             (define-event ,event-type (,@superclasses instruction-event)
                (,@(slot-args->slots args)
                 ,@extra-slots)
                ,@class-options)
@@ -215,7 +215,7 @@
                (thunk (gensym "THUNK"))
                (event (gensym "EVENT")))
           `(progn
-             (define-event ,event-type (query-event ,@superclasses)
+             (define-event ,event-type (,@superclasses query-event)
                ,(slot-args->slots args)
                ,@class-options)
              ,@(when event-response-type
