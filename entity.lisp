@@ -79,3 +79,30 @@
 
 (defmethod find-entity (id (list list))
   (loop for item in list thereis (find-entity id item)))
+
+(defclass client-entity (named-entity)
+  ((client :initarg :client :accessor client))
+  (:default-initargs
+   :client (error "CLIENT required.")))
+
+(defmethod matches ((a client-entity) (b client-entity))
+  (and (call-next-method)
+       (eql (client a) (client b))))
+
+(defclass server (client-entity)
+  ())
+
+(defclass user (client-entity)
+  ())
+
+(defmethod ensure-user ((user user) client)
+  user)
+
+(defclass channel (client-entity)
+  ())
+
+(defmethod ensure-channel ((channel channel) client)
+  channel)
+
+(defmethod users ((channel channel))
+  ())

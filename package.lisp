@@ -42,6 +42,10 @@
   ;; client.lisp
   (:export
    #:authenticate
+   #:users
+   #:user
+   #:channels
+   #:channel
    #:client-connected-p
    #:close-connection
    #:initiate-connection
@@ -139,6 +143,21 @@
    #:core-block-loop
    #:with-awaiting
    #:with-response)
+  ;; entity.lisp
+  (:export
+   #:entity
+   #:matches
+   #:named-entity
+   #:name
+   #:find-entity
+   #:client-entity
+   #:client
+   #:server
+   #:user
+   #:ensure-user
+   #:channel
+   #:ensure-channel
+   #:users)
   ;; event.lisp
   (:export
    #:instruction-event

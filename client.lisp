@@ -28,16 +28,15 @@
 (define-consumer user-client (client)
   ())
 
-(defclass user (named-entity)
-  ((client :initarg :client :accessor client))
-  (:default-initargs
-   :client (error "CLIENT required.")))
-
 (defmethod user (name (client user-client))
   NIL)
 
 (defmethod users ((client user-client))
   ())
+
+(defmethod ensure-user ((name string) (client user-client))
+  (or (user name client)
+      (make-instance 'user :name name :client client)))
 
 (defmethod authenticate (user (client user-client))
   NIL)
@@ -45,19 +44,15 @@
 (define-consumer channel-client (client)
   ())
 
-(defclass channel (named-entity)
-  ((client :initarg :client :accessor client))
-  (:default-initargs
-   :client (error "CLIENT required.")))
-
 (defmethod channels ((client channel-client))
   ())
 
 (defmethod channel (name (client channel-client))
   NIL)
 
-(defmethod users ((channel channel))
-  ())
+(defmethod ensure-channel ((name string) (client channel-client))
+  (or (channel name client)
+      (make-instance 'channel :name name :client client)))
 
 (define-consumer remote-client (client)
   ())
