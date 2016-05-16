@@ -78,8 +78,8 @@
            (reply ev "I don't know what you mean."))
           (T
            (setf alternatives (sort alternatives #'compare-alternatives))
-           (reply ev "Unknown command. Possible matches:~{ ~a~}"
-                  (mapcar #'second (subseq alternatives 0 10)))))))
+           (reply ev "Unknown command. Possible matches:~10{ ~a~}"
+                  (mapcar #'second alternatives))))))
 
 
 (defun compare-alternatives (a b)
