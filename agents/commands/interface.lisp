@@ -12,20 +12,20 @@
 (defvar *framework-sender* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
 (defvar *dispatch-event* NIL)
 
-(define-event framework-message-event (message-event)
+(define-event framework-message (message-event)
   ()
   (:default-initargs
    :client *framework-client*
    :sender *framework-sender*
    :message ""))
 
-(defmethod reply ((event framework-message-event) format-string &rest format-args)
+(defmethod reply ((event framework-message) format-string &rest format-args)
   (apply #'v:info :commands format-string format-args))
 
 (define-event command-event (instruction-event)
   ((dispatch-event :initarg :dispatch-event :accessor dispatch-event))
   (:default-initargs
-   :dispatch-event (or *dispatch-event* (make-instance 'framework-message-event))))
+   :dispatch-event (or *dispatch-event* (make-instance 'framework-message))))
 
 (define-consumer commands (agent)
   ())
@@ -108,11 +108,9 @@
              (dotimes (j (length v0))
                (setf (aref v0 j) (aref v1 j))))))))
 
-;; test case
+;;; Test case
 ;; (in-package :maiden-commands)
-;; (define-command (commands echo) (c ev &rest args) (reply ev "ECHO: ~{~a~^ ~}" args))
 ;; (defvar *core* (start (make-instance 'core)))
 ;; (add-consumer (start (make-instance 'commands)) *core*)
-;; (define-event repl-msg (message-event) () (:default-initargs :sender :repl :client :repl))
-;; (defmethod reply ((msg repl-msg) f &rest a) (apply #'v:info :reply f a))
-;; (do-issue *core* repl-msg :message "echo hi")
+;; (define-command (commands echo) (c ev &rest args) (reply ev "ECHO: ~{~a~^ ~}" args))
+;; (do-issue *core* framework-message :message "echo hi")
