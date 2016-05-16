@@ -30,6 +30,14 @@
 (define-consumer commands (agent)
   ())
 
+(defmacro define-command-invoker (command (event &rest args) &body body)
+  `(maiden::update-list
+    (list ,(string-downcase command)
+          (lambda (,event message)
+            (with-command-destructuring-bind ,args message
+              ,@body)))
+    *commands* :key #'first :test #'string-equal))
+
 ;; FIXME: The command event needs to link-back to the initiating event
 ;;        in order to make the RESPOND/REPLY stuff actually work as they
 ;;        should grip on the initiating event.
@@ -44,14 +52,9 @@
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))
                   ,@body))
-              (maiden::update-list
-               (list ,(string-downcase (or command (string name)))
-                     (lambda (,event message)
-                       (with-command-destructuring-bind ,args message
-                         (issue (make-instance ',name :dispatch-event ,event ,@fun-kargs)
-                                (event-loop ,event)))))
-               *commands* :key #'first :test #'string-equal)
-              (list ',consumer ',name)))))
+              (define-command-invoker ,(or command (string name)) (,event ,@args)
+                (issue (make-instance ',name :dispatch-event ,event ,@fun-kargs)
+                       (event-loop ,event)))))))
 
 (define-handler (commands processor message-event) (c ev message)
   (let ((match NIL)
