@@ -1,25 +1,21 @@
 #|
  This file is a part of Maiden
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+ (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (in-package #:cl-user)
-(asdf:defsystem maiden-relay
+(asdf:defsystem maiden-networking
   :version "0.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Relay client for Maiden"
+  :description "Mixin components to help with common networking tasks in Maiden."
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
                (:file "conditions")
-               (:file "containers")
-               (:file "events")
-               (:file "virtual-client")
-               (:file "relay")
-               (:file "client")
+               (:file "clients")
                (:file "documentation"))
-  :depends-on (:maiden-serialize
-               :maiden-networking))
+  :depends-on (:maiden
+               :usocket))

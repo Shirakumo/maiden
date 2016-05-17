@@ -32,6 +32,5 @@
                :bordeaux-threads
                :closer-mop
                :uuid
-               :usocket
                :form-fiddle
                :documentation-utils))

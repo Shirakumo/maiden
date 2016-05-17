@@ -18,6 +18,7 @@
                (:file "commands")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:babel
+  :depends-on (:maiden-networking
+               :babel
                :cl-ppcre
                :form-fiddle))

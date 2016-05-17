@@ -35,47 +35,9 @@
    #:authenticate
    #:channels
    #:channel
-   #:client-connected-p
-   #:close-connection
-   #:initiate-connection
-   #:handle-connection
-   #:handle-connection-error
-   #:handle-connection-idle
-   #:process
-   #:send
-   #:receive
-   #:accept
-   #:make-tcp-server-client
    #:client
    #:user-client
-   #:channel-client
-   #:remote-client
-   #:ip-client
-   #:host
-   #:port
-   #:socket-client
-   #:socket
-   #:read-thread
-   #:reconnecting-client
-   #:failures
-   #:max-failures
-   #:backoff
-   #:interval
-   #:timeout-client
-   #:timeout
-   #:last-received-time
-   #:text-client
-   #:encoding
-   #:buffer
-   #:tcp-client
-   #:element-type
-   #:idle-interval
-   #:text-tcp-client
-   #:tcp-server
-   #:clients
-   #:tcp-server-client
-   #:server
-   #:socket)
+   #:channel-client)
   ;; conditions.lisp
   (:export
    #:maiden-condition
@@ -89,18 +51,7 @@
    #:agent-already-exists-error
    #:existing-agent
    #:client-condition
-   #:client
-   #:client-connection-failed-error
-   #:client-still-connected-error
-   #:client-reconnection-exceeded-error
-   #:client-connection-closed-uncleanly-warning
-   #:closing-error
-   #:client-timeout-error
-   #:timeout
-   #:message-condition
-   #:message
-   #:message-parse-error
-   #:unknown-message-warning)
+   #:client)
   ;; consumer.lisp
   (:export
    #:consumer-class
