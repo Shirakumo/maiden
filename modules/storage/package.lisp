@@ -7,4 +7,4 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-storage
   (:nicknames #:org.shirakumo.maiden.modules.storage)
-  (:use #:cl))
+  (:use #:cl #:maiden))

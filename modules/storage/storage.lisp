@@ -6,10 +6,10 @@
 
 (in-package #:org.shirakumo.maiden.modules.storage)
 
-(defun package-full-name (package)
-  (loop for max = ""  then (if (< (length max) (length name)) name max)
+(defun package-short-name (package)
+  (loop for min = ""  then (if (< (length name) (length min)) name min)
         for name in (cons (package-name package) (package-nicknames package))
-        finally (return max)))
+        finally (return min)))
 
 (defun starts-with (start string)
   (and (<= (length start) (length string))
@@ -44,7 +44,7 @@
      (map 'string (lambda (c) (if (char= c #\.) #\/ (char-downcase c))) name)))))
 
 (defun package-path (package)
-  (let ((parts (split #\/ (normalize-fqdn (package-full-name package)))))
+  (let ((parts (split #\/ (normalize-fqdn (package-short-name package)))))
     (make-pathname :name (or (car (last parts)) "default")
                    :defaults (apply #'pathname-utils:subdirectory NIL (butlast parts)))))
 
@@ -52,6 +52,31 @@
   (merge-pathnames (package-path package)
                    (pathname-utils:downwards (ubiquitous:config-pathname type) "maiden")))
 
-(defmacro with-storage ((&optional (designator *package*)) &body body)
-  `(ubiquitous:with-local-storage (,designator)
-     ,@body))
+(defmethod ubiquitous:designator-pathname ((consumer consumer) type)
+  (ubiquitous:designator-pathname (type-of consumer) type))
+
+(defun storage (thing)
+  (etypecase thing
+    (symbol (get thing :storage))
+    (string (storage (intern thing :keyword)))
+    (package (storage (package-name thing)))
+    (consumer (storage (type-of thing)))))
+
+(defun (setf storage) (storage thing)
+  (etypecase thing
+    (symbol (setf (get thing :storage) storage))
+    (string (setf (storage (intern thing :keyword)) storage))
+    (package (setf (storage (package-name thing)) storage))
+    (consumer (setf (storage (type-of thing)) storage))))
+
+(defun ensure-storage (designator type)
+  (or (storage designator)
+      (setf (storage designator) (ubiquitous:restore designator type))))
+
+(defmacro with-storage ((&key (designator *package*) type (transaction T) always-load) &body body)
+  (let ((type (or type 'ubiquitous:*storage-type*)))
+    `(ubiquitous:with-local-storage (,designator
+                                     :transaction ,transaction
+                                     :type ,type
+                                     ,@(unless always-load `(:storage (ensure-storage ',designator ,type))))
+       ,@body)))
