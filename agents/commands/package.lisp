@@ -5,7 +5,7 @@
 |#
 
 (in-package #:maiden-user)
-(define-module #:maiden-commands
+(defpackage #:maiden-commands
   (:nicknames #:org.shirakumo.maiden.agents.commands)
   (:use #:cl #:maiden)
   ;; 

@@ -49,12 +49,8 @@
                    :defaults (apply #'pathname-utils:subdirectory NIL (butlast parts)))))
 
 (defmethod ubiquitous:designator-pathname ((package package) type)
-  (merge-pathnames (or (modularize:module-storage package 'storage)
-                       (package-path package))
+  (merge-pathnames (package-path package)
                    (pathname-utils:downwards (ubiquitous:config-pathname type) "maiden")))
-
-(modularize:define-option-expander storage (package storage)
-  (setf (module-storage package 'storage) storage))
 
 (defmacro with-storage ((&optional (designator *package*)) &body body)
   `(ubiquitous:with-local-storage (,designator)

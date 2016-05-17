@@ -9,8 +9,6 @@
 (pushnew :deeds-no-startup *features*)
 
 (asdf:defsystem maiden
-  :defsystem-depends-on (:modularize)
-  :class "modularize:module"
   :version "3.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"

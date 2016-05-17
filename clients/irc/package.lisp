@@ -5,7 +5,7 @@
 |#
 
 (in-package #:maiden-user)
-(define-module #:maiden-irc-events
+(defpackage #:maiden-irc-events
   (:nicknames #:irc #:org.shirakumo.maiden.clients.irc.events)
   (:use)
   ;; commands.lisp

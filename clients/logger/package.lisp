@@ -5,7 +5,7 @@
 |#
 
 (in-package #:maiden-user)
-(define-module #:maiden-logger
+(defpackage #:maiden-logger
   (:nicknames #:org.shirakumo.maiden.clients.logger)
   (:use #:cl #:maiden)
   ;; 

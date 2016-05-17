@@ -6,24 +6,10 @@
 
 (in-package #:cl-user)
 
-(modularize:define-module #:maiden
+(defpackage #:maiden
   (:nicknames #:org.shirakumo.maiden)
-  (:use #:cl #:modularize #:deeds)
+  (:use #:cl #:deeds)
   (:shadow #:define-handler #:define-command #:with-response #:with-awaiting)
-  ;; re-export from modularize
-  (:export
-   #:virtual-module
-   #:virtual-module-name
-   #:define-module
-   #:define-module-extension
-   #:delete-module
-   #:module
-   #:module-p
-   #:module-storage
-   #:module-storage-remove
-   #:module-identifier
-   #:module-name
-   #:current-module)
   ;; re-export from deeds
   (:export
    #:event
