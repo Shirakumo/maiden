@@ -10,8 +10,7 @@
   (:use #:cl #:maiden)
   ;; dispatch.lisp
   (:export
-   #:commands
-   #:find-matching-command)
+   #:commands)
   ;; extraction.lisp
   (:export
    #:command-extractor
@@ -22,12 +21,14 @@
   ;; invocation.lisp
   (:export
    #:framework-message
+   #:issue-message
    #:command-event
    #:dispatch-event
    #:command-invoker
    #:remove-command-invoker
    #:define-command-invoker
-   #:define-command)
+   #:define-command
+   #:find-matching-command)
   ;; parsing.lisp
   (:export
    #:command-condition

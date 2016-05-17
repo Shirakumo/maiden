@@ -23,6 +23,9 @@
 (defmethod reply ((event framework-message) format-string &rest format-args)
   (apply #'v:info :commands format-string format-args))
 
+(defun issue-message (core command-string)
+  (do-issue core framework-message :message command-string))
+
 (define-event command-event (instruction-event)
   ((dispatch-event :initarg :dispatch-event :accessor dispatch-event))
   (:default-initargs
@@ -57,3 +60,18 @@
               (define-command-invoker ,(or command (string name)) (,event ,@args)
                 (issue (make-instance ',name :dispatch-event ,event ,@fun-kargs)
                        (event-loop ,event)))))))
+
+(defun find-matching-command (message)
+  (let ((match NIL)
+        (alternatives ()))
+    (loop for command in *invokers*
+          for prefix = (car command)
+          for cut = (subseq message 0 (length prefix))
+          for distance = (levenshtein-distance prefix cut)
+          do (when (and (= 0 distance)
+                        (or (null match) (< (length (car match))
+                                            (length prefix))))
+               (setf match command))
+             (when (< distance *alternative-distance-threshold*)
+               (push (cons distance command) alternatives)))
+    (values match alternatives)))

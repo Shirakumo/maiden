@@ -16,7 +16,7 @@
         (cond ((not (null match))
                (handler-case
                    (handler-bind ((error #'invoke-debugger))
-                     (funcall (second match) ev (subseq command (1+ (length (first match))))))
+                     (funcall (cdr match) ev (subseq command (1+ (length (car match))))))
                  (command-condition (err)
                    (reply ev "Invalid command: ~a" err))
                  (error (err)
@@ -27,21 +27,6 @@
                (setf alternatives (sort alternatives #'compare-alternatives))
                (reply ev "Unknown command. Possible matches:~10{ ~a~}"
                       (mapcar #'second alternatives))))))))
-
-(defun find-matching-command (message)
-  (let ((match NIL)
-        (alternatives ()))
-    (loop for command in *commands*
-          for prefix = (first command)
-          for cut = (subseq message 0 (length prefix))
-          for distance = (levenshtein-distance prefix cut)
-          do (when (and (= 0 distance)
-                        (or (null match) (< (length (first match))
-                                            (length prefix))))
-               (setf match command))
-             (when (< distance *alternative-distance-threshold*)
-               (push (cons distance command) alternatives)))
-    (values match alternatives)))
 
 (defun compare-alternatives (a b)
   (let ((a-distance (first a))
