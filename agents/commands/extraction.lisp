@@ -28,4 +28,4 @@
 
 (define-command-extractor prefix (event)
   (when (starts-with "!" (message event))
-    (return (subseq (message event) 1))))
+    (subseq (message event) 1)))
