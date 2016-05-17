@@ -17,4 +17,5 @@
                (:file "serialize")
                (:file "documentation"))
   :depends-on (:maiden
-               :cl-store))
+               :pathname-utils
+               :ubiquitous-concurrent))

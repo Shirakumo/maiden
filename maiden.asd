@@ -28,10 +28,7 @@
                (:file "documentation"))
   :depends-on (:deeds
                :verbose
-               :ubiquitous-concurrent
                :bordeaux-threads
-               :trivial-garbage
-               :pathname-utils
                :closer-mop
                :uuid
                :usocket
