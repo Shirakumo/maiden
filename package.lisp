@@ -195,6 +195,7 @@
    #:kw
    #:ensure-list
    #:unlist
+   #:update-list
    #:with-default-encoding
    #:with-retry-restart
    #:do-issue
