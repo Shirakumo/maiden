@@ -12,6 +12,12 @@
   (unless (name agent)
     (setf (name agent) (class-name (class-of agent)))))
 
+(defmethod print-object ((agent agent) stream)
+  (print-unreadable-object (agent stream :type T)
+    (format stream "~@[~a ~]~a"
+            (when (string/= (name agent) (class-name (class-of agent))) (name agent))
+            (id agent))))
+
 (defmethod matches ((a agent) (b agent))
   (eql (class-of a) (class-of b)))
 
