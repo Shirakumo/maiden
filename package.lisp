@@ -12,6 +12,9 @@
   (:shadow #:define-handler #:define-command #:with-response #:with-awaiting)
   ;; re-export from deeds
   (:export
+   #:running
+   #:start
+   #:stop
    #:event
    #:define-event
    #:issue)
@@ -27,9 +30,9 @@
    #:agent)
   ;; client.lisp
   (:export
-   #:authenticate
    #:users
    #:user
+   #:authenticate
    #:channels
    #:channel
    #:client-connected-p
@@ -45,6 +48,7 @@
    #:make-tcp-server-client
    #:client
    #:user-client
+   #:channel-client
    #:remote-client
    #:ip-client
    #:host
@@ -70,7 +74,8 @@
    #:tcp-server
    #:clients
    #:tcp-server-client
-   #:server)
+   #:server
+   #:socket)
   ;; conditions.lisp
   (:export
    #:maiden-condition
@@ -80,12 +85,14 @@
    #:existing-consumer
    #:new-consumer
    #:agent-condition
+   #:agent
    #:agent-already-exists-error
    #:existing-agent
    #:client-condition
    #:client
    #:client-connection-failed-error
    #:client-still-connected-error
+   #:client-reconnection-exceeded-error
    #:client-connection-closed-uncleanly-warning
    #:closing-error
    #:client-timeout-error
@@ -97,48 +104,41 @@
   ;; consumer.lisp
   (:export
    #:consumer-class
+   #:direct-handlers
    #:handlers
+   #:instances
    #:consumer
+   #:handlers
    #:cores
    #:lock
-   #:running
-   #:start
-   #:stop
+   #:abstract-handler
+   #:target-class
+   #:options
+   #:name
+   #:instantiate-handler
    #:define-handler
    #:define-instruction
    #:define-query
    #:define-consumer)
   ;; core.lisp
   (:export
-   #:matches
-   #:entity
-   #:named-entity
-   #:name
-   #:id
-   #:find-entity
+   #:consumer
+   #:add-consumer
+   #:remove-consumer
    #:core
    #:event-loop
    #:block-loop
    #:consumers
-   #:consumer
-   #:add-consumer
-   #:remove-consumer
-   #:handler
-   #:register-handler
-   #:deregister-handler
-   #:core-event-loop
-   #:core-block-loop
    #:with-awaiting
    #:with-response)
   ;; entity.lisp
   (:export
-   #:entity
    #:matches
+   #:entity
+   #:id
    #:named-entity
    #:name
-   #:find-entity
    #:client-entity
-   #:client
    #:server
    #:user
    #:ensure-user
@@ -165,7 +165,7 @@
    #:consumer-added
    #:consumer-removed
    #:instruction-event
-   #:execute-instruction
+   #:executed-instruction
    #:core-instruction-event
    #:add-consumer
    #:consumer-type
@@ -182,8 +182,8 @@
    #:ensure-list
    #:unlist
    #:starts-with
-   #:update-list
    #:with-default-encoding
+   #:update-list
    #:with-retry-restart
    #:do-issue
    #:broadcast))
