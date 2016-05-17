@@ -48,7 +48,7 @@
 (defmethod (setf handlers) :after (handlers (class consumer-class))
   (setf (instances class)
         (loop for pointer in (instances class)
-              for consumer = (trivial-garbage:weak-pointer-value pointer)
+              for consumer = (tg:weak-pointer-value pointer)
               when consumer
               collect (prog1 pointer 
                         (reinitialize-handlers consumer (handlers class))))))
@@ -70,7 +70,7 @@
   (:metaclass consumer-class))
 
 (defmethod initialize-instance :after ((consumer consumer) &key)
-  (push (trivial-garbage:make-weak-pointer consumer) (instances (class-of consumer)))
+  (push (tg:make-weak-pointer consumer) (instances (class-of consumer)))
   (dolist (handler (handlers (class-of consumer)))
     (push (instantiate-handler handler consumer) (handlers consumer))))
 

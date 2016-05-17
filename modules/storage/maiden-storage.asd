@@ -5,16 +5,16 @@
 |#
 
 (in-package #:cl-user)
-(asdf:defsystem maiden-serialize
+(asdf:defsystem maiden-storage
   :version "0.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Relay client for Maiden"
+  :description "Storage support for Maiden modules."
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
-               (:file "serialize")
+               (:file "storage")
                (:file "documentation"))
   :depends-on (:maiden
                :pathname-utils

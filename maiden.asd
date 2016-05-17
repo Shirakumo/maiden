@@ -28,6 +28,7 @@
                (:file "documentation"))
   :depends-on (:deeds
                :verbose
+               :trivial-garbage
                :bordeaux-threads
                :closer-mop
                :uuid
