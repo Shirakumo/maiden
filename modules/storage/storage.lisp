@@ -11,10 +11,6 @@
         for name in (cons (package-name package) (package-nicknames package))
         finally (return min)))
 
-(defun starts-with (start string)
-  (and (<= (length start) (length string))
-       (string= start string :end2 (length start))))
-
 (defun left-trim-string (trim string)
   (if (starts-with trim string)
       (subseq string (length trim))
