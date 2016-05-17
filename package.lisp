@@ -81,7 +81,8 @@
    #:block-loop
    #:consumers
    #:with-awaiting
-   #:with-response)
+   #:with-response
+   #:make-simple-core)
   ;; entity.lisp
   (:export
    #:matches

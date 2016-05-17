@@ -134,3 +134,8 @@
            ,response
            (:issue-loop (event-loop ,core-g) :response-loop (block-loop ,core-g) ,@args)
          ,@body))))
+
+(defun make-simple-core (&rest consumers)
+  (let ((core (start (make-instance 'core))))
+    (dolist (consumer consumers core)
+      (add-consumer (start (make-instance consumer)) core))))
