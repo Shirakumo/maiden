@@ -69,10 +69,10 @@
   (or (storage designator)
       (setf (storage designator) (ubiquitous:restore designator type))))
 
-(defmacro with-storage ((&key (designator *package*) type (transaction T) always-load) &body body)
+(defmacro with-storage ((designator &key type (transaction T) always-load) &body body)
   (let ((type (or type 'ubiquitous:*storage-type*)))
     `(ubiquitous:with-local-storage (,designator
                                      :transaction ,transaction
                                      :type ,type
-                                     ,@(unless always-load `(:storage (ensure-storage ',designator ,type))))
+                                     ,@(unless always-load `(:storage (ensure-storage ,designator ,type))))
        ,@body)))
