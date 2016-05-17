@@ -103,6 +103,9 @@
   (deregister-handler (handlers consumer) core)
   (setf (cores consumer) (remove core (cores consumer))))
 
+(defmethod running ((consumer consumer))
+  (running (handlers consumer)))
+
 (defmethod start ((consumer consumer))
   (start (handlers consumer))
   consumer)

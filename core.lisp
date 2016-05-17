@@ -25,6 +25,10 @@
      (execute-instruction ev :core core))
    core))
 
+(defmethod running ((core core))
+  (and (running (event-loop core))
+       (running (block-loop core))))
+
 (defmethod start ((core core))
   (start (event-loop core))
   (start (block-loop core))
@@ -70,7 +74,8 @@
            (when (and (name consumer) (matches (name current) (name consumer)))
              (warn 'consumer-name-duplicated-warning :new-consumer consumer :existing-consumer current :core core))
         finally (push consumer (consumers core))
-                (issue (make-instance 'consumer-added :consumer consumer) core)))
+                (when (running core)
+                  (do-issue core consumer-added :consumer consumer))))
 
 (defmethod remove-consumer :around (consumer target)
   (call-next-method)
@@ -88,7 +93,8 @@
   (setf (consumers core)
         (loop for consumer in (consumers core)
               if (matches consumer id)
-              do (issue (make-instance 'consumer-removed :consumer consumer) core)
+              do (when (running core)
+                   (do-issue core consumer-removed :consumer consumer))
               else collect consumer)))
 
 (defmethod handler (id (core core))
