@@ -8,5 +8,31 @@
 (defpackage #:maiden-commands
   (:nicknames #:org.shirakumo.maiden.agents.commands)
   (:use #:cl #:maiden)
-  ;; 
-  (:export))
+  ;; dispatch.lisp
+  (:export
+   #:commands
+   #:find-matching-command)
+  ;; extraction.lisp
+  (:export
+   #:command-extractor
+   #:remove-command-extractor
+   #:define-command-extractor
+   #:extract-command
+   #:prefix)
+  ;; invocation.lisp
+  (:export
+   #:framework-message
+   #:command-event
+   #:dispatch-event
+   #:command-invoker
+   #:remove-command-invoker
+   #:define-command-invoker
+   #:define-command)
+  ;; parsing.lisp
+  (:export
+   #:command-condition
+   #:lexing-error
+   #:expected-key-error
+   #:destructuring-error
+   #:not-enough-arguments-error
+   #:with-command-destructuring-bind))
