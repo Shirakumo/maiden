@@ -11,6 +11,7 @@
 (defvar *framework-client* (make-instance 'client :name "FRAMEWORK"))
 (defvar *framework-sender* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
 (defvar *dispatch-event* NIL)
+(defvar *alternative-distance-threshold* 10)
 
 (define-event framework-message (message-event)
   ()
@@ -38,9 +39,6 @@
               ,@body)))
     *commands* :key #'first :test #'string-equal))
 
-;; FIXME: The command event needs to link-back to the initiating event
-;;        in order to make the RESPOND/REPLY stuff actually work as they
-;;        should grip on the initiating event.
 (defmacro define-command ((consumer name) (instance event &rest args) &body body)
   (form-fiddle:with-body-options (body options command command-event-variable) body
     (let ((fun-kargs (loop for arg in (lambda-fiddle:extract-lambda-vars args)
@@ -57,6 +55,27 @@
                        (event-loop ,event)))))))
 
 (define-handler (commands processor message-event) (c ev message)
+  (when (command-p ev)
+    (multiple-value-bind (match alternatives) (find-matching-command message)
+      (cond ((not (null match))
+             (handler-case
+                 (handler-bind ((error #'invoke-debugger))
+                   (funcall (second match) ev (subseq message (1+ (length (first match))))))
+               (command-condition (err)
+                 (reply ev "Invalid command: ~a" err))
+               (error (err)
+                 (reply ev "Unexpected error: ~a" err))))
+            ((null alternatives)
+             (reply ev "I don't know what you mean."))
+            (T
+             (setf alternatives (sort alternatives #'compare-alternatives))
+             (reply ev "Unknown command. Possible matches:~10{ ~a~}"
+                    (mapcar #'second alternatives)))))))
+
+(defmethod command-p ((event message-event))
+  T)
+
+(defun find-matching-command (message)
   (let ((match NIL)
         (alternatives ()))
     (loop for command in *commands*
@@ -67,23 +86,9 @@
                         (or (null match) (< (length (first match))
                                             (length prefix))))
                (setf match command))
-             (when (< distance 10)
+             (when (< distance *alternative-distance-threshold*)
                (push (cons distance command) alternatives)))
-    (cond ((not (null match))
-           (handler-case
-               (handler-bind ((error #'invoke-debugger))
-                 (funcall (second match) ev (subseq message (1+ (length (first match))))))
-             (command-condition (err)
-               (reply ev "Invalid command: ~a" err))
-             (error (err)
-               (reply ev "Unexpected error: ~a" err))))
-          ((null alternatives)
-           (reply ev "I don't know what you mean."))
-          (T
-           (setf alternatives (sort alternatives #'compare-alternatives))
-           (reply ev "Unknown command. Possible matches:~10{ ~a~}"
-                  (mapcar #'second alternatives))))))
-
+    (values match alternatives)))
 
 (defun compare-alternatives (a b)
   (let ((a-distance (first a))
@@ -110,10 +115,3 @@
                                              (+ cost (aref v0 j))))))
              (dotimes (j (length v0))
                (setf (aref v0 j) (aref v1 j))))))))
-
-;;; Test case
-;; (in-package :maiden-commands)
-;; (defvar *core* (start (make-instance 'core)))
-;; (add-consumer (start (make-instance 'commands)) *core*)
-;; (define-command (commands echo) (c ev &rest args) (reply ev "ECHO: ~{~a~^ ~}" args))
-;; (do-issue *core* framework-message :message "echo hi")
