@@ -15,4 +15,4 @@
   :serial T
   :components ((:file "package")
                (:file "documentation"))
-  :depends-on ())
+  :depends-on (:maiden))

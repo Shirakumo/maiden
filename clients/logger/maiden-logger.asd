@@ -10,10 +10,10 @@
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Relay client for Maiden"
+  :description "Primitive logging example client"
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
                (:file "client")
                (:file "documentation"))
-  :depends-on ())
+  :depends-on (:maiden))

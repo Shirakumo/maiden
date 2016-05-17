@@ -19,4 +19,5 @@
                (:file "invocation")
                (:file "dispatch")
                (:file "documentation"))
-  :depends-on (:lambda-fiddle))
+  :depends-on (:lambda-fiddle
+               :maiden))
