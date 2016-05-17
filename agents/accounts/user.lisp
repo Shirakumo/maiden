@@ -14,13 +14,3 @@
    :name (error "NAME required.")
    :data (make-hash-table)))
 
-(ubiquitous:define-ubiquitous-writer user (user)
-  `(,(name user)
-    (:identities ,(identities user))
-    (:data ,(data user))))
-
-(ubiquitous:define-ubiquitous-reader user (form)
-  (let ((name (first form))
-        (identities (cdr (assoc :identities (cdr form))))
-        (data (cdr (assoc :data (cdr form)))))
-    (make-instance 'user :name name :identities identities :data data)))
