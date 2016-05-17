@@ -23,6 +23,10 @@
 (defun unlist (thing &key (key #'first))
   (if (consp thing) (funcall key thing) thing))
 
+(defun starts-with (start sequence &key (test #'eql))
+  (and (<= (length start) (length sequence))
+       (every test start sequence)))
+
 (defmacro with-default-encoding ((&optional (encoding :UTF-8)) &body body)
   `(let (#+sbcl (sb-impl::*default-external-format* ,encoding)
          #+ccl (ccl:*default-external-format* ,encoding))
