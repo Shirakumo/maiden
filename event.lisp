@@ -18,7 +18,8 @@
   ())
 
 (defmethod respond ((event query-event) &key payload)
-  (issue (make-instance 'response-event :payload payload)
+  (issue (make-instance 'response-event :identifier (identifier event)
+                                        :payload payload)
          (event-loop event)))
 
 (define-event response-event (identified-event payload-event)
