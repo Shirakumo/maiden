@@ -50,11 +50,11 @@
 
 (define-irc-command join (channels)
   "JOIN ~{~a~^,~} ~{~a~^,~}"
-  (loop for chan in (ensure-list channels) collect (if (listp chan) (first chan) chan))
-  (loop for chan in (ensure-list channels) collect (if (listp chan) (second chan) "")))
+  (loop for chan in (enlist channels) collect (if (listp chan) (first chan) chan))
+  (loop for chan in (enlist channels) collect (if (listp chan) (second chan) "")))
 
 (define-irc-command part (channels)
-  "PART ~{~a~^,~}" (ensure-list channels))
+  "PART ~{~a~^,~}" (enlist channels))
 
 (define-irc-command mode (target mode &key limit user ban-mask)
   "MODE ~a ~a~@[ ~a~@[ ~a~@[ ~a~]~]~]" target mode limit user ban-mask)
@@ -63,10 +63,10 @@
   "TOPIC ~a~@[ :~a~]" channel topic)
 
 (define-irc-command names (channels)
-  "NAMES ~{~a~^,~}" (ensure-list channels))
+  "NAMES ~{~a~^,~}" (enlist channels))
 
 (define-irc-command list (channels &key server)
-  "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (ensure-list channels) server)
+  "LIST~@[ ~{~a~^,~}~@[ ~a~]~]" (enlist channels) server)
 
 (define-irc-command invite (nickname channel)
   "INVITE ~a ~a" nickname channel)
@@ -99,7 +99,7 @@
   "INFO~@[ ~a~]" server)
 
 (define-irc-command privmsg (receivers message)
-  "PRIVMSG ~{~a~^,~} :~a" (ensure-list receivers) message)
+  "PRIVMSG ~{~a~^,~} :~a" (enlist receivers) message)
 
 (define-irc-command notice (nickname text)
   "NOTICE ~a ~a" nickname text)
@@ -108,7 +108,7 @@
   "WHO~@[ ~a~@[ o~]~]" name opers-only)
 
 (define-irc-command whois (nickmasks &key server)
-  "WHOIS~@[ ~a~] ~{~a~^,~}" server (ensure-list nickmasks))
+  "WHOIS~@[ ~a~] ~{~a~^,~}" server (enlist nickmasks))
 
 (define-irc-command whowas (nickname &key count server)
   "WHOWAS ~a~@[ ~a~@[ ~a~]~]" nickname count server)
@@ -144,7 +144,7 @@
   "WALLOPS :~a" message)
 
 (define-irc-command userhost (nicknames)
-  "USERHOST~{ ~a~}" (ensure-list nicknames))
+  "USERHOST~{ ~a~}" (enlist nicknames))
 
 (define-irc-command ison (nicknames)
-  "ISON~{ ~a~}" (ensure-list nicknames))
+  "ISON~{ ~a~}" (enlist nicknames))

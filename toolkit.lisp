@@ -17,7 +17,7 @@
 (defun kw (name)
   (intern (string name) :keyword))
 
-(defun ensure-list (thing &rest extra-elements)
+(defun enlist (thing &rest extra-elements)
   (if (listp thing) thing (list* thing extra-elements)))
 
 (defun unlist (thing &key (key #'first))

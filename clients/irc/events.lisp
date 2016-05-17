@@ -48,7 +48,7 @@
     `(progn
        (define-event ,name (reply-event ,@direct-superclasses)
          ,(loop for arg in args
-                for (name delim) = (ensure-list arg NIL)
+                for (name delim) = (enlist arg NIL)
                 when name
                 collect `(,name :initarg ,(kw name)))
          (:default-initargs :code ,code))
@@ -59,7 +59,7 @@
                      (apply #'call-next-method
                             ,instance
                             ,@(loop for arg in args
-                                    for (name delim) = (ensure-list arg NIL)
+                                    for (name delim) = (enlist arg NIL)
                                     when name
                                     append `(,(kw name) ,(if delim `(cl-ppcre:split ,(string delim) ,name) name)))
                             ,rest))))

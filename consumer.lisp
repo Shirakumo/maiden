@@ -169,10 +169,10 @@
 
 (defun slot-args->slots (args)
   (flet ((make-req-field (a)
-           (destructuring-bind (name &rest kargs) (ensure-list a)
+           (destructuring-bind (name &rest kargs) (enlist a)
              `(,name :initarg ,(kw name) :initform (error ,(format NIL "~a required." name)) ,@kargs)))
          (make-opt-field (a)
-           (destructuring-bind (name &optional value &rest kargs) (ensure-list a)
+           (destructuring-bind (name &optional value &rest kargs) (enlist a)
              `(,name :initarg ,(kw name) :initform ,value ,@kargs))))
     (lambda-fiddle:with-destructured-lambda-list (:required required :optional optional :rest rest :key key) args
       (append (mapcar #'make-req-field required)
@@ -186,7 +186,7 @@
         collect (cond ((find arg lambda-list-keywords)
                        (setf stage arg) arg)
                       ((find stage '(&key &optional))
-                       (destructuring-bind (name &optional value &rest kargs) (ensure-list arg)
+                       (destructuring-bind (name &optional value &rest kargs) (enlist arg)
                          (declare (ignore kargs))
                          `(,name ,value)))
                       (T

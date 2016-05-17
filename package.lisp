@@ -179,7 +179,7 @@
    #:xor
    #:xnor
    #:kw
-   #:ensure-list
+   #:enlist
    #:unlist
    #:starts-with
    #:with-default-encoding
