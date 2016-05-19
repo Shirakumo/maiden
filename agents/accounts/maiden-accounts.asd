@@ -15,5 +15,6 @@
   :serial T
   :components ((:file "package")
                (:file "account")
+               (:file "fields")
                (:file "documentation"))
   :depends-on (:maiden-storage))

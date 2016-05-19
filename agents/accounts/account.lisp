@@ -23,76 +23,105 @@
    (charr #xFFF0 #xFFFF)
    (chars #x007F #x061C #x1680 #x180E #x205F #x2060 #x3000 #xFEFF)))
 
-(defvar *accounts* (make-hash-table :test 'equalp))
+(defvar *accounts* (make-hash-table :test 'equal))
+(defvar *identity-account-map* (make-hash-table :test 'equalp))
 
 (defclass account (named-entity)
   ((identities :initform () :accessor identities)
    (data :initform (make-hash-table :test 'equal) :reader account-data)))
 
 (defmethod ubiquitous:field ((account account) field &optional default)
-  (gethash field (account-data data) default))
+  (gethash (string-downcase field) (account-data data) default))
 
 (defmethod (setf ubiquitous:field) (value (account account) field)
-  (setf (gethash field (account-data data)) value))
+  (setf (gethash (string-downcase field) (account-data data)) value))
 
-(defmethod add-identity (account-ish (event sender-event))
-  (add-identity account-ish (sender event)))
+(defmethod ensure-identity ((event sender-event))
+  (ensure-identity (sender event)))
 
-(defmethod add-identity (account-ish (user user))
-  (add-identity account-ish (cons (name (client user)) (name user))))
+(defmethod ensure-identity ((user user))
+  (cons (name (client user)) (name user)))
+
+(defmethod ensure-identity ((cons cons))
+  cons)
+
+(defmethod add-identity (account-ish identity-ish)
+  (add-identity account-ish (ensure-identity identity-ish)))
 
 (defmethod add-identity (account-ish (identity cons))
-  (add-identity (ensure-account account-ish) identity))
+  (add-identity (account account-ish) identity))
 
 (defmethod add-identity ((account account) (identity cons))
-  (pushnew identity (identities account) :test #'equalp))
+  (pushnew identity (identities account) :test #'equalp)
+  (setf (gethash identity *identity-account-map*) account))
 
-(defmethod remove-identity (account-ish (event sender-event))
-  (remove-identity account-ish (sender event)))
-
-(defmethod remove-identity (account-ish (user user))
-  (remove-identity account-ish (cons (name (client user)) (name user))))
+(defmethod remove-identity (account-ish identity-ish)
+  (remove-identity account-ish (ensure-identity identity-ish)))
 
 (defmethod remove-identity (account-ish (identity cons))
-  (remove-identity (ensure-account account-ish) identity))
+  (remove-identity (account account-ish) identity))
 
 (defmethod remove-identity ((account account) (identity cons))
-  (setf (identities account) (remove identity (identities account) :test #'equalp)))
+  (setf (identities account) (remove identity (identities account) :test #'equalp))
+  (remhash identity *identity-account-map*))
+
+(defmethod identity-p (account-ish identity-ish)
+  (identity-p account-ish (ensure-identity identity-ish)))
+
+(defmethod identity-p (account-ish (identity cons))
+  (identity-p (account account-ish) identity))
+
+(defmethod identity-p ((account account) (identity cons))
+  (find cons (identities account) :test #'equalp))
 
 (defun normalize-account-name (name)
   (remove-if (lambda (c) (find c *illegal-account-name-chars*))
-             (string-downcase name)))
+             (string-downcase (etypecase name
+                                (string name)
+                                (account (name name))))))
 
 (defun account-pathname (name)
   (maiden-storage:config-pathname
-   (make-pathname :name (string-downcase name)
+   (make-pathname :name (normalize-account-name name)
                   :type "lisp"
                   :directory '(:relative "account"))))
-
-(defun stored-account-pathnames ()
-  (directory
-   (maiden-storage:config-pathname
-    (make-pathname :name pathname-utils:*wild-component*
-                   :type "lisp"
-                   :directory '(:relative "account")))))
 
 (defmethod maiden-storage:config-pathname ((account account))
   (account-pathname (name account)))
 
-(defun account (name &key (error T))
+(defmethod account ((account account) &key)
+  account)
+
+(defmethod account ((user user) &key)
+  (account (ensure-identity user)))
+
+(defmethod account ((identity cons) &key)
+  (gethash identity *identity-account-map*))
+
+(defmethod account ((name symbol) &key)
+  (account (string name)))
+
+(defmethod account ((name string) &key (error T))
   (let ((name (normalize-account-name name)))
     (or (gethash name *accounts*)
         (handler-case
-            (setf (gethash name *accounts*)
-                  (ubiquitous:restore (account-pathname name)))
+            (setf (account name) (ubiquitous:restore (account-pathname name)))
           (ubiquitous:no-storage-file () NIL))
         (when error (error "No such account ~s." name)))))
 
-(defun ensure-account (account-ish)
-  (etypecase account-ish
-    (account account-ish)
-    (string (ensure-account (account account-ish)))
-    (symbol (ensure-account (string account-ish)))))
+(defmethod (setf account) (account (name symbol))
+  (setf (account (string name)) account))
+
+(defmethod (setf account) (account (name string))
+  (dolist (identity (identities account))
+    (setf (account identity) account))
+  (setf (gethash name *accounts*) account))
+
+(defmethod (setf account) (account (user user))
+  (setf (account (ensure-identity user)) account))
+
+(defmethod (setf account) (account (identity cons))
+  (add-identity account identity))
 
 (defun create-account (name)
   (let ((name (normalize-account-name name)))
@@ -100,9 +129,21 @@
       (error "Account ~s already exists." name))
     (let ((account (make-instance 'account :name name)))
       (ubiquitous:offload (account-pathname name) "lisp" account)
-      (setf (gethash name *accounts*) account))))
+      (setf (account name) account))))
 
-;; Reload all from files
-(dolist (pathname (stored-account-pathnames))
-  (let ((account (ubiquitous:restore pathname)))
-    (setf (gethash (name account) *accounts*) account)))
+(defun delete-account (account-ish)
+  (let ((account (account account-ish)))
+    (uiop:delete-file-if-exists (account-pathname account))
+    (remhash (name account) *accounts*)
+    account))
+
+(defun load-all-accounts ()
+  (dolist (pathname (directory
+                     (maiden-storage:config-pathname
+                      (make-pathname :name pathname-utils:*wild-component*
+                                     :type "lisp"
+                                     :directory '(:relative "account")))))
+    (let ((account (ubiquitous:restore pathname)))
+      (setf (account (name account)) account))))
+
+(load-all-accounts)
