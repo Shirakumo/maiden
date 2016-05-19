@@ -7,8 +7,8 @@
 (in-package #:org.shirakumo.maiden.modules.storage)
 
 (defun package-short-name (package)
-  (loop for min = ""  then (if (< (length name) (length min)) name min)
-        for name in (cons (package-name package) (package-nicknames package))
+  (loop for min = (package-name package) then (if (< (length name) (length min)) name min)
+        for name in (package-nicknames package)
         finally (return min)))
 
 (defun left-trim-string (trim string)
@@ -41,15 +41,34 @@
 
 (defun package-path (package)
   (let ((parts (split #\/ (normalize-fqdn (package-short-name package)))))
-    (make-pathname :name (or (car (last parts)) "default")
-                   :defaults (apply #'pathname-utils:subdirectory NIL (butlast parts)))))
+    (make-pathname :name "default"
+                   :type "lisp"
+                   :defaults (apply #'pathname-utils:subdirectory NIL parts))))
 
-(defmethod ubiquitous:designator-pathname ((package package) type)
-  (merge-pathnames (package-path package)
-                   (pathname-utils:downwards (ubiquitous:config-pathname type) "maiden")))
+(defun find-config-directory ()
+  (let ((local-config (pathname-utils:subdirectory *root* "config"))
+        (global-config (pathname-utils:subdirectory (ubiquitous:config-directory) "maiden")))
+    (or (uiop:directory-exists-p local-config)
+        (ensure-directories-exist global-config))))
 
-(defmethod ubiquitous:designator-pathname ((consumer consumer) type)
-  (ubiquitous:designator-pathname (type-of consumer) type))
+(defmethod config-pathname ((pathname pathname))
+  (merge-pathnames pathname (find-config-directory)))
+
+(defmethod config-pathname ((string string))
+  (config-pathname (pathname string)))
+
+(defmethod config-pathname ((package package))
+  (config-pathname (if (eql package (find-package :KEYWORD))
+                       (make-pathname :name "default" :type "lisp")
+                       (package-path package))))
+
+(defmethod config-pathname ((symbol symbol))
+  (config-pathname (make-pathname :name (string-downcase symbol)
+                                  :type "lisp"
+                                  :defaults (config-pathname (symbol-package symbol)))))
+
+(defmethod config-pathname ((consumer consumer))
+  (config-pathname (class-name (class-of consumer))))
 
 (defun storage (thing)
   (etypecase thing
@@ -65,14 +84,13 @@
     (package (setf (storage (package-name thing)) storage))
     (consumer (setf (storage (type-of thing)) storage))))
 
-(defun ensure-storage (designator type)
+(defun ensure-storage (designator)
   (or (storage designator)
-      (setf (storage designator) (ubiquitous:restore designator type))))
+      (setf (storage designator) (ubiquitous:restore (config-pathname designator) "lisp"))))
 
-(defmacro with-storage ((designator &key type (transaction T) always-load) &body body)
-  (let ((type (or type 'ubiquitous:*storage-type*)))
-    `(ubiquitous:with-local-storage (,designator
-                                     :transaction ,transaction
-                                     :type ,type
-                                     ,@(unless always-load `(:storage (ensure-storage ,designator ,type))))
-       ,@body)))
+(defmacro with-storage ((designator &key (transaction T) always-load) &body body)
+  `(ubiquitous:with-local-storage (,designator
+                                   :transaction ,transaction
+                                   :type "lisp"
+                                   ,@(unless always-load `(:storage (ensure-storage ,designator))))
+     ,@body))

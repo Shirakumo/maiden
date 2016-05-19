@@ -9,6 +9,7 @@
   (:nicknames #:org.shirakumo.maiden.modules.storage)
   (:use #:cl #:maiden)
   (:export
+   #:config-pathname
    #:storage
    #:with-storage))
 
