@@ -92,14 +92,15 @@
 (defmethod account ((account account) &key)
   account)
 
-(defmethod account ((user user) &key)
-  (account (ensure-identity user)))
+(defmethod account ((user user) &rest args)
+  (apply #'account (ensure-identity user) args))
 
-(defmethod account ((identity cons) &key)
-  (gethash identity *identity-account-map*))
+(defmethod account ((identity cons) &key (error T))
+  (or (gethash identity *identity-account-map*)
+      (when error (error "The identity ~s does not have any account associated with it." identity))))
 
-(defmethod account ((name symbol) &key)
-  (account (string name)))
+(defmethod account ((name symbol) &rest args)
+  (apply #'account (string name) args))
 
 (defmethod account ((name string) &key (error T))
   (let ((name (normalize-account-name name)))
