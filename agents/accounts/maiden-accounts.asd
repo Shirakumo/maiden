@@ -14,5 +14,6 @@
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
+               (:file "account")
                (:file "documentation"))
-  :depends-on (:maiden))
+  :depends-on (:maiden-storage))
