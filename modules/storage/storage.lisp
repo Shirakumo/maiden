@@ -70,19 +70,32 @@
 (defmethod config-pathname ((consumer consumer))
   (config-pathname (class-name (class-of consumer))))
 
-(defun storage (thing)
-  (etypecase thing
-    (symbol (get thing :storage))
-    (string (storage (intern thing :keyword)))
-    (package (storage (package-name thing)))
-    (consumer (storage (type-of thing)))))
+(defgeneric storage (thing))
+(defgeneric (setf storage) (storage thing))
 
-(defun (setf storage) (storage thing)
-  (etypecase thing
-    (symbol (setf (get thing :storage) storage))
-    (string (setf (storage (intern thing :keyword)) storage))
-    (package (setf (storage (package-name thing)) storage))
-    (consumer (setf (storage (type-of thing)) storage))))
+(defmethod storage ((thing symbol))
+  (get thing :storage))
+
+(defmethod storage ((thing string))
+  (storage (intern thing :keyword)))
+
+(defmethod storage ((thing package))
+  (storage (package-name thing)))
+
+(defmethod storage ((thing consumer))
+  (storage (type-of thing)))
+
+(defmethod (setf storage) (storage (thing symbol))
+  (setf (get thing :storage) storage))
+
+(defmethod (setf storage) (storage (thing string))
+  (setf (storage (intern thing :keyword)) storage))
+
+(defmethod (setf storage) (storage (thing package))
+  (setf (storage (package-name thing)) storage))
+
+(defmethod (setf storage) (storage (thing consumer))
+  (setf (storage (type-of thing)) storage))
 
 (defun ensure-storage (designator)
   (or (storage designator)
