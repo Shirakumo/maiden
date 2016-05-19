@@ -6,6 +6,19 @@
 
 (in-package #:org.shirakumo.maiden)
 
+(defvar *root*
+  #+asdf (asdf:system-source-directory :maiden)
+  #-asdf (make-pathname :name NIL
+                        :type NIL
+                        :version NIL
+                        :defaults #.(or *compile-file-pathname* *load-pathname*)))
+
+(defun update-root-for-image ()
+  (let ((argv0 (uiop:argv0)))
+    (setf *root* (if argv0 (pathname argv0) (user-homedir-pathname)))))
+
+(uiop:register-image-restore-hook #'update-root-for-image)
+
 (defun xor (a b)
   (or (and a (not b))
       (and (not a) b)))

@@ -128,6 +128,7 @@
    #:stop)
   ;; toolkit.lisp
   (:export
+   #:*root*
    #:xor
    #:xnor
    #:kw
