@@ -27,6 +27,7 @@
    #:command-invoker
    #:remove-command-invoker
    #:define-command-invoker
+   #:define-simple-command-invoker
    #:define-command
    #:find-matching-command)
   ;; parsing.lisp
