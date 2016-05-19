@@ -41,7 +41,7 @@
 (defclass entity ()
   ((id :initarg :id :accessor id))
   (:default-initargs
-   :id (uuid:make-v4-uuid)))
+   :id (princ-to-string (uuid:make-v4-uuid))))
 
 (defmethod print-object ((entity entity) stream)
   (print-unreadable-object (entity stream :type T)
