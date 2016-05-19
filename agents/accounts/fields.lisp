@@ -70,6 +70,9 @@
              (identity-p account user)
              (find (getf (access info) :owner) test)))))
 
+(defmethod field (field (account (eql T)) user)
+  (field field (account user) user))
+
 (defmethod field (field (account account) user)
   (field (normalize-field-name field) account user))
 
@@ -81,6 +84,9 @@
     (unless (access-p field account user :r)
       (error "Not permitted to view field ~s." field)))
   (gethash field (data account)))
+
+(defmethod (setf field) (value field (account (eql T)) user)
+  (setf (field field (account user) user) value))
 
 (defmethod (setf field) (value field (account account) user)
   (setf (field (normalize-field-name field) account user) value))
