@@ -114,4 +114,4 @@
           ((and (< time (+ now relative-time-threshold)) (< now time))
            (format NIL "in ~a" (format-relative-time (- time now))))
           (T
-           (format-absolute-time time)))))
+           (format NIL "at ~a" (format-absolute-time time))))))
