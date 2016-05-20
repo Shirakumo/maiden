@@ -40,7 +40,7 @@
 (defun location-weather-data (apikey location)
   (multiple-value-bind (loc resolved-location) (location-coordinates location)
     (cond ((not loc)
-           (error "Could not determine any location called ~s" location))
+           (error "Could not determine any location called ~s." location))
           (T
            (values (weather-data apikey (first loc) (second loc))
                    resolved-location)))))
@@ -63,7 +63,7 @@
 
 (defun get-api-key (c)
   (or (with-storage (c) (value :api-key))
-      (error "You must set an API key before you can use this service. See http://forecast.io/")))
+      (error "You must set an API key before you can use this service. See http://forecast.io/ to get a key and finally set it with `set weather api key <key>`.")))
 
 (maiden-commands:define-command (weather weather weather-request) (c ev location)
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
