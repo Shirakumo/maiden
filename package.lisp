@@ -94,6 +94,7 @@
    #:server
    #:user
    #:ensure-user
+   #:authenticated-p
    #:channel
    #:ensure-channel
    #:users)

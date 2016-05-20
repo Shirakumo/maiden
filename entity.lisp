@@ -93,10 +93,16 @@
   ())
 
 (defclass user (client-entity)
-  ())
+  ((authenticated :initarg :authenticated)))
 
 (defmethod ensure-user ((user user) client)
   user)
+
+(defmethod authenticated-p ((user user))
+  (if (slot-boundp user 'authenticated)
+      (slot-value user 'authenticated)
+      (setf (slot-value user 'authenticated)
+            (authenticate user (client user)))))
 
 (defclass channel (client-entity)
   ())

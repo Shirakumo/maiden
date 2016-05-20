@@ -28,6 +28,9 @@
       (make-instance 'user :name name :client client)))
 
 (defmethod authenticate (user (client user-client))
+  (authenticate (ensure-user user client) client))
+
+(defmethod authenticate ((user user) (client user-client))
   NIL)
 
 (define-consumer channel-client (client)
