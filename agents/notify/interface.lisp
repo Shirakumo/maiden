@@ -22,10 +22,10 @@
         ((string-equal (name (sender ev)) target)
          (reply ev "Are you feeling lonely?"))
         (T
-         (make-instance 'note :from (name (sender ev))
-                              :to (normalize-user-name target)
-                              :message (format NIL "~{~a~^ ~}" message)
-                              :trigger trigger)
+         (make-note (name (sender ev))
+                    (normalize-user-name target)
+                    (format NIL "~{~a~^ ~}" message)
+                    :trigger trigger)
          (reply ev "~a: Got it. I'll let ~a know as soon as possible."
                 (name (sender ev)) target))))
 
@@ -45,7 +45,7 @@
         (when (string-equal (name (sender ev)) (from note))
           (remove-note note)))))
 
-(define-command (notify send-note) (c ev target &rest message)
+(define-command (notify send-join-note) (c ev target &rest message)
   :command "notify on join"
   (handle-note-creation ev target message :join))
 
