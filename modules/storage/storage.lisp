@@ -102,8 +102,8 @@
       (setf (storage designator) (ubiquitous:restore (config-pathname designator) "lisp"))))
 
 (defmacro with-storage ((designator &key (transaction T) always-load) &body body)
-  `(ubiquitous:with-local-storage (,designator
+  `(ubiquitous:with-local-storage ((config-pathname ,designator)
                                    :transaction ,transaction
-                                   :type "lisp"
+                                   :type :lisp
                                    ,@(unless always-load `(:storage (ensure-storage ,designator))))
      ,@body))
