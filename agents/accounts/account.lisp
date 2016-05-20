@@ -97,7 +97,7 @@
 
 (defmethod account ((identity cons) &key (error T))
   (or (gethash identity *identity-account-map*)
-      (when error (error "The identity ~s does not have any account associated with it." identity))))
+      (when error (error 'no-account-for-identity :identity identity))))
 
 (defmethod account ((name symbol) &rest args)
   (apply #'account (string name) args))
@@ -108,7 +108,7 @@
         (handler-case
             (setf (account name) (ubiquitous:restore (account-pathname name)))
           (ubiquitous:no-storage-file () NIL))
-        (when error (error "No such account ~s." name)))))
+        (when error (error 'account-not-found :name name)))))
 
 (defmethod (setf account) (account (name symbol))
   (setf (account (string name)) account))
@@ -127,7 +127,7 @@
 (defun create-account (name)
   (let ((name (normalize-account-name name)))
     (when (account name :error NIL)
-      (error "Account ~s already exists." name))
+      (error 'account-already-exists :name name))
     (let ((account (make-instance 'account :name name)))
       (ubiquitous:offload (account-pathname name) "lisp" account)
       (setf (account name) account))))

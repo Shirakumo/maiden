@@ -66,7 +66,7 @@
                 (:w '(:w :rw))
                 (:rw '(:rw)))))
     (or (find (getf (access info) :world) test)
-        (and (authenticated user)
+        (and (authenticated-p user)
              (identity-p account user)
              (find (getf (access info) :owner) test)))))
 
@@ -82,7 +82,7 @@
 (defmethod field ((field string) (account account) user)
   (when (and user (not (eql user :system)))
     (unless (access-p field account user :r)
-      (error "Not permitted to view field ~s." field)))
+      (error 'field-access-denied :field field :account account :user user)))
   (gethash field (data account)))
 
 (defmethod (setf field) (value field (account (eql T)) user)
@@ -97,5 +97,5 @@
 (defmethod (setf field) (value (field string) (account account) user)
   (when (and user (not (eql user :system)))
     (unless (access-p field account user :w)
-      (error "Not permitted to change field ~s." field)))
+      (error 'field-access-denied :field field :account account :user user)))
   (setf (gethash field (data account)) value))
