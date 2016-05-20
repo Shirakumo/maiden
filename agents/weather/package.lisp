@@ -7,4 +7,13 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-weather
   (:nicknames #:org.shirakumo.maiden.agents.weather)
-  (:use #:cl #:maiden #:maiden-api-access #:maiden-storage))
+  (:use #:cl #:maiden #:maiden-api-access #:maiden-storage)
+  ;; weather.lisp
+  (:export
+   #:weather-data
+   #:location-coordinates
+   #:location-weather-data
+   #:format-weather-data
+   #:weather
+   #:set-api-key
+   #:weather))
