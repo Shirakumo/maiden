@@ -99,7 +99,7 @@
 
 (defun ensure-storage (designator)
   (or (storage designator)
-      (setf (storage designator) (ubiquitous:restore (config-pathname designator) "lisp"))))
+      (setf (storage designator) (ubiquitous:restore (config-pathname designator) :lisp))))
 
 (defmacro with-storage ((designator &key (transaction T) always-load) &body body)
   `(ubiquitous:with-local-storage ((config-pathname ,designator)
