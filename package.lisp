@@ -140,7 +140,10 @@
    #:update-list
    #:with-retry-restart
    #:do-issue
-   #:broadcast))
+   #:broadcast
+   #:format-relative-time
+   #:format-absolute-time
+   #:format-time))
 
 (defpackage #:maiden-user
   (:nicknames #:org.shirakumo.maiden.user)
