@@ -27,7 +27,7 @@
   (do-issue core framework-message :message command-string))
 
 (define-event command-event (instruction-event)
-  ((dispatch-event :initarg :dispatch-event :accessor dispatch-event))
+  ((dispatch-event :initarg :dispatch-event :reader dispatch-event))
   (:default-initargs
    :dispatch-event (or *dispatch-event* (make-instance 'framework-message))))
 
