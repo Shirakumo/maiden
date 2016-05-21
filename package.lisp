@@ -141,6 +141,7 @@
    #:with-retry-restart
    #:do-issue
    #:broadcast
+   #:get-unix-time
    #:format-relative-time
    #:format-absolute-time
    #:format-time))

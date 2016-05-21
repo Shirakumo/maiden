@@ -74,6 +74,12 @@
 (defun broadcast (cores event-type &rest initargs)
   (apply #'deeds:broadcast event-type :loop cores initargs))
 
+;; FIXME: Maybe put this all somewhere else?
+
+(defvar *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0))
+(defun get-unix-time ()
+  (- (get-universal-time) *unix-epoch-difference*))
+
 (defun format-relative-time (seconds)
   (if (= seconds 0)
       (format NIL "0 seconds")

@@ -9,10 +9,6 @@
 (defparameter *location-api* "https://maps.googleapis.com/maps/api/geocode/json")
 (defparameter *weather-api* "https://api.forecast.io/forecast/~a/~f,~f")
 
-(defvar *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0))
-(defun get-unix-time ()
-  (- (get-universal-time) *unix-epoch-difference*))
-
 (defun weather-data (apikey lat lng)
   (let* ((data (request-as :json (format NIL *weather-api* apikey lat lng)
                            :get '(("units" "si") ("exclude" "hourly,minutely,daily,flags,alerts")))))
