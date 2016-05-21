@@ -203,7 +203,7 @@
              (define-event ,event-type (,@superclasses instruction-event)
                (,@(slot-args->slots args)
                 ,@extra-slots)
-               :documentation ,documentation
+               ,@(when documentation `((:documentation ,documentation)))
                ,@class-options)
              (define-handler (,consumer ,instruction ,event-type) (,consumer-var ,event-var ,@pure-args)
                ,@options
@@ -224,7 +224,7 @@
              (define-event ,event-type (,@superclasses query-event)
                (,@(slot-args->slots args)
                 ,@extra-slots)
-               :documentation ,documentation
+               ,@(when documentation `((:documentation ,documentation)))
                ,@class-options)
              ,@(when event-response-type
                  `((define-event ,event-response-type (response-event) ())
