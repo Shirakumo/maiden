@@ -69,6 +69,7 @@
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
 ;; Manually edited to suit a more parseable format, and to
 ;; remove conflicting duplicates.
+;; FIXME: Automatically convert CHANNEL and USER/SENDER references into the appropriate objects
 (define-irc-reply MSG-PASS PASS ("(.*)" PASSWORD))
 (define-irc-reply MSG-NICK NICK ("([^ ]+)( (.*))?" NICKNAME NIL HOPCOUNT))
 (define-irc-reply MSG-USER USER ("([^ ]+) ([^ ]+) ([^ ]+) :(.*)" USERNAME HOSTNAME SERVERNAME REALNAME))
@@ -76,10 +77,13 @@
 (define-irc-reply MSG-OPER OPER ("([^ ]+) ([^ ]+)" USER PASSWORD))
 (define-irc-reply MSG-QUIT QUIT ("(:(.*))?" NIL COMMENT))
 (define-irc-reply MSG-SQUIT SQUIT ("([^ ]+) :(.*)" SERVER COMMENT))
-(define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNELS #\,)))
-(define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNELS #\,)))
+;; FIXME
+(define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNELS #\,)) (user-entered))
+;; FIXME
+(define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNELS #\,)) (user-left))
 (define-irc-reply MSG-MODE MODE ("([^ ]+) ([^ ]+)( ([^ ]+)( ([^ ]+)( ([^ ]+))?)?)?" TARGET MODE NIL LIMIT NIL USER NIL BAN-MASK))
-(define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC))
+;; FIXME
+(define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC) (channel-topic-changed))
 (define-irc-reply MSG-NAMES NAMES ("([^ ]+)" (CHANNELS #\,)))
 (define-irc-reply MSG-LIST LIST ("([^ ]+)( ([^ ]+))?" (CHANNELS #\,) NIL SERVER))
 (define-irc-reply MSG-INVITE INVITE ("([^ ]+) ([^ ]+)" NICKNAME CHANNEL))
@@ -92,7 +96,8 @@
 (define-irc-reply MSG-TRACE TRACE ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-ADMIN ADMIN ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-INFO INFO ("([^ ]+)?" SERVER))
-(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (RECEIVERS #\,) MESSAGE) (message-event))
+;; FIXME: Convert RECEIVERS to multiple events of CHANNELs or something
+(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (RECEIVERS #\,) MESSAGE) (channel-event message-event))
 (define-irc-reply MSG-NOTICE NOTICE ("([^ ]+)? ?:(.*)" NICKNAME MESSAGE))
 (define-irc-reply MSG-WHO WHO ("(([^ ]+)( o)?)?" NIL NAME OPERS-ONLY))
 (define-irc-reply MSG-WHOIS WHOIS ("(([^ ]+) )?([^ ]+)" NIL SERVER (NICKMASKS #\,)))
