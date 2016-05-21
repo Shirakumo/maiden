@@ -42,7 +42,7 @@
 
 (defmacro define-fields (&body fields)
   `(progn ,@(loop for field in fields
-                  collect (destructuring-bind (name (&key owner world) &optional (documentation "")) field
+                  collect (destructuring-bind (name (&key (owner :rw) (world :w)) &optional (documentation "")) field
                             `(make-instance 'field-info :name ,(normalize-field-name name)
                                                         :documentation ,documentation
                                                         :access (list :owner ,owner
