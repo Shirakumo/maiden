@@ -56,6 +56,11 @@
 
 (defgeneric reply (event format-string &rest format-args))
 
+(define-event channel-event (client-event)
+  ((channel :initarg :channel :reader channel))
+  (:default-initargs
+   :channel (error "CHANNEL required.")))
+
 (define-event core-event ()
   ())
 

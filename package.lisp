@@ -114,6 +114,8 @@
    #:message-event
    #:message
    #:reply
+   #:channel-event
+   #:channel
    #:core-event
    #:consumer-added
    #:consumer-removed
