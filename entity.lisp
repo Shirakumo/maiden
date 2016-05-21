@@ -104,6 +104,12 @@
       (setf (slot-value user 'authenticated)
             (authenticate user (client user)))))
 
+;; Shitty default implementation
+(defmethod channels ((user user))
+  (when (typep (client user) 'channel-client)
+    (loop for channel in (channels (client user))
+          when (find user (users channel)) collect channel)))
+
 (defclass channel (client-entity)
   ())
 
