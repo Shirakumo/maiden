@@ -44,12 +44,12 @@
 (define-event connection-closed (connection-event)
   ())
 
-(define-event sender-event (client-event)
-  ((sender :initarg :sender :reader sender))
+(define-event user-event (client-event)
+  ((user :initarg :user :reader user))
   (:default-initargs
-   :sender (error "SENDER required.")))
+   :user (error "USER required.")))
 
-(define-event message-event (sender-event)
+(define-event message-event (user-event)
   ((message :initarg :message :reader message :mutable T))
   (:default-initargs
    :message (error "MESSAGE required.")))

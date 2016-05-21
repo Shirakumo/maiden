@@ -8,7 +8,7 @@
 
 (defgeneric users (client))
 (defgeneric find-user (name client))
-(defgeneric authenticate (sender client))
+(defgeneric authenticate (user client))
 (defgeneric channels (client))
 (defgeneric find-channel (name client))
 

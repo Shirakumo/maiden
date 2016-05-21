@@ -9,40 +9,40 @@
 (define-consumer notify (agent)
   ())
 
-(defun handle-note-notification (ev sender trigger)
-  (dolist (note (sort (user-notes sender) #'< :key #'date))
+(defun handle-note-notification (ev user trigger)
+  (dolist (note (sort (user-notes user) #'< :key #'date))
     (when (eql (trigger note) trigger)
       (remove-note note)
       (reply ev "~a: ~a said ~a: ~a"
-             (name sender) (from note) (format-time (date note)) (message note)))))
+             (name user) (from note) (format-time (date note)) (message note)))))
 
 (defun handle-note-creation (ev target message trigger)
   (cond ((string= "" target)
          (reply ev "I'll have to know someone to tell the message to."))
-        ((string-equal (name (sender ev)) target)
+        ((string-equal (name (user ev)) target)
          (reply ev "Are you feeling lonely?"))
         (T
-         (make-note (name (sender ev))
+         (make-note (name (user ev))
                     (normalize-user-name target)
                     (format NIL "~{~a~^ ~}" message)
                     :trigger trigger)
          (reply ev "~a: Got it. I'll let ~a know as soon as possible."
-                (name (sender ev)) target))))
+                (name (user ev)) target))))
 
-(define-handler (notify new-message message-event) (c ev sender)
-  (handle-note-notification ev sender :message))
+(define-handler (notify new-message message-event) (c ev user)
+  (handle-note-notification ev user :message))
 
 ;;;; FIXME: Once we actually have a protocol for this.
-;; (define-handler (notify user-join user-join-event) (c ev sender)
-;;   (handle-note-notification ev sender :Join))
+;; (define-handler (notify user-enter user-enter-event) (c ev user)
+;;   (handle-note-notification ev user :Join))
 
 (define-command (notify forget-notes) (c ev &optional target)
   :command "forget notifications"
   :before '(new-message)
   (if target
-      (clear-notes (sender ev))
+      (clear-notes (user ev))
       (dolist (note (user-notes target))
-        (when (string-equal (name (sender ev)) (from note))
+        (when (string-equal (name (user ev)) (from note))
           (remove-note note)))))
 
 (define-command (notify send-join-note) (c ev target &rest message)

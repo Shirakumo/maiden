@@ -36,8 +36,8 @@
 (defmethod (setf ubiquitous:field) (value (account account) field)
   (setf (gethash (string-downcase field) (account-data data)) value))
 
-(defmethod ensure-identity ((event sender-event))
-  (ensure-identity (sender event)))
+(defmethod ensure-identity ((event user-event))
+  (ensure-identity (user event)))
 
 (defmethod ensure-identity ((user user))
   (cons (name (client user)) (name user)))

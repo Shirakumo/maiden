@@ -87,18 +87,18 @@
   :match-consumer 'client
   (irc:pong client server other-server))
 
-(define-handler (client nick-change irc:msg-nick) (client ev sender nickname)
+(define-handler (client nick-change irc:msg-nick) (client ev user nickname)
   :match-consumer 'client
-  (when (string-equal sender (nickname client))
-    (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." sender nickname)
+  (when (string-equal user (nickname client))
+    (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." user nickname)
     (setf (nickname client) nickname)))
 
-(define-handler (client yank-nick irc:msg-quit) (client ev sender)
+(define-handler (client yank-nick irc:msg-quit) (client ev user)
   :match-consumer 'client
-  (when (and (string-equal sender (intended-nickname client))
-             (not (string-equal sender (nickname client))))
-    (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." sender)
-    (irc:nick client sender)))
+  (when (and (string-equal user (intended-nickname client))
+             (not (string-equal user (nickname client))))
+    (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." user)
+    (irc:nick client user)))
 
 (defmethod authenticate (nick (client client))
   (case (services client)

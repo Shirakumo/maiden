@@ -451,8 +451,8 @@
   (:export
    #:irc-event
    #:reply-event
-   #:sender
-   #:sender-user
-   #:sender-host
+   #:user
+   #:user-user
+   #:user-host
    #:unknown-event
    #:define-irc-reply))

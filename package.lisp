@@ -109,8 +109,8 @@
    #:connection-event
    #:connection-initiated
    #:connection-closed
-   #:sender-event
-   #:sender
+   #:user-event
+   #:user
    #:message-event
    #:message
    #:reply

@@ -9,7 +9,7 @@
 (defvar *invokers* ())
 
 (defvar *framework-client* (make-instance 'client :name "FRAMEWORK"))
-(defvar *framework-sender* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
+(defvar *framework-user* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
 (defvar *dispatch-event* NIL)
 (defvar *alternative-distance-threshold* 10)
 
@@ -17,7 +17,7 @@
   ()
   (:default-initargs
    :client *framework-client*
-   :sender *framework-sender*
+   :user *framework-user*
    :message ""))
 
 (defmethod reply ((event framework-message) format-string &rest format-args)
