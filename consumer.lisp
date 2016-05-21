@@ -194,7 +194,7 @@
 
 (defmacro define-instruction ((consumer instruction &optional (event-type instruction)) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (form-fiddle:with-body-options (body options superclasses extra-slots class-options) body
+    (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
@@ -203,16 +203,18 @@
              (define-event ,event-type (,@superclasses instruction-event)
                (,@(slot-args->slots args)
                 ,@extra-slots)
+               :documentation ,documentation
                ,@class-options)
              (define-handler (,consumer ,instruction ,event-type) (,consumer-var ,event-var ,@pure-args)
                ,@options
                ,@body)
              (defun ,instruction (,core ,@(slot-args->args args))
+               ,documentation
                (broadcast ,core ',event-type ,@fun-kargs))))))))
 
 (defmacro define-query ((consumer instruction &optional (event-type instruction) event-response-type) args &body body)
   (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (form-fiddle:with-body-options (body options superclasses class-options) body
+    (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
       (destructuring-bind (consumer-var event-var &rest args) args
         (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
                (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
@@ -220,7 +222,9 @@
                (event (gensym "EVENT")))
           `(progn
              (define-event ,event-type (,@superclasses query-event)
-               ,(slot-args->slots args)
+               (,@(slot-args->slots args)
+                ,@extra-slots)
+               :documentation ,documentation
                ,@class-options)
              ,@(when event-response-type
                  `((define-event ,event-response-type (response-event) ())
@@ -233,6 +237,7 @@
                         ,@body))
                  (respond ,event-var :payload (multiple-value-list (,thunk)))))
              (defun ,instruction (core ,@(slot-args->args args))
+               ,documentation
                (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@fun-kargs)))
                  (with-awaiting (,(or event-response-type 'response-event) response payload)
                      (core :filter `(matches identifier ,(identifier ,event)))
