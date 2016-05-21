@@ -43,6 +43,10 @@
   (cons (name (client user)) (name user)))
 
 (defmethod ensure-identity ((cons cons))
+  (when (typep (car cons) 'client)
+    (setf (car cons) (name (car cons))))
+  (when (typep (cdr cons) 'user)
+    (setf (cdr cons) (name (cdr cons))))
   cons)
 
 (defmethod add-identity (account-ish identity-ish)
@@ -52,8 +56,9 @@
   (add-identity (account account-ish) identity))
 
 (defmethod add-identity ((account account) (identity cons))
-  (pushnew identity (identities account) :test #'equalp)
-  (setf (gethash identity *identity-account-map*) account))
+  (let ((identity (ensure-identity identity)))
+    (pushnew identity (identities account) :test #'equalp)
+    (setf (gethash identity *identity-account-map*) account)))
 
 (defmethod remove-identity (account-ish identity-ish)
   (remove-identity account-ish (ensure-identity identity-ish)))
@@ -62,8 +67,9 @@
   (remove-identity (account account-ish) identity))
 
 (defmethod remove-identity ((account account) (identity cons))
-  (setf (identities account) (remove identity (identities account) :test #'equalp))
-  (remhash identity *identity-account-map*))
+  (let ((identity (ensure-identity identity)))
+    (setf (identities account) (remove identity (identities account) :test #'equalp))
+    (remhash identity *identity-account-map*)))
 
 (defmethod identity-p (account-ish identity-ish)
   (identity-p account-ish (ensure-identity identity-ish)))
@@ -72,7 +78,7 @@
   (identity-p (account account-ish) identity))
 
 (defmethod identity-p ((account account) (identity cons))
-  (find cons (identities account) :test #'equalp))
+  (find (ensure-identity cons) (identities account) :test #'equalp))
 
 (defun normalize-account-name (name)
   (remove-if (lambda (c) (find c *illegal-account-name-chars*))
@@ -96,8 +102,9 @@
   (apply #'account (ensure-identity user) args))
 
 (defmethod account ((identity cons) &key (error T))
-  (or (gethash identity *identity-account-map*)
-      (when error (error 'no-account-for-identity :identity identity))))
+  (let ((identity (ensure-identity identity)))
+    (or (gethash identity *identity-account-map*)
+        (when error (error 'no-account-for-identity :identity identity)))))
 
 (defmethod account ((name symbol) &rest args)
   (apply #'account (string name) args))
