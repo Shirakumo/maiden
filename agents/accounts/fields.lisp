@@ -12,7 +12,7 @@
   (etypecase name
     (string name)
     (keyword (string name))
-    (symbol (format T "~(~a:~a~)" (package-name (symbol-package name)) (symbol-name name)))))
+    (symbol (format NIL "~(~a:~a~)" (package-name (symbol-package name)) (symbol-name name)))))
 
 (defclass field-info ()
   ((name :initarg :name :reader name)
@@ -25,7 +25,7 @@
                  :world :r)))
 
 (defmethod initialize-instance :after ((info field-info) &key)
-  (setf (name info) (normalize-field-name (name info)))
+  (setf (slot-value info 'name) (normalize-field-name (name info)))
   (setf (field-info (name info)) info))
 
 (defun field-info (name)
