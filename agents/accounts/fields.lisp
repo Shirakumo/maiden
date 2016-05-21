@@ -17,7 +17,7 @@
 (defclass field-info ()
   ((name :initarg :name :reader name)
    (documentation :initarg :documentation)
-   (access :initarg :access :reader name))
+   (access :initarg :access :reader access))
   (:default-initargs
    :name (error "Field NAME required.")
    :documentation ""
