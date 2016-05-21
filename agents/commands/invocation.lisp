@@ -71,7 +71,7 @@
                     (error (,error)
                       (v:warn :maiden.agents.commands ,error)
                       (reply ,event "~a" ,error)))))
-              (define-simple-command-invoker ,(or command (string name)) ,args ,name
+              (define-simple-command-invoker ,(or command (string name)) ,args ,event-type
                 :message-event-initarg :dispatch-event)
               (list ',consumer ',name)))))
 
