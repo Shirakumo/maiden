@@ -16,7 +16,8 @@
         (cond ((not (null match))
                (handler-case
                    (handler-bind ((error #'invoke-debugger))
-                     (funcall (cdr match) ev (subseq command (1+ (length (car match))))))
+                     (funcall (cdr match) ev (if (= (length command) (length (car match)))
+                                                 "" (subseq command (1+ (length (car match)))))))
                  (command-condition (err)
                    (reply ev "Invalid command: ~a" err))
                  (error (err)
