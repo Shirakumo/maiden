@@ -31,10 +31,10 @@
   ;; client.lisp
   (:export
    #:users
-   #:user
+   #:find-user
    #:authenticate
    #:channels
-   #:channel
+   #:find-channel
    #:client
    #:user-client
    #:channel-client)

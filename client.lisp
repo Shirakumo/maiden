@@ -7,17 +7,17 @@
 (in-package #:org.shirakumo.maiden)
 
 (defgeneric users (client))
-(defgeneric user (name client))
+(defgeneric find-user (name client))
 (defgeneric authenticate (sender client))
 (defgeneric channels (client))
-(defgeneric channel (name client))
+(defgeneric find-channel (name client))
 
 (define-consumer client () ())
 
 (define-consumer user-client (client)
   ())
 
-(defmethod user (name (client user-client))
+(defmethod find-user (name (client user-client))
   NIL)
 
 (defmethod users ((client user-client))
@@ -36,11 +36,11 @@
 (define-consumer channel-client (client)
   ())
 
+(defmethod find-channel (name (client channel-client))
+  NIL)
+
 (defmethod channels ((client channel-client))
   ())
-
-(defmethod channel (name (client channel-client))
-  NIL)
 
 (defmethod ensure-channel ((name string) (client channel-client))
   (or (channel name client)
