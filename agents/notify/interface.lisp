@@ -32,9 +32,8 @@
 (define-handler (notify new-message message-event) (c ev user)
   (handle-note-notification ev user :message))
 
-;;;; FIXME: Once we actually have a protocol for this.
-;; (define-handler (notify user-enter user-enter-event) (c ev user)
-;;   (handle-note-notification ev user :Join))
+(define-handler (notify user-enter user-entered) (c ev user)
+  (handle-note-notification ev user :Join))
 
 (define-command (notify forget-notes) (c ev &optional target)
   :command "forget notifications"

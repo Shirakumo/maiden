@@ -49,6 +49,17 @@
   (:default-initargs
    :user (error "USER required.")))
 
+(define-event user-removed (user-event)
+  ())
+
+(define-event user-added (user-event)
+  ())
+
+(define-event user-name-changed (user-event)
+  ((old-name :initarg :old-name :reader user))
+  (:default-initargs
+   :old-name (error "OLD-NAME required.")))
+
 (define-event message-event (user-event)
   ((message :initarg :message :reader message :mutable T))
   (:default-initargs
@@ -60,6 +71,17 @@
   ((channel :initarg :channel :reader channel))
   (:default-initargs
    :channel (error "CHANNEL required.")))
+
+(define-event channel-topic-changed (channel-event)
+  ((topic :initarg :topic :reader topic))
+  (:default-initargs
+   :topic (error "TOPIC required.")))
+
+(define-event user-entered (user-event channel-event)
+  ())
+
+(define-event user-left (user-event channel-event)
+  ())
 
 (define-event core-event ()
   ())

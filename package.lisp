@@ -111,11 +111,18 @@
    #:connection-closed
    #:user-event
    #:user
+   #:user-removed
+   #:user-added
+   #:user-name-changed
    #:message-event
    #:message
    #:reply
    #:channel-event
    #:channel
+   #:channel-topic-changed
+   #:topic
+   #:user-entered
+   #:user-left
    #:core-event
    #:consumer-added
    #:consumer-removed
