@@ -6,7 +6,6 @@
 
 (in-package #:org.shirakumo.maiden.agents.weather)
 
-(defparameter *location-api* "https://maps.googleapis.com/maps/api/geocode/json")
 (defparameter *weather-api* "https://api.forecast.io/forecast/~a/~f,~f")
 
 (defun weather-data (apikey lat lng)
@@ -17,24 +16,8 @@
           (T
            (error "Forecast.io failed to perform your request for an unknown reason.")))))
 
-(defun location-coordinates (location)
-  (let* ((data (request-as :json *location-api* :get `(("sensor" "false") ("address" ,location))))
-         (status (json-v data "status")))
-    (cond ((string-equal status "ok")
-           (let ((result (json-v data "results" 0)))
-             (values
-              (list (json-v result "geometry" "location" "lat")
-                    (json-v result "geometry" "location" "lng"))
-              (json-v result "address_components" 0 "long_name"))))
-          ((string-equal status "zero_results")
-           (values))
-          ((string-equal status "over_query_limit")
-           (error "Exceeded allowed amount of queries against the Google Maps API."))
-          (T
-           (error "Google Maps failed to perform your request for an unknown reason.")))))
-
 (defun location-weather-data (apikey location)
-  (multiple-value-bind (loc resolved-location) (location-coordinates location)
+  (multiple-value-bind (loc resolved-location) (maiden-location:coordinates location)
     (cond ((not loc)
            (error "Could not determine any location called ~s." location))
           (T
@@ -61,6 +44,13 @@
   (or (with-storage (c) (value :api-key))
       (error "You must set an API key before you can use this service. See http://forecast.io/ to get a key and finally set it with `set weather api key <key>`.")))
 
-(maiden-commands:define-command (weather weather weather-request) (c ev location)
+(maiden-commands:define-command (weather weather weather-location) (c ev location)
+  :command "weather in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
-    (reply ev "Weather for ~a: ~a" resolved-location (format-weather-data data))))
+    (reply ev "Weather in ~a: ~a" resolved-location (format-weather-data data))))
+
+(maiden-commands:define-command (weather weather-for weather-user) (c ev user)
+  :command "weather for"
+  (let ((location (maiden-location:user-location user)))
+    (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
+      (reply ev "Weather for ~a in ~a: ~a" (name account) resolved-location (format-weather-data data)))))

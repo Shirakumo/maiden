@@ -5,18 +5,17 @@
 |#
 
 (in-package #:cl-user)
-(asdf:defsystem maiden-weather
+(asdf:defsystem maiden-location
   :version "0.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Simple weather data access through forecast.io"
+  :description "Handle location data with Maiden."
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
-               (:file "weather")
+               (:file "location")
                (:file "documentation"))
   :depends-on (:maiden-commands
-               :maiden-storage
-               :maiden-location
+               :maiden-accounts
                :maiden-api-access))
