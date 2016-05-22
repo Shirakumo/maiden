@@ -16,5 +16,6 @@
   :components ((:file "package")
                (:file "account")
                (:file "fields")
+               (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-storage))
