@@ -192,57 +192,59 @@
                       (T
                        (unlist arg)))))
 
+(defun args->initargs (args)
+  (loop for arg in (lambda-fiddle:extract-lambda-vars args)
+        collect (kw arg) collect arg))
+
+(defmacro define-function-handler ((consumer name &optional (event-type name)) args &body body)
+  (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
+    (destructuring-bind (consumer-var event-var &rest args) args
+      (when documentation (push `(:documentation ,documentation) class-options))
+      `(progn
+         (define-event ,event-type ,superclasses
+           (,@(slot-args->slots args)
+            ,@extra-slots)
+           ,@class-options)
+         (define-handler (,consumer ,name ,event-type) (,consumer-var ,event-var ,@(lambda-fiddle:extract-lambda-vars (cddr args)))
+           ,@options
+           ,@body)))))
+
 (defmacro define-instruction ((consumer instruction &optional (event-type instruction)) args &body body)
-  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
-      (destructuring-bind (consumer-var event-var &rest args) args
-        (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
-               (core (gensym "CORE")))
-          `(progn
-             (define-event ,event-type (,@superclasses instruction-event)
-               (,@(slot-args->slots args)
-                ,@extra-slots)
-               ,@(when documentation `((:documentation ,documentation)))
-               ,@class-options)
-             (define-handler (,consumer ,instruction ,event-type) (,consumer-var ,event-var ,@pure-args)
-               ,@options
-               ,@body)
-             (defun ,instruction (,core ,@(slot-args->args args))
-               ,documentation
-               (broadcast ,core ',event-type ,@fun-kargs))))))))
+  (form-fiddle:with-body-options (body options superclasses documentation) body
+    (let ((core (gensym "CORE")))
+      `(progn
+         (define-function-handler (,consumer ,instruction ,event-type) ,args
+           :documentation ,documentation
+           :superclasses (,@superclasses instruction-event)
+           ,@options
+           ,@body)
+         (defun ,instruction (,core ,@(slot-args->args (cddr args)))
+           ,documentation
+           (broadcast ,core ',event-type ,@(args->initargs (cddr args))))))))
 
 (defmacro define-query ((consumer instruction &optional (event-type instruction) event-response-type) args &body body)
-  (labels ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
-      (destructuring-bind (consumer-var event-var &rest args) args
-        (let* ((pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-               (fun-kargs (loop for arg in pure-args collect (kw arg) collect arg))
-               (thunk (gensym "THUNK"))
-               (event (gensym "EVENT")))
-          `(progn
-             (define-event ,event-type (,@superclasses query-event)
-               (,@(slot-args->slots args)
-                ,@extra-slots)
-               ,@(when documentation `((:documentation ,documentation)))
-               ,@class-options)
-             ,@(when event-response-type
-                 `((define-event ,event-response-type (response-event) ())
-                   (defmethod respond ((event ,event-type) &key payload)
-                     (issue (make-instance ',event-response-type :payload payload :identifier (identifier event))
-                            (event-loop event)))))
-             (define-handler (,consumer ,instruction ,event-type) (,consumer-var ,event-var ,@pure-args)
-               ,@options
-               (flet ((,thunk ()
-                        ,@body))
-                 (respond ,event-var :payload (multiple-value-list (,thunk)))))
-             (defun ,instruction (core ,@(slot-args->args args))
-               ,documentation
-               (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@fun-kargs)))
-                 (with-awaiting (,(or event-response-type 'response-event) response payload)
-                     (core :filter `(matches identifier ,(identifier ,event)))
-                     (issue ,event core)
-                   (values-list payload))))))))))
+  (form-fiddle:with-body-options (body options superclasses documentation) body
+    (let ((thunk (gensym "THUNK"))
+          (event (gensym "EVENT")))
+      `(progn
+         (define-function-handler (,consumer ,instruction ,event-type) ,args
+           :documentation ,documentation
+           :superclasses (,@superclasses instruction-event)
+           ,@options
+           (flet ((,thunk () ,@body))
+             (respond ,(second args) :payload (multiple-value-list (,thunk)))))             
+         ,@(when event-response-type
+             `((define-event ,event-response-type (response-event) ())
+               (defmethod respond ((event ,event-type) &key payload)
+                 (issue (make-instance ',event-response-type :payload payload :identifier (identifier event))
+                        (event-loop event)))))
+         (defun ,instruction (core ,@(slot-args->args (cddr args)))
+           ,documentation
+           (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@(args->initargs (cddr args)))))
+             (with-awaiting (,(or event-response-type 'response-event) response payload)
+                 (core :filter `(matches identifier ,(identifier ,event)))
+                 (issue ,event core)
+               (values-list payload))))))))
 
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses

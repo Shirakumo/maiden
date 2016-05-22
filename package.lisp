@@ -68,6 +68,7 @@
    #:name
    #:instantiate-handler
    #:define-handler
+   #:define-function-handler
    #:define-instruction
    #:define-query
    #:define-consumer)

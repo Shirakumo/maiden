@@ -33,4 +33,5 @@
                :closer-mop
                :uuid
                :form-fiddle
+               :lambda-fiddle
                :documentation-utils))
