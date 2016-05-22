@@ -134,7 +134,8 @@
 (defmethod (setf account) (account (name string))
   (dolist (identity (identities account))
     (setf (account identity) account))
-  (setf (gethash name *accounts*) account))
+  (setf (gethash name *accounts*) account)
+  (ubiquitous:offload (account-pathname name) :lisp account))
 
 (defmethod (setf account) (account (user user))
   (setf (account (ensure-identity user)) account))
