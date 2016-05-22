@@ -98,4 +98,6 @@
   (when (and user (not (eql user :system)))
     (unless (access-p field account user :w)
       (error 'field-access-denied :field field :account account :user user)))
-  (setf (gethash field (data account)) value))
+  (setf (gethash field (data account)) value)
+  (ubiquitous:offload (account-pathname account) :lisp account)
+  value)
