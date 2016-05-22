@@ -23,12 +23,27 @@
    (charr #xFFF0 #xFFFF)
    (chars #x007F #x061C #x1680 #x180E #x205F #x2060 #x3000 #xFEFF)))
 
+(defun normalize-account-name (name)
+  (remove-if (lambda (c) (find c *illegal-account-name-chars*))
+             (string-downcase (etypecase name
+                                (string name)
+                                (account (name name))))))
+
 (defvar *accounts* (make-hash-table :test 'equal))
 (defvar *identity-account-map* (make-hash-table :test 'equalp))
 
 (defclass account (named-entity)
   ((identities :initform () :accessor identities)
-   (data :initform (make-hash-table :test 'equal) :reader account-data)))
+   (password :initarg :password :accessor password)
+   (data :initform (make-hash-table :test 'equal) :reader account-data))
+  (:default-initargs
+   :password (error "PASSWORD required.")))
+
+(defmethod initialize-instance :after ((account account) &key)
+  (setf (name account) (normalize-account-name (name account)))
+  (when (gethash name *accounts*)
+    (error "An account with the name ~s already exists."))
+  (setf (account (name account)) account))
 
 (defmethod ubiquitous:field ((account account) field &optional default)
   (gethash (string-downcase field) (account-data data) default))
@@ -81,12 +96,6 @@
 
 (defmethod identity-p ((account account) (identity cons))
   (find (ensure-identity cons) (identities account) :test #'equalp))
-
-(defun normalize-account-name (name)
-  (remove-if (lambda (c) (find c *illegal-account-name-chars*))
-             (string-downcase (etypecase name
-                                (string name)
-                                (account (name name))))))
 
 (defun account-pathname (name)
   (maiden-storage:config-pathname
