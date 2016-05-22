@@ -47,6 +47,6 @@
 
 (define-command (location query-coordinates) (c ev location)
   :command "coordinates of"
-  (multiple-value-bind (coordinates location) (coordiantes location)
+  (multiple-value-bind (coordinates location) (coordinates location)
     (reply ev "~s is located at ~flat ~flng."
            location (first coordinates) (second coordinates))))
