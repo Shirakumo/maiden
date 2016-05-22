@@ -10,9 +10,7 @@
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands)
   ;; chatlog.lisp
   (:export
-   #:chatlog
-   #:activate
-   #:initialize)
+   #:chatlog)
   ;; database.lisp
   (:export
    #:connection

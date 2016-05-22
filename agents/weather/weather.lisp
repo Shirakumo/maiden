@@ -48,12 +48,12 @@
   (or (with-storage (c) (value :api-key))
       (error "You must set an API key before you can use this service. See http://forecast.io/ to get a key and finally set it with `set weather api key <key>`.")))
 
-(maiden-commands:define-command (weather weather weather-location) (c ev location)
+(maiden-commands:define-command (weather weather-location) (c ev location)
   :command "weather in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
     (reply ev "Weather in ~a: ~a" resolved-location (format-weather-data data))))
 
-(maiden-commands:define-command (weather weather-for weather-user) (c ev user)
+(maiden-commands:define-command (weather weather-user) (c ev user)
   :command "weather for"
   (let ((location (maiden-location:user-location user)))
     (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)

@@ -13,4 +13,5 @@
    #:geo-information
    #:coordinates
    #:address
-   #:user-location))
+   #:user-location
+   #:location))

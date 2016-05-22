@@ -10,10 +10,7 @@
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands)
   ;; interface.lisp
   (:export
-   #:notify
-   #:forget-notes
-   #:send-join-note
-   #:send-note)
+   #:notify)
   ;; notes.lisp
   (:export
    #:note

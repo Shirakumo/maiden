@@ -58,11 +58,11 @@
               (event-loop ,event)))))
 
 (defmacro define-command ((consumer name &optional (event-type name)) (instance event &rest args) &body body)
-  (form-fiddle:with-body-options (body options command command-event-variable) body
+  (form-fiddle:with-body-options (body options superclasses command command-event-variable) body
     (let ((command-event-variable (or command-event-variable (gensym "COMMAND-EVENT")))
           (error (gensym "ERROR")))
-      `(progn (define-instruction (,consumer ,name ,event-type) (,instance ,command-event-variable ,@args)
-                :superclasses (command-event)
+      `(progn (define-function-handler (,consumer ,name ,event-type) (,instance ,command-event-variable ,@args)
+                :superclasses (,@superclasses command-event)
                 ,@options
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))

@@ -14,6 +14,4 @@
    #:location-coordinates
    #:location-weather-data
    #:format-weather-data
-   #:weather
-   #:set-api-key
    #:weather))
