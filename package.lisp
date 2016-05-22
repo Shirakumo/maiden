@@ -91,7 +91,10 @@
    #:id
    #:named-entity
    #:name
+   #:storage-entity
+   #:data
    #:client-entity
+   #:client
    #:server
    #:user
    #:ensure-user

@@ -80,6 +80,9 @@
 (defmethod find-entity (id (list list))
   (loop for item in list thereis (find-entity id item)))
 
+(defclass storage-entity (entity)
+  ((data :initform (make-hash-table :test 'equal) :accessor data)))
+
 (defclass client-entity (named-entity)
   ((client :initarg :client :accessor client))
   (:default-initargs
@@ -92,7 +95,7 @@
 (defclass server (client-entity)
   ())
 
-(defclass user (client-entity)
+(defclass user (client-entity storage-entity)
   ((authenticated :initarg :authenticated)))
 
 (defmethod ensure-user ((user user) client)
