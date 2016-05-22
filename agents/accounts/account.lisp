@@ -57,6 +57,8 @@
 
 (defmethod add-identity ((account account) (identity cons))
   (let ((identity (ensure-identity identity)))
+    (when (gethash identity *identity-account-map*)
+      (error "The identity ~s is already linked to an account!" identity))
     (pushnew identity (identities account) :test #'equalp)
     (setf (gethash identity *identity-account-map*) account)))
 
