@@ -26,10 +26,14 @@
 
 (defun format-weather-data (data)
   (flet ((d (field) (cdr (assoc field data :test #'equalp))))
-    (format NIL "~a at ~f°C~:[ (feels like ~f°C)~;~*~], ~f% humidity, ~fkm/h wind, ~fhPa pressure."
-            (d "summary") (d "temperature")
-            (= (d "temperature") (d "apparentTemperature")) (d "apparentTemperature")
-            (round (* 100 (d "humidity"))) (d "windSpeed") (d "pressure"))))
+    (let ((summary (d "summary"))
+          (temperature (round (d "temperature")))
+          (apparent (round (d "apparentTemperature")))
+          (humidity (round (* 100 (d "humidity"))))
+          (wind (round (d "windSpeed")))
+          (pressure (round (d "pressure"))))
+      (format NIL "~a at ~d°C~:[ (feels like ~d°C)~;~*~], ~d% humidity, ~dkm/h wind, ~dhPa pressure."
+              summary temperature (= temperature apparent) apparent humidity wind pressure))))
 
 (define-consumer weather (agent)
   ())
