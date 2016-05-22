@@ -205,7 +205,7 @@
            (,@(slot-args->slots args)
             ,@extra-slots)
            ,@class-options)
-         (define-handler (,consumer ,name ,event-type) (,consumer-var ,event-var ,@(lambda-fiddle:extract-lambda-vars (cddr args)))
+         (define-handler (,consumer ,name ,event-type) (,consumer-var ,event-var ,@(lambda-fiddle:extract-lambda-vars args))
            ,@options
            ,@body)))))
 
