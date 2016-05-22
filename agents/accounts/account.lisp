@@ -143,14 +143,6 @@
 (defmethod (setf account) (account (identity cons))
   (add-identity account identity))
 
-(defun create-account (name)
-  (let ((name (normalize-account-name name)))
-    (when (account name :error NIL)
-      (error 'account-already-exists :name name))
-    (let ((account (make-instance 'account :name name)))
-      (ubiquitous:offload (account-pathname name) "lisp" account)
-      (setf (account name) account))))
-
 (defun delete-account (account-ish)
   (let ((account (account account-ish)))
     (uiop:delete-file-if-exists (account-pathname account))

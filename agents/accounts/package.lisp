@@ -18,7 +18,6 @@
    #:remove-identity
    #:identity-p
    #:account
-   #:create-account
    #:delete-account)
   ;; conditions.lisp
   (:export
