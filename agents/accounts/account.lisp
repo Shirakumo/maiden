@@ -110,7 +110,8 @@
   account)
 
 (defmethod account ((user user) &rest args)
-  (apply #'account (ensure-identity user) args))
+  (or (gethash 'account (data user))
+      (apply #'account (ensure-identity user) args)))
 
 (defmethod account ((identity cons) &key (error T))
   (let ((identity (ensure-identity identity)))
@@ -138,7 +139,7 @@
   (ubiquitous:offload (account-pathname name) :lisp account))
 
 (defmethod (setf account) (account (user user))
-  (setf (account (ensure-identity user)) account))
+  (setf (gethash 'account (data user)) account))
 
 (defmethod (setf account) (account (identity cons))
   (add-identity account identity))

@@ -66,9 +66,10 @@
                 (:w '(:w :rw))
                 (:rw '(:rw)))))
     (or (find (getf (access info) :world) test)
-        (and (authenticated-p user)
-             (identity-p account user)
-             (find (getf (access info) :owner) test)))))
+        (and (find (getf (access info) :owner) test)
+             (or (eql (gethash 'account (data user)) account)
+                 (and (authenticated-p user)
+                      (identity-p account user)))))))
 
 (defmethod field (field (account (eql T)) user)
   (field field (account user) user))
