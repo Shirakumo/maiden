@@ -67,9 +67,7 @@
                 (:rw '(:rw)))))
     (or (find (getf (access info) :world) test)
         (and (find (getf (access info) :owner) test)
-             (or (eql (gethash 'account (data user)) account)
-                 (and (authenticated-p user)
-                      (identity-p account user)))))))
+             (eql (account user) account)))))
 
 (defmethod field (field (account (eql T)) user)
   (field field (account user) user))
@@ -84,7 +82,7 @@
   (when (and user (not (eql user :system)))
     (unless (access-p field account user :r)
       (error 'field-access-denied :field field :account account :user user)))
-  (gethash field (data account)))
+  (data-value field account))
 
 (defmethod (setf field) (value field (account (eql T)) user)
   (setf (field field (account user) user) value))
@@ -99,6 +97,5 @@
   (when (and user (not (eql user :system)))
     (unless (access-p field account user :w)
       (error 'field-access-denied :field field :account account :user user)))
-  (setf (gethash field (data account)) value)
-  (ubiquitous:offload (account-pathname account) :lisp account)
+  (setf (data-value field account) value)
   value)

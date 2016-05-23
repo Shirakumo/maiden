@@ -32,10 +32,9 @@
 (defvar *accounts* (make-hash-table :test 'equal))
 (defvar *identity-account-map* (make-hash-table :test 'equalp))
 
-(defclass account (named-entity)
+(defclass account (named-entity data-entity)
   ((identities :initform () :accessor identities)
-   (password :initarg :password :accessor password)
-   (data :initform (make-hash-table :test 'equal) :reader account-data))
+   (password :initarg :password :accessor password))
   (:default-initargs
    :password (error "PASSWORD required.")))
 
@@ -45,19 +44,16 @@
     (error "An account with the name ~s already exists."))
   (setf (account (name account)) account))
 
-(defmethod ubiquitous:field ((account account) field &optional default)
-  (gethash (string-downcase field) (account-data data) default))
+(defmethod (setf data-value) :after (value field (account account))
+  (ubiquitous:offload (account-pathname account) :lisp account))
 
-(defmethod (setf ubiquitous:field) (value (account account) field)
-  (setf (gethash (string-downcase field) (account-data data)) value))
+(defmethod identity ((event user-event))
+  (identity (user event)))
 
-(defmethod ensure-identity ((event user-event))
-  (ensure-identity (user event)))
-
-(defmethod ensure-identity ((user user))
+(defmethod identity ((user user))
   (cons (name (client user)) (name user)))
 
-(defmethod ensure-identity ((cons cons))
+(defmethod identity ((cons cons))
   (when (typep (car cons) 'client)
     (setf (car cons) (name (car cons))))
   (when (typep (cdr cons) 'user)
@@ -65,37 +61,37 @@
   cons)
 
 (defmethod add-identity (account-ish identity-ish)
-  (add-identity account-ish (ensure-identity identity-ish)))
+  (add-identity account-ish (identity identity-ish)))
 
 (defmethod add-identity (account-ish (identity cons))
   (add-identity (account account-ish) identity))
 
 (defmethod add-identity ((account account) (identity cons))
-  (let ((identity (ensure-identity identity)))
+  (let ((identity (identity identity)))
     (when (gethash identity *identity-account-map*)
       (error "The identity ~s is already linked to an account!" identity))
     (pushnew identity (identities account) :test #'equalp)
     (setf (gethash identity *identity-account-map*) account)))
 
 (defmethod remove-identity (account-ish identity-ish)
-  (remove-identity account-ish (ensure-identity identity-ish)))
+  (remove-identity account-ish (identity identity-ish)))
 
 (defmethod remove-identity (account-ish (identity cons))
   (remove-identity (account account-ish) identity))
 
 (defmethod remove-identity ((account account) (identity cons))
-  (let ((identity (ensure-identity identity)))
+  (let ((identity (identity identity)))
     (setf (identities account) (remove identity (identities account) :test #'equalp))
     (remhash identity *identity-account-map*)))
 
 (defmethod identity-p (account-ish identity-ish)
-  (identity-p account-ish (ensure-identity identity-ish)))
+  (identity-p account-ish (identity identity-ish)))
 
 (defmethod identity-p (account-ish (identity cons))
   (identity-p (account account-ish) identity))
 
 (defmethod identity-p ((account account) (identity cons))
-  (find (ensure-identity cons) (identities account) :test #'equalp))
+  (find (identity cons) (identities account) :test #'equalp))
 
 (defun account-pathname (name)
   (maiden-storage:config-pathname
@@ -110,11 +106,12 @@
   account)
 
 (defmethod account ((user user) &rest args)
-  (or (gethash 'account (data user))
-      (apply #'account (ensure-identity user) args)))
+  (or (data-value user 'account)
+      (and (authenticated user)
+           (setf (account user) (apply #'account (identity user) args)))))
 
 (defmethod account ((identity cons) &key (error T))
-  (let ((identity (ensure-identity identity)))
+  (let ((identity (identity identity)))
     (or (gethash identity *identity-account-map*)
         (when error (error 'no-account-for-identity :identity identity)))))
 
@@ -129,6 +126,9 @@
           (ubiquitous:no-storage-file () NIL))
         (when error (error 'account-not-found :name name)))))
 
+(defmethod (setf account) (account (user user))
+  (setf (data-value 'account user) account))
+
 (defmethod (setf account) (account (name symbol))
   (setf (account (string name)) account))
 
@@ -137,9 +137,6 @@
     (setf (account identity) account))
   (setf (gethash name *accounts*) account)
   (ubiquitous:offload (account-pathname name) :lisp account))
-
-(defmethod (setf account) (account (user user))
-  (setf (gethash 'account (data user)) account))
 
 (defmethod (setf account) (account (identity cons))
   (add-identity account identity))
