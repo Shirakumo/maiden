@@ -80,8 +80,14 @@
 (defmethod find-entity (id (list list))
   (loop for item in list thereis (find-entity id item)))
 
-(defclass storage-entity (entity)
+(defclass data-entity (entity)
   ((data :initform (make-hash-table :test 'equal) :accessor data)))
+
+(defmethod data-value (field (entity data-entity))
+  (gethash field (data entity)))
+
+(defmethod (setf data-value) (value field (entity data-entity))
+  (setf (gethash field (data entity)) value))
 
 (defclass client-entity (named-entity)
   ((client :initarg :client :accessor client))
@@ -95,7 +101,7 @@
 (defclass server (client-entity)
   ())
 
-(defclass user (client-entity storage-entity)
+(defclass user (client-entity data-entity)
   ((authenticated :initarg :authenticated)))
 
 (defmethod ensure-user ((user user) client)

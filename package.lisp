@@ -91,8 +91,9 @@
    #:id
    #:named-entity
    #:name
-   #:storage-entity
+   #:data-entity
    #:data
+   #:data-value
    #:client-entity
    #:client
    #:server
