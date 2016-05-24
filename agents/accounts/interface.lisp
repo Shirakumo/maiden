@@ -16,7 +16,7 @@
 (define-command (accounts login) (c ev password &optional account)
   :command "login"
   (let ((account (account (or account (user ev)))))
-    (cond ((gethash 'account (data (user ev)))
+    (cond ((account (user ev))
            (error "I still remember you, ~a." (name (user ev))))
           ((string/= password (password account))
            (error "Invalid password."))
@@ -28,7 +28,7 @@
   :command "create account"
   (let ((name (if (or (not name) (string= name "")) (name (user ev)) name))
         (password (if (or (not password) (string= password "")) (random-string 6) password)))
-    (when (account (user ev) :error NIL)
+    (when (account (identity (user ev)) :error NIL)
       (error "This identity is already tied to ~a." (account ev)))
     (let ((account (make-instance 'account :name name :password password)))
       (setf (account (user ev)) account)
@@ -40,18 +40,18 @@
 
 (define-command (accounts destroy) (c ev)
   :command "destroy account"
-  (let ((account (account (user ev))))
-    (when (and (not (gethash 'account (data (user ev))))
-               (not (authenticated user)))
+  (let ((account (account (user ev) :error nIL)))
+    (unless account
       (error "Please log in to this account first."))
     (delete-account account)
-    (reply ev "Your account ~a has been deleted." (name account))))
+    (setf (account (user ev)) NIL)
+    (reply ev "Your account ~a has been deleted and you have been logged out." (name account))))
 
 (define-command (accounts associate) (c ev account password)
   :command "associate with account"
   (let ((account (account account)))
-    (when (account (user ev) :error NIL)
-      (error "This identity is already associated with ~a." (account ev)))
+    (when (account (identity (user ev)) :error NIL)
+      (error "This identity is already associated with ~a." (account (identity ev))))
     (unless (authenticated (user ev))
       (error "You must be authenticated to associate this identity with the account."))
     (unless (string= (password account) password)
