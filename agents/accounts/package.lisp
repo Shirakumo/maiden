@@ -7,13 +7,14 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-accounts
   (:nicknames #:org.shirakumo.maiden.agents.accounts)
-  (:use #:cl #:maiden)
+  (:use #:cl #:maiden #:maiden-commands)
+  (:shadow #:identity)
   ;; account.lisp
   (:export
    #:account
    #:identities
-   #:account-data
-   #:ensure-identity
+   #:password
+   #:identity
    #:add-identity
    #:remove-identity
    #:identity-p

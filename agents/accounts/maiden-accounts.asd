@@ -18,4 +18,5 @@
                (:file "fields")
                (:file "interface")
                (:file "documentation"))
-  :depends-on (:maiden-storage))
+  :depends-on (:maiden-storage
+               :maiden-commands))
