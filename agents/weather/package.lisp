@@ -14,6 +14,6 @@
    #:location-coordinates
    #:location-weather-data
    #:format-weather-data
-   #:format-forecast-data
+   #:format-daily-forecast
    #:weather)
   (:shadowing-import-from #:cl #:identity))

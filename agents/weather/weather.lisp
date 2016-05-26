@@ -46,7 +46,7 @@
     (5 "Friday")
     (6 "Saturday")))
 
-(defun format-forecast-data (data)
+(defun format-daily-forecast (data)
   (flet ((d (field) (cdr (assoc field data :test #'equalp))))
     (format NIL "~{~{~a ~d-~d°C~}~^, ~}"
             (loop for dat in (d "data")
@@ -75,7 +75,7 @@
 (maiden-commands:define-command (weather forecast-location) (c ev location)
   :command "forecast in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
-    (reply ev "Forecast in ~a: ~a" resolved-location (format-forecast-data data))))
+    (reply ev "Forecast in ~a: ~a" resolved-location (format-daily-forecast data))))
 
 (maiden-commands:define-command (weather weather-user) (c ev user)
   :command "weather for"
@@ -87,4 +87,4 @@
   :command "forecast for"
   (let ((location (maiden-location:user-location user)))
     (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
-      (reply ev "Forecast for ~a in ~a: ~a" (name account) resolved-location (format-weather-data data)))))
+      (reply ev "Forecast for ~a in ~a: ~a" (name account) resolved-location (format-daily-forecast data)))))
