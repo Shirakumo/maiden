@@ -24,7 +24,7 @@
   ())
 
 (defmethod ensure-user ((name string) (client user-client))
-  (or (user name client)
+  (or (find-user name client)
       (make-instance 'user :name name :client client)))
 
 (defmethod authenticate (user (client user-client))
@@ -43,5 +43,5 @@
   ())
 
 (defmethod ensure-channel ((name string) (client channel-client))
-  (or (channel name client)
+  (or (find-channel name client)
       (make-instance 'channel :name name :client client)))
