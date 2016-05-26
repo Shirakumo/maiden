@@ -77,8 +77,14 @@
 ;; FIXME: Maybe put this all somewhere else?
 
 (defvar *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0))
+(defun universal-to-unix (universal)
+  (- universal *unix-epoch-difference*))
+
+(defun unix-to-universal (unix)
+  (+ unix *unix-epoch-difference*))
+
 (defun get-unix-time ()
-  (- (get-universal-time) *unix-epoch-difference*))
+  (universal-to-unix (get-universal-time)))
 
 (defun format-relative-time (seconds)
   (if (= seconds 0)

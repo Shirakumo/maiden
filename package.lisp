@@ -155,6 +155,8 @@
    #:with-retry-restart
    #:do-issue
    #:broadcast
+   #:universal-to-unix
+   #:unix-to-universal
    #:get-unix-time
    #:format-relative-time
    #:format-absolute-time
