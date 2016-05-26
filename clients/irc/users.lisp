@@ -6,6 +6,11 @@
 
 (in-package #:org.shirakumo.maiden.clients.irc)
 
+;; FIXME: We need to lock up the user and channel tables //everywhere//
+;;        during updates to ensure consistency during changes. Otherwise
+;;        things like rapid nicks or parts/joins could end up confusing
+;;        the system.
+
 (defclass irc-server (server)
   ())
 
@@ -79,6 +84,11 @@
 (defmethod remove-channel ((channel irc-channel) (client irc-client))
   (remove-channel (name channel) client))
 
+(defun prune-users (client)
+  (loop for user being the hash-values of client
+        do (unless (channels user)
+             (remove-user user client))))
+
 (define-handler (irc-client track-join irc:msg-join) (client ev channel user)
   :match-consumer 'client
   (cond ((matches user (nickname client))
@@ -94,19 +104,32 @@
          (setf (gethash (name user) (user-map client)) user)
          (setf (gethash (name user) (user-map channel)) user))))
 
+(define-handler (irc-client track-nick irc:msg-nick) (client ev user nickname)
+  :match-consumer 'client
+  :after '(nick-change)
+  (unless (matches nickname (nickname client))
+    (dolist (channel (channels user))
+      (remhash (name user) (user-map channel))
+      (setf (gethash nickname (user-map channel)) user))
+    (remhash (name user) (user-map client))
+    (setf (gethash nickname (user-map user)) user)
+    (setf (name user) nickname)))
+
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
   :match-consumer 'client
   (cond ((matches user (nickname client))
          (remove-channel channel))
         (T
-         (remhash (name user) (user-map channel)))))
+         (remhash (name user) (user-map channel))))
+  (prune-users client))
 
 (define-handler (irc-client track-kick irc:msg-kick) (client ev channel nickname)
   :match-consumer 'client
   (cond ((matches nickname (nickname client))
          (remove-channel channel))
         (T
-         (remhash nickname (user-map channel)))))
+         (remhash nickname (user-map channel))))
+  (prune-users client))
 
 (define-handler (irc-client track-quit irc:msg-quit) (client ev user)
   :match-consumer 'client
