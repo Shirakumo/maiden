@@ -8,13 +8,15 @@
 
 (defvar *send-length-limit* 512)
 
-(define-consumer client (text-tcp-client reconnecting-client timeout-client user-client)
+(define-consumer client (text-tcp-client reconnecting-client timeout-client user-client channel-client)
   ((nickname :initarg :nickname :accessor nickname)
    (username :initarg :username :accessor username)
    (password :initarg :password :accessor password)
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
-   (services :initarg :services :accessor services))
+   (services :initarg :services :accessor services)
+   (users :initform (make-hash-table :test 'equalp) :accessor user-map)
+   (channels :inifrom (make-hash-table :test 'equalp) :accessor channel-map))
   (:default-initargs
    :nickname (machine-instance)
    :username (machine-instance)
@@ -78,6 +80,26 @@
 
 (defmethod handle-connection-idle ((client client))
   (irc:ping client (host client)))
+
+(defmethod users ((client client))
+  (loop for v being the hash-values of (user-map client) collect v))
+
+(defmethod find-user (name (client client))
+  (gethash name (user-map client)))
+
+(defmethod ensure-user (name (client client))
+  (or (find-user name client)
+      (make-instance 'user :name name :client client)))
+
+(defmethod channels ((client client))
+  (loop for v being the hash-values of (channel-map client) collect v))
+
+(defmethod find-channel (name (client client))
+  (gethash name (channel-map client)))
+
+(defmethod ensure-channel (name (client client))
+  (or (find-channel name client)
+      (make-instance 'channel :name name :client client)))
 
 (define-handler (client sender send-event) (client ev)
   :match-consumer 'client
