@@ -17,6 +17,7 @@
                (:file "events")
                (:file "commands")
                (:file "client")
+               (:file "users")
                (:file "documentation"))
   :depends-on (:maiden-networking
                :babel

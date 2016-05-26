@@ -15,8 +15,8 @@
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
    (services :initarg :services :accessor services)
-   (users :initform (make-hash-table :test 'equalp) :accessor user-map)
-   (channels :inifrom (make-hash-table :test 'equalp) :accessor channel-map))
+   (channels :inifrom (make-hash-table :test 'equalp) :accessor channel-map)
+   (users :inifrom (make-hash-table :test 'equalp) :accessor user-map))
   (:default-initargs
    :nickname (machine-instance)
    :username (machine-instance)
@@ -80,26 +80,6 @@
 
 (defmethod handle-connection-idle ((client irc-client))
   (irc:ping client (host client)))
-
-(defmethod users ((client irc-client))
-  (loop for v being the hash-values of (user-map client) collect v))
-
-(defmethod find-user (name (client irc-client))
-  (gethash name (user-map client)))
-
-(defmethod ensure-user (name (client irc-client))
-  (or (find-user name client)
-      (make-instance 'user :name name :client client)))
-
-(defmethod channels ((client irc-client))
-  (loop for v being the hash-values of (channel-map client) collect v))
-
-(defmethod find-channel (name (client irc-client))
-  (gethash name (channel-map client)))
-
-(defmethod ensure-channel (name (client irc-client))
-  (or (find-channel name client)
-      (make-instance 'channel :name name :client client)))
 
 (define-handler (irc-client sender send-event) (client ev)
   :match-consumer 'client

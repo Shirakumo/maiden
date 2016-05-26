@@ -1,0 +1,118 @@
+#|
+ This file is a part of Maiden
+ (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+ Author: Nicolas Hafner <shinmera@tymoon.eu>
+|#
+
+(in-package #:org.shirakumo.maiden.clients.irc)
+
+(defclass irc-server (server)
+  ())
+
+(defclass irc-user (user)
+  ((user :initarg :user :reader user)
+   (host :initarg :host :reader host))
+  (:default-initargs
+   :user ""
+   :host ""))
+
+(defclass irc-channel (channel)
+  ((users :initform (make-hash-table :test 'equalp) :accessor user-map)))
+
+(defmethod users ((client irc-client))
+  (loop for v being the hash-values of (user-map client) collect v))
+
+(defmethod users ((channel channel))
+  (loop for v being the hash-values of (user-map channel) collect v))
+
+(defmethod channels ((user irc-user))
+  (loop for channel being the hash-values of (channel-map (client user))
+        when (find-user user channel)
+        collect channel))
+
+(defmethod channels ((client irc-client))
+  (loop for v being the hash-values of (channel-map client) collect v))
+
+(defmethod find-user ((name string) (client irc-client))
+  (gethash name (user-map client)))
+
+(defmethod find-user ((name string) (channel channel))
+  (gethash name (user-map channel)))
+
+(defmethod find-channel ((name string) (client irc-client))
+  (gethash name (channel-map client)))
+
+(defmethod find-channel ((name string) (user irc-user))
+  (find name (channels user) :test #'matches))
+
+(defmethod ensure-user ((name string) (client irc-client))
+  (or (find-user name client)
+      (make-instance 'irc-user :name name :client client)))
+
+(defmethod ensure-channel ((name string) (client irc-client))
+  (or (find-channel name client)
+      (make-instance 'irc-channel :name name :client client)))
+
+(defmethod remove-user ((name string) (channel irc-channel))
+  (remhash name (user-map channel)))
+
+(defmethod remove-user ((user irc-user) (channel irc-channel))
+  (remove-user (name user) channel))
+
+(defmethod remove-user ((name string) (client irc-client))
+  (remove-user (find-user name client) client))
+
+(defmethod remove-user ((user irc-user) (client irc-client))
+  (dolist (channel (channels user))
+    (remove-user user channel))
+  (remhash (name user) (user-map client)))
+
+(defmethod remove-channel ((name string) (client irc-client))
+  (remhash name (channel-map client)))
+
+(defmethod remove-channel ((name string) (user irc-user))
+  (remove-channel (find-channel name user) user))
+
+(defmethod remove-channel ((channel irc-channel) (user irc-user))
+  (remove-user user channel))
+
+(defmethod remove-channel ((channel irc-channel) (client irc-client))
+  (remove-channel (name channel) client))
+
+(define-handler (irc-client track-join irc:msg-join) (client ev channel user)
+  :match-consumer 'client
+  (cond ((matches user (nickname client))
+         (setf (gethash (name channel) (channel-map client)) channel))
+        (T
+         ;; Note!! We have to be 100% fukin' sure that this is either the ONLY instance
+         ;;        of this particular user, or one that already exists in the map.
+         ;;        Otherwise we might run into inconsistency issues where some parts of
+         ;;        the system might have a dupe of a user with a different object
+         ;;        identity! This can actually happen no matter what if we are particularly
+         ;;        unlucky about concurrency and other parts of the system retaining user
+         ;;        objects for a prolonged period of time.
+         (setf (gethash (name user) (user-map client)) user)
+         (setf (gethash (name user) (user-map channel)) user))))
+
+(define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
+  :match-consumer 'client
+  (cond ((matches user (nickname client))
+         (remove-channel channel))
+        (T
+         (remhash (name user) (user-map channel)))))
+
+(define-handler (irc-client track-kick irc:msg-kick) (client ev channel nickname)
+  :match-consumer 'client
+  (cond ((matches nickname (nickname client))
+         (remove-channel channel))
+        (T
+         (remhash nickname (user-map channel)))))
+
+(define-handler (irc-client track-quit irc:msg-quit) (client ev user)
+  :match-consumer 'client
+  (remove-user user))
+
+(define-handler (irc-client track-kill irc:msg-kill) (client ev nickname)
+  :match-consumer 'client
+  (let ((user (find-user nickname client)))
+    (when user (remove-user user))))
