@@ -19,4 +19,5 @@
   :depends-on (:maiden-commands
                :maiden-storage
                :maiden-location
-               :maiden-api-access))
+               :maiden-api-access
+               :local-time))

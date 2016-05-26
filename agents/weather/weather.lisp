@@ -8,20 +8,20 @@
 
 (defparameter *weather-api* "https://api.forecast.io/forecast/~a/~f,~f")
 
-(defun weather-data (apikey lat lng)
+(defun weather-data (apikey lat lng &key (time-frame :currently))
   (let* ((data (request-as :json (format NIL *weather-api* apikey lat lng)
-                           :get '(("units" "si") ("exclude" "hourly,minutely,daily,flags,alerts")))))
+                           :get `(("units" "si") ("exclude" ,(format NIL "~{~(~a~)~^,~}" (remove time-frame '(:currently :minutely :hourly :daily :flags :alerts))))))))
     (cond ((consp data)
-           (cdr (json-v data "currently")))
+           (cdr (json-v data (string-downcase time-frame))))
           (T
            (error "Forecast.io failed to perform your request for an unknown reason.")))))
 
-(defun location-weather-data (apikey location)
+(defun location-weather-data (apikey location &key (time-frame :currently))
   (multiple-value-bind (loc resolved-location) (maiden-location:coordinates location)
     (cond ((not loc)
            (error "Could not determine any location called ~s." location))
           (T
-           (values (weather-data apikey (first loc) (second loc))
+           (values (weather-data apikey (first loc) (second loc) :time-frame time-frame)
                    resolved-location)))))
 
 (defun format-weather-data (data)
@@ -34,6 +34,25 @@
           (pressure (round (d "pressure"))))
       (format NIL "~a at ~d°C~:[ (feels like ~d°C)~;~*~], ~d% humidity, ~dkm/h wind, ~dhPa pressure."
               summary temperature (= temperature apparent) apparent humidity wind pressure))))
+
+(defun day-of-week (unix-time)
+  (case (local-time:timestamp-day-of-week
+         (local-time:unix-to-timestamp unix-time))
+    (0 "Sunday")
+    (1 "Monday")
+    (2 "Tuesday")
+    (3 "Wednesday")
+    (4 "Thursday")
+    (5 "Friday")
+    (6 "Saturday")))
+
+(defun format-forecast-data (data)
+  (flet ((d (field) (cdr (assoc field data :test #'equalp))))
+    (format NIL "~{~{~a ~d-~d°C~}~^, ~}"
+            (loop for dat in (d "data")
+                  collect (list (day-of-week (json-v dat "time"))
+                                (round (json-v dat "temperatureMin"))
+                                (round (json-v dat "temperatureMax")))))))
 
 (define-consumer weather (agent)
   ())
@@ -53,8 +72,19 @@
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
     (reply ev "Weather in ~a: ~a" resolved-location (format-weather-data data))))
 
+(maiden-commands:define-command (weather forecast-location) (c ev location)
+  :command "forecast in"
+  (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
+    (reply ev "Forecast in ~a: ~a" resolved-location (format-forecast-data data))))
+
 (maiden-commands:define-command (weather weather-user) (c ev user)
   :command "weather for"
   (let ((location (maiden-location:user-location user)))
     (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
       (reply ev "Weather for ~a in ~a: ~a" (name account) resolved-location (format-weather-data data)))))
+
+(maiden-commands:define-command (weather weather-user) (c ev user)
+  :command "forecast for"
+  (let ((location (maiden-location:user-location user)))
+    (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
+      (reply ev "Forecast for ~a in ~a: ~a" (name account) resolved-location (format-weather-data data)))))
