@@ -66,7 +66,7 @@
                           for (name delim) = (enlist slot NIL)
                           when name append (list (kw name) (if delim `(cl-ppcre:split ,(string delim) ,name) name)))))
     `(progn
-       (define-event ,name (reply-event ,@direct-superclasses)
+       (define-event ,name (,@direct-superclasses reply-event)
          ,(loop for slot in slots
                 for (name delim) = (enlist slot NIL)
                 when name collect `(,name :initarg ,(kw name)))
@@ -75,15 +75,18 @@
          ;; If there's a chance of a multi-target field, we need to generate a list and permute.
          ;; However, this case is rare, so we spend a small amount of code dupe optimising the
          ;; common case to not do any of that crap.
-         ,(if (some #'consp slots)
-              `(mapcar (lambda (other-args)
-                         (apply #'make-instance ',name :client client :code code :args args :user user other-args))
-                       ,(when regex
-                          `(when args
-                             (cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
-                               (permute (list ,@slot-kargs))))))
-              `(cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
-                 (list (make-instance ',name :client client :code code :args args :user user ,@slot-kargs)))))
+         ,(cond ((some #'consp slots)
+                 `(mapcar (lambda (other-args)
+                            (apply #'make-instance ',name :client client :code code :args args :user user other-args))
+                          (or (when args
+                                (cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
+                                  (permute (list ,@slot-kargs))))
+                              ())))
+                (slots
+                 `(cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
+                    (list (make-instance ',name :client client :code code :args args :user user ,@slot-kargs))))
+                (T
+                 `(list (make-instance ',name :client client :code code :args args :user user)))))
        (pushnew ',name (gethash ,code *reply-events*)))))
 
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
@@ -100,7 +103,6 @@
 (define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNEL #\,)) (user-entered irc-channel-event))
 (define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNEL #\,)) (user-left irc-channel-event))
 (define-irc-reply MSG-MODE MODE ("([^ ]+) ([^ ]+)( ([^ ]+)( ([^ ]+)( ([^ ]+))?)?)?" TARGET MODE NIL LIMIT NIL USERNAME NIL BAN-MASK))
-;; FIXME
 (define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC) (irc-channel-event channel-topic-changed))
 (define-irc-reply MSG-NAMES NAMES ("([^ ]+)" (CHANNEL #\,)) (irc-channel-event))
 (define-irc-reply MSG-LIST LIST ("([^ ]+)( ([^ ]+))?" (CHANNEL #\,) NIL SERVER) (irc-channel-event))
