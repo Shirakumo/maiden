@@ -13,9 +13,9 @@
 
 (defun timezone-data (location &optional (time (get-unix-time)))
   (let* ((location (if (listp location) location (maiden-location:coordinates location)))
-         (data (request *timezone-api* :get `(("sensor" "false")
-                                              ("timestamp" ,time)
-                                              ("location" ,(format NIL "~f,~f" (first location) (second location))))))
+         (data (request-as :json *timezone-api* :get `(("sensor" "false")
+                                                       ("timestamp" ,time)
+                                                       ("location" ,(format NIL "~f,~f" (first location) (second location))))))
          (status (json-v data "status")))
     (cond ((string-equal status "ok")
            (list :zone-id (json-v data "timeZoneId")
