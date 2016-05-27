@@ -148,7 +148,7 @@
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
   :match-consumer 'client
   (cond ((matches user (nickname client))
-         (remove-channel channel))
+         (remove-channel channel client))
         (T
          (remhash (name user) (user-map channel))))
   (prune-users client))
@@ -156,16 +156,16 @@
 (define-handler (irc-client track-kick irc:msg-kick) (client ev channel nickname)
   :match-consumer 'client
   (cond ((matches nickname (nickname client))
-         (remove-channel channel))
+         (remove-channel channel client))
         (T
          (remhash nickname (user-map channel))))
   (prune-users client))
 
 (define-handler (irc-client track-quit irc:msg-quit) (client ev user)
   :match-consumer 'client
-  (remove-user user))
+  (remove-user user client))
 
 (define-handler (irc-client track-kill irc:msg-kill) (client ev nickname)
   :match-consumer 'client
   (let ((user (find-user nickname client)))
-    (when user (remove-user user))))
+    (when user (remove-user user client))))
