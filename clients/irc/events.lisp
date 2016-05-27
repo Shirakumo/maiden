@@ -425,7 +425,7 @@
 (define-irc-reply RPL-TIMEONSERVERIS 679 ("([^ ]+)( ([^ ]+|0))? ([^ ]+) ([^ ]+) (:.*)" SECONDS NIL NANOSECONDS TIMEZONE FLAGS INFO))
 (define-irc-reply RPL-NETWORKS 682 ("([^ ]+) ([^ ]+) ([^ ]+) (:.*)" NAME THROUGH-NAME HOPS INFO))
 (define-irc-reply RPL-YOURLANGUAGEIS 687 ("([^ ]+) (:.*)" CODES INFO))
-(define-irc-reply RPL-LANGUAGE 688 ("([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) * (:.*)" CODE REVISION MAINTAINER FLAGS INFO))
+(define-irc-reply RPL-LANGUAGE 688 ("([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) * (:.*)" LANGUAGE-CODE REVISION MAINTAINER FLAGS INFO))
 (define-irc-reply RPL-WHOISSTAFF 689 ("(:.*)" INFO))
 (define-irc-reply RPL-WHOISLANGUAGE 690 ("([^ ]+) ([^ ]+)" NICKNAME LANGUAGE-CODES))
 (define-irc-reply RPL-MODLIST 702 ())
