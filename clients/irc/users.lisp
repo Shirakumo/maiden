@@ -131,8 +131,9 @@
     (dolist (channel (channels user))
       (remhash (name user) (user-map channel))
       (setf (gethash nickname (user-map channel)) user))
-    (remhash (name user) (user-map client))
-    (setf (gethash nickname (user-map user)) user)
+    (when (find-user user client)
+      (remhash (name user) (user-map client))
+      (setf (gethash nickname (user-map user)) user))
     (setf (name user) nickname)))
 
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
