@@ -124,9 +124,9 @@
          (setf (gethash (name user) (user-map client)) user)
          (setf (gethash (name user) (user-map channel)) user))))
 
-(define-handler (irc-client track-namreply irc:rpl-namreply) (client ev channel users)
+(define-handler (irc-client track-namreply irc:rpl-namreply) (client ev channel info)
   :match-consumer 'client
-  (dolist (user (cl-ppcre:split " +" users))
+  (dolist (user (cl-ppcre:split " +" info))
     (let ((object (coerce-irc-object user NIL NIL client)))
       (setf (gethash (name object) (user-map channel)) object)
       ;; We somehow missed a JOIN, but we trust NAMREPLY more.
