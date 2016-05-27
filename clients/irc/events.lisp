@@ -9,6 +9,14 @@
 (define-event irc-event (client-event)
   ())
 
+(define-event irc-channel-event (irc-event channel-event)
+  ())
+
+(defmethod initialize-instance :after ((event irc-channel-event) &key client channel)
+  (unless (typep channel 'channel)
+    (deeds:with-immutable-slots-unlocked ()
+      (setf (slot-value event 'channel) (coerce-irc-object channel NIL NIL client)))))
+
 (define-event reply-event (irc-event user-event)
   ((code :initarg :code)
    (args :initarg :args)))
@@ -29,8 +37,7 @@
      (let ((event-types (or (gethash code *reply-events*)
                             (progn (warn 'unknown-message-warning :client client :message message)
                                    '(unknown-event))))
-           (user (or (find-user nick client)
-                     (make-instance 'irc-user :name nick :user user :host host :client client))))
+           (user (coerce-irc-object nick user host client)))
        (loop for event-type in event-types
              nconc (make-reply-events event-type :client client :code code :args args :user user))))
    (error 'message-parse-error :client client :message message)))
