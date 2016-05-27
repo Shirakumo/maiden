@@ -38,11 +38,17 @@
 (defmethod channels ((client irc-client))
   (loop for v being the hash-values of (channel-map client) collect v))
 
+(defmethod find-user ((user user) thing)
+  (find-user (name user) thing))
+
 (defmethod find-user ((name string) (client irc-client))
   (gethash name (user-map client)))
 
 (defmethod find-user ((name string) (channel channel))
   (gethash name (user-map channel)))
+
+(defmethod find-channel ((channel channel) thing)
+  (find-channel (name channel) thing))
 
 (defmethod find-channel ((name string) (client irc-client))
   (gethash name (channel-map client)))
