@@ -54,13 +54,15 @@
         (code (etypecase code
                 (symbol (string code))
                 (string code)
-                (integer (format NIL "~3,'0d" code)))))
+                (integer (format NIL "~3,'0d" code))))
+        (slot-kargs (loop for slot in slots
+                          for (name delim) = (enlist slot NIL)
+                          when name append (list (kw name) (if delim `(cl-ppcre:split ,(string delim) ,name) name)))))
     `(progn
        (define-event ,name (reply-event ,@direct-superclasses)
          ,(loop for slot in slots
                 for (name delim) = (enlist slot NIL)
-                when name
-                collect `(,name :initarg ,(kw name)))
+                when name collect `(,name :initarg ,(kw name)))
          (:default-initargs :code ,code))
        (defmethod make-reply-events ((type (eql ',name)) &key client code args user)
          ;; If there's a chance of a multi-target field, we need to generate a list and permute.
@@ -72,15 +74,9 @@
                        ,(when regex
                           `(when args
                              (cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
-                               (permute
-                                (list
-                                 ,@(loop for slot in slots
-                                         for (name delim) = (enlist slot NIL)
-                                         when name
-                                         append `(,(kw name) ,(if delim `(cl-ppcre:split ,(string delim) ,name) name)))))))))
+                               (permute (list ,@slot-kargs))))))
               `(cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
-                 (list (make-instance ',name :client client :code code :args args :user user
-                                      ,@(loop for slot in slots when slot append `(,(kw slot) ,slot)))))))
+                 (list (make-instance ',name :client client :code code :args args :user user ,@slot-kargs)))))
        (pushnew ',name (gethash ,code *reply-events*)))))
 
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
