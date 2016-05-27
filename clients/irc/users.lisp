@@ -96,17 +96,18 @@
              (remove-user user client))))
 
 (defun coerce-irc-object (name user host client)
-  (cond ((find #\. name)
-         (make-instance 'irc-server :name name :client client))
-        ((find #\# name)
-         (or (find-channel name client)
-             (make-instance 'irc-channel :name name :client client)))
-        (T
-         (or (find-user name client)
-             (make-instance 'irc-user :name name
-                                      :user (or user "")
-                                      :host (or host "")
-                                      :client client)))))
+  (let ((name (string-left-trim "=+*@" name)))
+    (cond ((find #\. name)
+           (make-instance 'irc-server :name name :client client))
+          ((find #\# name)
+           (or (find-channel name client)
+               (make-instance 'irc-channel :name name :client client)))
+          (T
+           (or (find-user name client)
+               (make-instance 'irc-user :name name
+                                        :user (or user "")
+                                        :host (or host "")
+                                        :client client))))))
 
 (define-handler (irc-client track-join irc:msg-join) (client ev channel user)
   :match-consumer 'client
