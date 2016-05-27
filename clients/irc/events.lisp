@@ -10,9 +10,7 @@
   ())
 
 (define-event reply-event (irc-event user-event)
-  ((user-user :initarg :user-user :reader user-user)
-   (user-host :initarg :user-host :reader user-host)
-   (code :initarg :code)
+  ((code :initarg :code)
    (args :initarg :args)))
 
 (defmethod print-object ((reply-event reply-event) stream)
@@ -26,14 +24,15 @@
 
 (defun parse-reply (client message)
   (or
-   (cl-ppcre:register-groups-bind (NIL user NIL user NIL host code NIL args)
+   (cl-ppcre:register-groups-bind (NIL nick NIL user NIL host code NIL args)
        ("^(:([^! ]+)(!([^@ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
      (let ((events (or (gethash code *reply-events*)
                        (progn (warn 'unknown-message-warning :client client :message message)
-                              '(unknown-event)))))
+                              '(unknown-event))))
+           (user (or (find-user nick client)
+                     (make-instance 'irc-user :name nick :user user :host host :client client))))
        (mapcar (lambda (event)
-                 (make-instance event :client client :code code :args args
-                                      :user user :user-user user :user-host host))
+                 (make-instance event :client client :code code :args args :user user))
                events)))
    (error 'message-parse-error :client client :message message)))
 
