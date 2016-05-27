@@ -475,3 +475,6 @@
 (define-irc-reply ERR-NOLANGUAGE 982 ("([^ ]+) (:.*)" LANGUAGE-CODE INFO))
 (define-irc-reply ERR-TEXTTOOSHORT 983 ("([^ ]+) (:.*)" COMMAND INFO))
 (define-irc-reply ERR-NUMERIC-ERR 999 ())
+
+(defmethod reply ((event irc:msg-privmsg) fmst &rest args)
+  (irc:privmsg (client event) (name (channel event)) (apply #'format NIL fmst args)))
