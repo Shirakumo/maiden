@@ -476,5 +476,9 @@
 (define-irc-reply ERR-TEXTTOOSHORT 983 ("([^ ]+) (:.*)" COMMAND INFO))
 (define-irc-reply ERR-NUMERIC-ERR 999 ())
 
-(defmethod reply ((event irc:msg-privmsg) fmst &rest args)
+;; Implement reply
+(defmethod reply ((event reply-event) fmst &rest args)
+  (irc:privmsg (client event) (name (user event)) (apply #'format NIL fmst args)))
+
+(defmethod reply ((event irc-channel-event) fmst &rest args)
   (irc:privmsg (client event) (name (channel event)) (apply #'format NIL fmst args)))
