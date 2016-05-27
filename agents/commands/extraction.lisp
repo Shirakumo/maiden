@@ -27,5 +27,5 @@
         thereis (funcall (cdr extractor) event)))
 
 (define-command-extractor prefix (event)
-  (when (starts-with "!" (message event))
-    (subseq (message event) 1)))
+  (when (starts-with "::" (message event))
+    (subseq (message event) 2)))
