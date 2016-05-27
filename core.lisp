@@ -138,4 +138,4 @@
 (defun make-simple-core (&rest consumers)
   (let ((core (start (make-instance 'core))))
     (dolist (consumer consumers core)
-      (add-consumer (start (make-instance consumer)) core))))
+      (start (add-consumer (apply #'make-instance (enlist consumer)) core)))))
