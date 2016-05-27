@@ -15,8 +15,8 @@
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
    (services :initarg :services :accessor services)
-   (channels :inifrom (make-hash-table :test 'equalp) :accessor channel-map)
-   (users :inifrom (make-hash-table :test 'equalp) :accessor user-map))
+   (channels :initform (make-hash-table :test 'equalp) :accessor channel-map)
+   (users :initform (make-hash-table :test 'equalp) :accessor user-map))
   (:default-initargs
    :nickname (machine-instance)
    :username (machine-instance)
