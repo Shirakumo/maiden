@@ -26,43 +26,61 @@
   (or
    (cl-ppcre:register-groups-bind (NIL nick NIL user NIL host code NIL args)
        ("^(:([^! ]+)(!([^@ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
-     (let ((events (or (gethash code *reply-events*)
-                       (progn (warn 'unknown-message-warning :client client :message message)
-                              '(unknown-event))))
+     (let ((event-types (or (gethash code *reply-events*)
+                            (progn (warn 'unknown-message-warning :client client :message message)
+                                   '(unknown-event))))
            (user (or (find-user nick client)
                      (make-instance 'irc-user :name nick :user user :host host :client client))))
-       (mapcar (lambda (event)
-                 (make-instance event :client client :code code :args args :user user))
-               events)))
+       (loop for event-type in event-types
+             nconc (make-reply-events event-type :client client :code code :args args :user user))))
    (error 'message-parse-error :client client :message message)))
 
-(defmacro define-irc-reply (name code (&optional regex &rest args) &optional direct-superclasses)
+(defgeneric make-reply-events (type &key client code args user))
+
+(defun permute (args)
+  (flet ((modf (func list)
+           (mapl (lambda (c) (setf (car c) (funcall func (car c)))) list)))
+    (cond ((not args)
+           (list ()))
+          ((listp (first args))
+           (loop for arg in (first args)
+                 nconc (modf (lambda (rest) (list* arg rest)) (permute (rest args)))))
+          (T
+           (let ((arg (first args)))
+             (modf (lambda (rest) (list* arg rest)) (permute (rest args))))))))
+
+(defmacro define-irc-reply (name code (&optional regex &rest slots) &optional direct-superclasses)
   (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
         (code (etypecase code
                 (symbol (string code))
                 (string code)
-                (integer (format NIL "~3,'0d" code))))
-        (instance (gensym "INSTANCE"))
-        (rest (gensym "REST")))
+                (integer (format NIL "~3,'0d" code)))))
     `(progn
        (define-event ,name (reply-event ,@direct-superclasses)
-         ,(loop for arg in args
-                for (name delim) = (enlist arg NIL)
+         ,(loop for slot in slots
+                for (name delim) = (enlist slot NIL)
                 when name
                 collect `(,name :initarg ,(kw name)))
          (:default-initargs :code ,code))
-       (defmethod initialize-instance :around ((,instance ,name) &rest ,rest &key args)
-         (or ,(when regex
-                `(when args
-                   (cl-ppcre:register-groups-bind ,(mapcar #'unlist args) (,regex args)
-                     (apply #'call-next-method
-                            ,instance
-                            ,@(loop for arg in args
-                                    for (name delim) = (enlist arg NIL)
-                                    when name
-                                    append `(,(kw name) ,(if delim `(cl-ppcre:split ,(string delim) ,name) name)))
-                            ,rest))))
-             (call-next-method)))
+       (defmethod make-reply-events ((type (eql ',name)) &key client code args user)
+         ;; If there's a chance of a multi-target field, we need to generate a list and permute.
+         ;; However, this case is rare, so we spend a small amount of code dupe optimising the
+         ;; common case to not do any of that crap.
+         ,(if (some #'consp slots)
+              `(mapcar (lambda (other-args)
+                         (apply #'make-instance ',name :client client :code code :args args :user user other-args))
+                       ,(when regex
+                          `(when args
+                             (cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
+                               (permute
+                                (list
+                                 ,@(loop for slot in slots
+                                         for (name delim) = (enlist slot NIL)
+                                         when name
+                                         append `(,(kw name) ,(if delim `(cl-ppcre:split ,(string delim) ,name) name)))))))))
+              `(cl-ppcre:register-groups-bind ,(mapcar #'unlist slots) (,regex args)
+                 (list (make-instance ',name :client client :code code :args args :user user
+                                      ,@(loop for slot in slots when slot append `(,(kw slot) ,slot)))))))
        (pushnew ',name (gethash ,code *reply-events*)))))
 
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
@@ -76,15 +94,13 @@
 (define-irc-reply MSG-OPER OPER ("([^ ]+) ([^ ]+)" USERNAME PASSWORD))
 (define-irc-reply MSG-QUIT QUIT ("(:(.*))?" NIL COMMENT))
 (define-irc-reply MSG-SQUIT SQUIT ("([^ ]+) :(.*)" SERVER COMMENT))
-;; FIXME
-(define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNELS #\,)) (user-entered))
-;; FIXME
-(define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNELS #\,)) (user-left))
+(define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNEL #\,)) (user-entered))
+(define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNEL #\,)) (user-left))
 (define-irc-reply MSG-MODE MODE ("([^ ]+) ([^ ]+)( ([^ ]+)( ([^ ]+)( ([^ ]+))?)?)?" TARGET MODE NIL LIMIT NIL USERNAME NIL BAN-MASK))
 ;; FIXME
 (define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC) (channel-topic-changed))
-(define-irc-reply MSG-NAMES NAMES ("([^ ]+)" (CHANNELS #\,)))
-(define-irc-reply MSG-LIST LIST ("([^ ]+)( ([^ ]+))?" (CHANNELS #\,) NIL SERVER))
+(define-irc-reply MSG-NAMES NAMES ("([^ ]+)" (CHANNEL #\,)))
+(define-irc-reply MSG-LIST LIST ("([^ ]+)( ([^ ]+))?" (CHANNEL #\,) NIL SERVER))
 (define-irc-reply MSG-INVITE INVITE ("([^ ]+) ([^ ]+)" NICKNAME CHANNEL))
 (define-irc-reply MSG-KICK KICK ("([^ ]+) ([^ ]+)( :(.*))?" CHANNEL NICKNAME NIL COMMENT))
 (define-irc-reply MSG-VERSION VERSION ("([^ ]+)?" SERVER))
@@ -95,11 +111,10 @@
 (define-irc-reply MSG-TRACE TRACE ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-ADMIN ADMIN ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-INFO INFO ("([^ ]+)?" SERVER))
-;; FIXME: Convert RECEIVERS to multiple events of CHANNELs or something
-(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (RECEIVERS #\,) MESSAGE) (channel-event message-event))
+(define-irc-reply MSG-PRIVMSG PRIVMSG ("([^ ]+) :(.*)" (CHANNEL #\,) MESSAGE) (channel-event message-event))
 (define-irc-reply MSG-NOTICE NOTICE ("([^ ]+)? ?:(.*)" NICKNAME MESSAGE))
 (define-irc-reply MSG-WHO WHO ("(([^ ]+)( o)?)?" NIL NAME OPERS-ONLY))
-(define-irc-reply MSG-WHOIS WHOIS ("(([^ ]+) )?([^ ]+)" NIL SERVER (NICKMASKS #\,)))
+(define-irc-reply MSG-WHOIS WHOIS ("(([^ ]+) )?([^ ]+)" NIL SERVER (NICKMASK #\,)))
 (define-irc-reply MSG-WHOWAS WHOWAS ("([^ ]+)( ([^ ]+)( ([^ ]+))?)?" NICKNAME NIL COUNT NIL SERVER))
 (define-irc-reply MSG-KILL KILL ("([^ ]+) :(.*)" NICKNAME COMMENT))
 (define-irc-reply MSG-PING PING ("([^ ]+)( ([^ ]+))?" SERVER NIL OTHER-SERVER))
@@ -111,8 +126,8 @@
 (define-irc-reply MSG-SUMMON SUMMON ("([^ ]+)( ([^ ]+))?" NICKNAME NIL SERVER))
 (define-irc-reply MSG-USERS USERS ("([^ ]+)?" SERVER))
 (define-irc-reply MSG-WALLOPS WALLOPS (":(.*)" MESSAGE))
-(define-irc-reply MSG-USERHOST USERHOST ("(.*)" (NICKNAMES #\ )))
-(define-irc-reply MSG-ISON ISON ("(.*)" (NICKNAMES #\ )))
+(define-irc-reply MSG-USERHOST USERHOST ("(.*)" (NICKNAME #\ )))
+(define-irc-reply MSG-ISON ISON ("(.*)" (NICKNAME #\ )))
 (define-irc-reply RPL-WELCOME 001 ("(:.*)" INFO))
 (define-irc-reply RPL-YOURHOST 002 ("(:.*)" INFO))
 (define-irc-reply RPL-CREATED 003 ("(:.*)" INFO))
