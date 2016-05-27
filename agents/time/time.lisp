@@ -63,3 +63,13 @@
 (define-command (time time-user) (c ev user)
   :command "time for"
   (reply ev "The time for ~a is ~a." user (format-absolute-time (user-time user))))
+
+(define-command (time time-between) (c ev from to)
+  :command "time between"
+  (let* ((data-from (timezone-data from))
+         (data-to (timezone-data to))
+         (diff (- (+ (getf data-to :offset) (getf data-to :dst-offset))
+                  (+ (getf data-from :offset) (getf data-from :dst-offset)))))
+    (reply ev "The time in ~a is ~a ~a (~a)."
+           to (format-relative-time (abs diff)) (if (<= 0 diff) "later" "earlier")
+           (format-absolute-time (+ (get-universal-time) (getf data-to :offset) (getf data-to :dst-offset))))))
