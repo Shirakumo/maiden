@@ -116,7 +116,7 @@
           (format NIL "~{~a~^, ~}" non-NIL)))))
 
 (defun format-absolute-time (time)
-  (multiple-value-bind (s m h dd mm yy) (decode-universal-time time)
+  (multiple-value-bind (s m h dd mm yy) (decode-universal-time time 0)
     (format NIL "~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d" yy mm dd h m s)))
 
 (defun format-time (time &optional (relative-time-threshold (* 60 60 24)))
