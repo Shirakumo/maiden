@@ -6,6 +6,19 @@
 
 (in-package #:org.shirakumo.maiden.agents.accounts)
 
+;; Reroute to account if it is present for the user.
+(defmethod data-value (field (user user))
+  (let ((account (account user)))
+    (or (and account (field field account user))
+        (call-next-method))))
+
+;; We also implement methods for account names
+(defmethod data-value (field (name symbol))
+  (data-value field account))
+
+(defmethod data-value (field (name string))
+  (data-value field (account name)))
+
 (define-consumer accounts (agent)
   ())
 
