@@ -40,8 +40,9 @@
 
 (defmethod initialize-instance :after ((account account) &key)
   (setf (name account) (normalize-account-name (name account)))
-  (when (gethash name *accounts*)
-    (error "An account with the name ~s already exists."))
+  (when (gethash (name account) *accounts*)
+    (error "An account with the name ~s already exists."
+           (name account)))
   (setf (account (name account)) account))
 
 (defmethod (setf data-value) :after (value field (account account))
