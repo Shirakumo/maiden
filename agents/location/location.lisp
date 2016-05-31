@@ -8,8 +8,8 @@
 
 (defparameter *geocode-api* "https://maps.googleapis.com/maps/api/geocode/json")
 
-(maiden-accounts:define-fields
-  (location () "A physical location where the user currently resides."))
+;; (maiden-accounts:define-fields
+;;   (location () "A physical location where the user currently resides."))
 
 (defun geo-information (location)
   (let* ((data (request-as :json *geocode-api* :get `(("sensor" "false") ("address" ,location))))
@@ -32,11 +32,6 @@
 (defun address (location)
   (let ((data (geo-information location)))
     (json-v data "formatted_address")))
-
-(defun user-location (user)
-  (let ((account (maiden-accounts:account user :error NIL)))
-    (or (when account (maiden-accounts:field :location account NIL))
-        (error "I don't know where ~a is located." user))))
 
 (define-consumer location (agent)
   ())

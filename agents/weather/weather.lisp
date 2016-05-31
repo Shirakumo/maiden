@@ -79,12 +79,12 @@
 
 (maiden-commands:define-command (weather weather-user) (c ev user)
   :command "weather for"
-  (let ((location (maiden-location:user-location user)))
-    (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
-      (reply ev "Weather for ~a in ~a: ~a" user resolved-location (format-weather-data data)))))
+  (multiple-value-bind (data resolved-location)
+      (location-weather-data (get-api-key c) (data-value :location user))
+    (reply ev "Weather for ~a in ~a: ~a" user resolved-location (format-weather-data data))))
 
 (maiden-commands:define-command (weather weather-user) (c ev user)
   :command "forecast for"
-  (let ((location (maiden-location:user-location user)))
-    (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
-      (reply ev "Forecast for ~a in ~a: ~a" (name account) resolved-location (format-daily-forecast data)))))
+  (multiple-value-bind (data resolved-location)
+      (location-weather-data (get-api-key c) (data-value :location user) :time-frame :daily)
+    (reply ev "Forecast for ~a in ~a: ~a" user resolved-location (format-daily-forecast data))))

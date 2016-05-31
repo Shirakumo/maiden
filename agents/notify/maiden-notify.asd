@@ -18,4 +18,5 @@
                (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
-               :maiden-storage))
+               :maiden-storage
+               :maiden-accounts))

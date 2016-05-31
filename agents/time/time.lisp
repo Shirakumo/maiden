@@ -8,8 +8,8 @@
 
 (defparameter *timezone-api* "https://maps.googleapis.com/maps/api/timezone/json")
 
-(maiden-accounts:define-fields
-  (timezone () "The time zone the account's user is currently in."))
+;; (maiden-accounts:define-fields
+;;   (timezone () "The time zone the account's user is currently in."))
 
 (defun timezone-data (location &optional (time (get-unix-time)))
   (let* ((location (if (listp location) location (maiden-location:coordinates location)))
@@ -40,11 +40,9 @@
        (getf data :dst-offset))))
 
 (defun user-location (user)
-  (let ((account (maiden-accounts:account user :error NIL)))
-    (or (when account
-          (or (maiden-accounts:field :timezone account NIL)
-              (maiden-location:user-location user)))
-        (error "I don't know where ~a is located." user))))
+  (or (data-value :timezone user)
+      (data-value :location user)
+      (error "I don't know where ~a is located." user)))
 
 (define-consumer time ()
   ())
