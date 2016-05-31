@@ -142,7 +142,7 @@
       (setf (gethash nickname (user-map channel)) user))
     (when (find-user user client)
       (remhash (name user) (user-map client))
-      (setf (gethash nickname (user-map user)) user))
+      (setf (gethash nickname (user-map client)) user))
     (setf (name user) nickname)))
 
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
