@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.maiden.agents.accounts)
 
 ;; Reroute to account if it is present for the user.
-(defmethod data-value (field (user user))
+(defmethod data-value :around (field (user user))
   (let ((account (account user)))
     (or (and account (field field account user))
         (call-next-method))))
