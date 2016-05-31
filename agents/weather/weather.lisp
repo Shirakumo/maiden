@@ -81,7 +81,7 @@
   :command "weather for"
   (let ((location (maiden-location:user-location user)))
     (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
-      (reply ev "Weather for ~a in ~a: ~a" (name account) resolved-location (format-weather-data data)))))
+      (reply ev "Weather for ~a in ~a: ~a" user resolved-location (format-weather-data data)))))
 
 (maiden-commands:define-command (weather weather-user) (c ev user)
   :command "forecast for"
