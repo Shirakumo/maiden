@@ -39,11 +39,11 @@
        (getf data :offset)
        (getf data :dst-offset))))
 
-(defun user-time (user)
+(defun user-location (user)
   (let ((account (maiden-accounts:account user :error NIL)))
     (or (when account
-          (time (or (maiden-accounts:field 'timezone account NIL)
-                    (maiden-location:user-location user))))
+          (or (maiden-accounts:field 'timezone account NIL)
+              (maiden-location:user-location user)))
         (error "I don't know where ~a is located." user))))
 
 (define-consumer time ()
@@ -62,14 +62,20 @@
 
 (define-command (time time-user) (c ev user)
   :command "time for"
-  (reply ev "The time for ~a is ~a." user (format-absolute-time (user-time user))))
+  (reply ev "The time for ~a is ~a." user (format-absolute-time (time (user-location user)))))
 
 (define-command (time time-between) (c ev from to)
   :command "time between"
   (let* ((data-from (timezone-data from))
          (data-to (timezone-data to))
          (diff (- (+ (getf data-to :offset) (getf data-to :dst-offset))
-                  (+ (getf data-from :offset) (getf data-from :dst-offset)))))
-    (reply ev "The time in ~a is ~a ~a (~a)."
-           to (format-relative-time (abs diff)) (if (<= 0 diff) "later" "earlier")
-           (format-absolute-time (+ (get-universal-time) (getf data-to :offset) (getf data-to :dst-offset))))))
+                  (+ (getf data-from :offset) (getf data-from :dst-offset))))
+         (to-time (format-absolute-time (+ (get-universal-time) (getf data-to :offset) (getf data-to :dst-offset)))))
+    (if (< (abs diff) 60)
+        (reply ev "Both are in the same timezone, which is currently at ~a." to-time)
+        (reply ev "The time in ~a is ~a ~a (~a)."
+               to (format-relative-time (abs diff)) (if (<= 0 diff) "later" "earlier") to-time))))
+
+(define-command (time time-between-users) (c ev from to)
+  :command "time between users"
+  (do-issue (core ev) 'time-between :from (user-location from) :to (user-location to)))
