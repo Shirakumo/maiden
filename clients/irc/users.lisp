@@ -91,7 +91,7 @@
   (remove-channel (name channel) client))
 
 (defun prune-users (client)
-  (loop for user being the hash-values of client
+  (loop for user being the hash-values of (user-map client)
         do (unless (channels user)
              (remove-user user client))))
 
