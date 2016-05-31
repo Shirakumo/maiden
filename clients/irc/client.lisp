@@ -91,13 +91,13 @@
 
 (define-handler (irc-client nick-change irc:msg-nick) (client ev user nickname)
   :match-consumer 'client
-  (when (string-equal user (nickname client))
+  (when (string-equal (name user) (nickname client))
     (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." user nickname)
     (setf (nickname client) nickname)))
 
 (define-handler (irc-client yank-nick irc:msg-quit) (client ev user)
   :match-consumer 'client
-  (when (and (string-equal user (intended-nickname client))
+  (when (and (string-equal (name user) (intended-nickname client))
              (not (string-equal user (nickname client))))
     (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." user)
     (irc:nick client user)))
