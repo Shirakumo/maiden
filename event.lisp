@@ -6,6 +6,9 @@
 
 (in-package #:org.shirakumo.maiden)
 
+(defmethod core ((event event))
+  (event-loop event))
+
 (define-event instruction-event ()
   ())
 
