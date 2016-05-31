@@ -58,7 +58,8 @@
         (issue event core)))))
 
 (defmethod send ((message string) (client irc-client))
-  (let ((message (format NIL "~a~c~c" message #\Return #\Linefeed)))
+  ;; FIXME: Better handling for multilines
+  (let ((message (format NIL "~a~c~c" (cl-ppcre:regex-replace-all "\\n" message " ") #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
       (warn 'message-too-long-warning :message message))
     (call-next-method message client))
