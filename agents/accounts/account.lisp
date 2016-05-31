@@ -107,7 +107,7 @@
 
 (defmethod account ((user user) &rest args)
   (or (data-value user 'account)
-      (and (authenticated user)
+      (and (authenticated-p user)
            (setf (account user) (apply #'account (identity user) args)))))
 
 (defmethod account ((identity cons) &key (error T))

@@ -33,7 +33,7 @@
     (let ((account (make-instance 'account :name name :password password)))
       (setf (account (user ev)) account)
       (reply ev "Your account ~a has been created with the password ~s." name password)
-      (cond ((identified (user ev))
+      (cond ((authenticated-p (user ev))
              (add-identity account ev))
             (T
              (reply ev "Since this identity is not authenticated, you will not be logged in automatically in the future."))))))
@@ -52,7 +52,7 @@
   (let ((account (account account)))
     (when (account (identity (user ev)) :error NIL)
       (error "This identity is already associated with ~a." (account (identity ev))))
-    (unless (authenticated (user ev))
+    (unless (authenticated-p (user ev))
       (error "You must be authenticated to associate this identity with the account."))
     (unless (string= (password account) password)
       (error "Invalid password."))
