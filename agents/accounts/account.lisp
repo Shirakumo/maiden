@@ -91,7 +91,7 @@
   (identity-p (account account-ish) identity))
 
 (defmethod identity-p ((account account) (identity cons))
-  (find (identity cons) (identities account) :test #'equalp))
+  (find (identity identity) (identities account) :test #'equalp))
 
 (defun account-pathname (name)
   (maiden-storage:config-pathname
