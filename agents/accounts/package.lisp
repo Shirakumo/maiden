@@ -36,4 +36,7 @@
    #:remove-field-info
    #:define-fields
    #:access-p
-   #:field))
+   #:field)
+  ;; interface.lisp
+  (:export
+   #:accounts))
