@@ -97,7 +97,7 @@
 ;; remove conflicting duplicates.
 ;; FIXME: Automatically convert CHANNEL and USER/SENDER references into the appropriate objects
 (define-irc-reply MSG-PASS PASS ("(.*)" PASSWORD))
-(define-irc-reply MSG-NICK NICK ("([^ ]+)( (.*))?" NICKNAME NIL HOPCOUNT))
+(define-irc-reply MSG-NICK NICK (":?([^ ]+)( (.*))?" NICKNAME NIL HOPCOUNT))
 (define-irc-reply MSG-USER USER ("([^ ]+) ([^ ]+) ([^ ]+) :(.*)" USERNAME HOSTNAME SERVERNAME REALNAME))
 (define-irc-reply MSG-SERVER SERVER ("([^ ]+) ([^ ]+) :(.*)" SERVERNAME HOPCOUNT INFO))
 (define-irc-reply MSG-OPER OPER ("([^ ]+) ([^ ]+)" USERNAME PASSWORD))
