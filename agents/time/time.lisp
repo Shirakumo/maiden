@@ -40,10 +40,10 @@
        (getf data :dst-offset))))
 
 (defun user-time (user)
-  (let ((account (account user :error NIL)))
+  (let ((account (maiden-accounts:account user :error NIL)))
     (or (when account
-          (local-time (or (field 'timezone account NIL)
-                          (user-location user))))
+          (time (or (maiden-accounts:field 'timezone account NIL)
+                    (maiden-location:user-location user))))
         (error "I don't know where ~a is located." user))))
 
 (define-consumer time ()
