@@ -35,7 +35,7 @@
 
 (defun user-location (user)
   (let ((account (maiden-accounts:account user :error NIL)))
-    (or (when account (maiden-accounts:field 'location account NIL))
+    (or (when account (maiden-accounts:field :location account NIL))
         (error "I don't know where ~a is located." user))))
 
 (define-consumer location (agent)

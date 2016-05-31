@@ -42,7 +42,7 @@
 (defun user-location (user)
   (let ((account (maiden-accounts:account user :error NIL)))
     (or (when account
-          (or (maiden-accounts:field 'timezone account NIL)
+          (or (maiden-accounts:field :timezone account NIL)
               (maiden-location:user-location user)))
         (error "I don't know where ~a is located." user))))
 
