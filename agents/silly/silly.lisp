@@ -24,7 +24,7 @@
 
 (defmacro define-silly (name (sender message) &body body)
   `(setf (silly-function ',name)
-         (named-lambda ',name (,sender ,message)
+         (named-lambda ,name (,sender ,message)
            (declare (ignorable ,sender))
            ,@body)))
 
