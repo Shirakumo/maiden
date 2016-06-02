@@ -431,6 +431,7 @@
   (:use #:cl #:maiden #:maiden-networking)
   ;; client.lisp
   (:export
+   #:irc-client
    #:nickname
    #:username
    #:password
