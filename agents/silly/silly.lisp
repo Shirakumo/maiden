@@ -59,6 +59,9 @@
 (define-simple-silly clooney (sender "(?i)who else")
   "George Clooney.")
 
+(define-simple-silly tomorrow (sender "(?i)when('s| is)( the next| the new)? (.*?)( going to| gonna)?( be| come)?")
+  "Tomorrow.")
+
 (define-simple-silly galo-sengen (sender "(?i)go\\s*go\\s*go")
   "GALO SENGEN")
 
