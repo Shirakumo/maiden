@@ -122,21 +122,23 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
               (string-equal times "dice")))
      (reply ev "1d6: ~d" (1+ (random 6))))
     (T
-     (setf size (parse-integer size :junk-allowed T))
-     (setf times (parse-integer times :junk-allowed T))
-     (if (and size times)
-         (reply ev "~dd~d: ~d" times size (loop for i from 0 below times summing (1+ (random size))))
-         (reply ev "I don't know how to roll that.")))))
+     (let ((size (parse-integer size :junk-allowed T))
+           (times (parse-integer times :junk-allowed T)))
+       (if (and size times)
+           (reply ev "~dd~d: ~d" times size (loop for i from 0 below times summing (1+ (random size))))
+           (reply ev "I don't know how to roll that."))))))
 
 (defparameter *fortunes*
   (with-open-file (s (asdf:system-relative-pathname :maiden-silly "fortunes.txt"))
     (loop for line = (read-line s NIL NIL)
           while line collect line)))
 
-(define-command (silly fortune) (c ev)
+(defun fortune (name)
   (multiple-value-bind (s m h dd mm yy) (decode-universal-time (get-universal-time))
     (declare (ignore s m h))
     (let ((date-hash (+ (+ dd (* mm 31)) (* yy 365)))
-          (nick-hash (reduce #'+ (name (user ev)) :key #'char-code)))
-      (reply ev "Your fortune for today is: ~a"
-             (elt *fortunes* (mod (+ date-hash nick-hash) (length *fortunes*)))))))
+          (nick-hash (reduce #'+ name :key #'char-code)))
+      (elt *fortunes* (mod (+ date-hash nick-hash) (length *fortunes*))))))
+
+(define-command (silly fortune) (c ev)
+  (reply ev "Your fortune for today is: ~a" (fortune (name (user ev)))))
