@@ -76,9 +76,8 @@
   ())
 
 (define-command (activatable activate) (c ev &rest modules)
-  (handler-bind ((error #'invoke-debugger))
-    (apply #'activate ev modules)
-    (reply ev "Modules activated.")))
+  (apply #'activate ev modules)
+  (reply ev "Modules activated."))
 
 (define-command (activatable deactivate) (c ev &rest modules)
   (apply #'deactivate ev modules)
