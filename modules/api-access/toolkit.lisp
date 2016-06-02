@@ -38,7 +38,8 @@
 
 (defun request-as (type url &rest args &key get post external-format other-args)
   (declare (ignore get post external-format other-args))
-  (parse-to type (apply #'request url args)))
+  (let ((values (multiple-value-list (apply #'request url args))))
+    (values-list (list* (parse-to type (first values)) (rest values)))))
 
 (defun json-v (json &rest path)
   (if path
