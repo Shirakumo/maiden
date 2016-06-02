@@ -25,36 +25,61 @@
       (package (short-package-name name))
       (symbol (symbol-name name))))))
 
-(defun activate (&rest modules)
-  (with-storage ('activatable)
-    (dolist (module modules)
-      (setf (value (normalize-module-name module)) T))))
+(defun normalize-ident (thing)
+  (etypecase thing
+    (channel-event
+     (normalize-ident
+      (cons (name (client thing)) (name (channel thing)))))
+    (client-event
+     (normalize-ident
+      (cons (name (client thing)) NIL)))
+    (cons
+     (destructuring-bind (client . channel) thing
+       (cons (string-downcase
+              (etypecase client
+                (entity (name client))
+                (T (string client))))
+             (string-downcase
+              (etypecase channel
+                (entity (name channel))
+                (null NIL)
+                (T (string channel)))))))))
 
-(defun deactivate (&rest modules)
-  (with-storage ('activatable)
-    (dolist (module modules)
-      (remvalue (normalize-module-name module)))))
+(defun activate (ident &rest modules)
+  (let ((ident (normalize-ident ident)))
+    (with-storage ('activatable)
+      (setf (value ident) (union (value ident) (mapcar #'normalize-module-name modules)
+                                 :test #'string-equal)))))
 
-(defun active-p (module)
-  (with-storage ('activatable)
-    (value (normalize-module-name module))))
+(defun deactivate (ident &rest modules)
+  (let ((ident (normalize-ident ident)))
+    (with-storage ('activatable)
+      (setf (value ident) (set-difference (value ident) (mapcar #'normalize-module-name modules)
+                                          :test #'string-equal)))))
 
-(defclass activatable-handler (queued-handler)
+(defun active-p (ident module)
+  (with-storage ('activatable)
+    (member (normalize-module-name module)
+            (value (normalize-ident ident))
+            :test #'string-equal)))
+
+(defclass activatable-handler (deeds:queued-handler)
   ((module :initarg :module :reader module))
   (:default-initargs
    :module *package*))
 
-(defmethod handle :around (event (handler activatable-handler))
-  (when (active-p (module handler))
+(defmethod handle :around ((event client-event) (handler activatable-handler))
+  (when (active-p event (module handler))
     (call-next-method)))
 
 (define-consumer activatable (agent)
   ())
 
 (define-command (activatable activate) (c ev &rest modules)
-  (apply activate modules)
-  (reply ev "Modules activated."))
+  (handler-bind ((error #'invoke-debugger))
+    (apply #'activate ev modules)
+    (reply ev "Modules activated.")))
 
 (define-command (activatable deactivate) (c ev &rest modules)
-  (apply deactivate modules)
+  (apply #'deactivate ev modules)
   (reply ev "Modules deactivated."))
