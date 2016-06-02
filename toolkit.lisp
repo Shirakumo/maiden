@@ -75,9 +75,8 @@
   (apply #'deeds:broadcast event-type :loop cores initargs))
 
 (defmacro named-lambda (name args &body body)
-  #+sbcl `(sb-int:named-lambda ,name ,args ,@body)
-  #-sbcl `(flet ((,name ,args ,@body))
-            #',name))
+  `(flet ((,name ,args ,@body))
+     #',name))
 
 ;; FIXME: Maybe put this all somewhere else?
 
