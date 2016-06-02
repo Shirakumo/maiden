@@ -18,7 +18,7 @@
    (channels :initform (make-hash-table :test 'equalp) :accessor channel-map)
    (users :initform (make-hash-table :test 'equalp) :accessor user-map))
   (:default-initargs
-   :nickname (machine-instance)
+   :nickname "Maiden"
    :username (machine-instance)
    :password NIL
    :realname (machine-instance)
