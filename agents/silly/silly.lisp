@@ -140,5 +140,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
           (nick-hash (reduce #'+ name :key #'char-code)))
       (elt *fortunes* (mod (+ date-hash nick-hash) (length *fortunes*))))))
 
-(define-command (silly fortune) (c ev)
-  (reply ev "Your fortune for today is: ~a" (fortune (name (user ev)))))
+(define-command (silly fortune) (c ev &optional name)
+  (if name
+      (reply ev "~@(~a~)'s fortune for today is: ~a" name (fortune name))
+      (reply ev "Your fortune for today is: ~a" (fortune (name (user ev))))))
