@@ -33,7 +33,7 @@
   (ecase type
     (:string input)
     (:json (jsown:parse input))
-    (:xml (plump:parse input))
+    ((:html :xml) (plump:parse input))
     (:sexp (read-from-string input))))
 
 (defun request-as (type url &rest args &key get post external-format other-args)
