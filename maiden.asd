@@ -34,5 +34,4 @@
                :uuid
                :form-fiddle
                :lambda-fiddle
-               :documentation-utils
-               :alexandria))
+               :documentation-utils))

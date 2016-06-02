@@ -74,6 +74,11 @@
 (defun broadcast (cores event-type &rest initargs)
   (apply #'deeds:broadcast event-type :loop cores initargs))
 
+(defmacro named-lambda (name args &body body)
+  #+sbcl `(sb-int:named-lambda ,name ,args ,@body)
+  #-sbcl `(flet ((,name ,lambda-list ,@body))
+            #',name))
+
 ;; FIXME: Maybe put this all somewhere else?
 
 (defvar *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0))

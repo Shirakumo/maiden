@@ -155,6 +155,7 @@
    #:with-retry-restart
    #:do-issue
    #:broadcast
+   #:named-lambda
    #:universal-to-unix
    #:unix-to-universal
    #:get-unix-time
