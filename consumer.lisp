@@ -158,7 +158,7 @@
            :target-class ',(or class 'deeds:queued-handler)
            :name ',name
            :event-type ',event-type
-           :delivery-function (alexandria:named-lambda ,name (,compvar ,event)
+           :delivery-function (named-lambda ,name (,compvar ,event)
                                 (declare (ignorable ,compvar ,event))
                                 (with-origin (',name)
                                   (with-fuzzy-slot-bindings ,args (,event ,event-type)
