@@ -59,13 +59,19 @@
          (map (make-hash-table :test 'equal :size num)))
     (dotimes (i num map)
       (multiple-value-bind (first second refs) (read-chain stream)
-        (setf (gethash (cons first second) map) refs)))))
+        (setf (gethash second
+                       (or (gethash first map)
+                           (setf (gethash first map)
+                                 (make-hash-table :test 'eql))))
+              refs)))))
 
 (defun write-chains (chains stream)
   (fast-io:write32-be (hash-table-count chains) stream)
-  (loop for (first . second) being the hash-keys of chains
-        for refs being the hash-values of chains
-        do (write-chain first second refs stream)))
+  (loop for first being the hash-keys of chains
+        for map being the hash-values of chains
+        do (loop for second being the hash-keys of map
+                 for refs being the hash-values of map
+                 do (write-chain first second refs stream))))
 
 (defun read-generator (source)
   (etypecase source
