@@ -20,4 +20,7 @@
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-activatable
-               :cl-ppcre))
+               :alexandria
+               :cl-ppcre
+               :fast-io
+               :babel))
