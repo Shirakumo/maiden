@@ -7,30 +7,30 @@
 (in-package #:org.shirakumo.maiden.agents.markov)
 
 (defclass generator ()
-  ((word-index :initform (make-array 1 :adjustable T :fill-pointer 1 :initial-contents '(".")) :accessor word-index)
-   (word-refs :initform (make-hash-table :test 'equal) :accessor word-refs)
+  ((words :initform (make-array 1 :adjustable T :fill-pointer 1 :initial-contents '(".")) :accessor words)
+   (word-map :initform (make-hash-table :test 'equal) :accessor word-map)
    (chains :initform (make-hash-table :test 'equal) :accessor chains)
    (end :initform 0 :accessor end)))
 
 (defmethod print-object ((generator generator) stream)
   (print-unreadable-object (generator stream :type T)
     (format stream "~a words, ~a chains"
-            (length (word-index generator))
+            (length (words generator))
             (hash-table-count (chains generator)))))
 
 (defun word (thing generator)
   (etypecase thing
-    (number (elt (word-index generator) thing))
+    (number (elt (words generator) thing))
     (symbol (word (string thing) generator))
-    (string (gethash (string-downcase thing) (word-refs generator)))))
+    (string (gethash (string-downcase thing) (word-map generator)))))
 
 (defun (setf word) (thing generator)
   (etypecase thing
     (number thing)
     (symbol (setf (word generator) (string thing)))
     (string (let ((thing (string-downcase thing)))
-              (setf (gethash thing (word-refs generator))
-                    (vector-push-extend thing (word-index generator)))))))
+              (setf (gethash thing (word-map generator))
+                    (vector-push-extend thing (words generator)))))))
 
 (defun word-index (generator word)
   (if (numberp word) word

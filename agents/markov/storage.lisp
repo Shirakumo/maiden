@@ -84,8 +84,8 @@
     (fast-io::input-buffer
      (let ((generator (make-instance 'generator)))
        (multiple-value-bind (index refs) (read-words source)
-         (setf (word-index generator) index)
-         (setf (word-refs generator) refs)
+         (setf (words generator) index)
+         (setf (word-map generator) refs)
          (setf (chains generator) (read-chains source))
          (setf (end generator) (fast-io:read32-be source)))
        generator))))
@@ -103,7 +103,7 @@
      (fast-io:with-fast-output (buffer target)
        (write-generator generator buffer)))
     (fast-io::output-buffer
-     (write-words (word-index generator) target)
+     (write-words (words generator) target)
      (write-chains (chains generator) target)
      (fast-io:write32-be (end generator) target)))
   target)
