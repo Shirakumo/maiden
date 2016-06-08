@@ -86,8 +86,7 @@
        (multiple-value-bind (index refs) (read-words source)
          (setf (words generator) index)
          (setf (word-map generator) refs)
-         (setf (chains generator) (read-chains source))
-         (setf (end generator) (fast-io:read32-be source)))
+         (setf (chains generator) (read-chains source)))
        generator))))
 
 (defun write-generator (generator target)
@@ -104,6 +103,5 @@
        (write-generator generator buffer)))
     (fast-io::output-buffer
      (write-words (words generator) target)
-     (write-chains (chains generator) target)
-     (fast-io:write32-be (end generator) target)))
+     (write-chains (chains generator) target)))
   target)

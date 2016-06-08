@@ -6,11 +6,12 @@
 
 (in-package #:org.shirakumo.maiden.agents.markov)
 
+(defvar *end* 0)
+
 (defclass generator ()
   ((words :initform (make-array 1 :adjustable T :fill-pointer 1 :initial-contents '(".")) :accessor words)
    (word-map :initform (make-hash-table :test 'equal) :accessor word-map)
-   (chains :initform (make-hash-table :test 'equal) :accessor chains)
-   (end :initform 0 :accessor end)))
+   (chains :initform (make-hash-table :test 'equal) :accessor chains)))
 
 (defmethod print-object ((generator generator) stream)
   (print-unreadable-object (generator stream :type T)
@@ -75,7 +76,7 @@
             for second = s then third
             for third = (next-word-index generator first second)
             do (write-string (word first generator) out)
-               (cond ((= second (end generator))
+               (cond ((= second *end*)
                       (write-char #\. out)
                       (return))
                      (T
@@ -88,7 +89,7 @@
             for second = (pop tokens) then third
             for third in tokens
             do (add-chain generator first second third)
-            finally (add-chain generator first second (end generator)))))
+            finally (add-chain generator first second *end*))))
   generator)
 
 (defun learn (string generator)
