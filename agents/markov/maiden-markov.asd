@@ -14,7 +14,9 @@
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
-               (:file "markov")
+               (:file "generator")
+               (:file "storage")
+               (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-activatable
