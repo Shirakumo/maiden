@@ -94,3 +94,6 @@
 (defun learn (string generator)
   (dolist (sentence (cl-ppcre:split "[.!?¿¡̣;:<>(){}\\[\\]\"”。！？：；]+"string))
     (learn-sentence sentence generator)))
+
+(defun learn-from-file (file generator)
+  (learn (alexandria:read-file-into-string file) generator))
