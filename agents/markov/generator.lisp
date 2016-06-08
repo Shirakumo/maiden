@@ -32,19 +32,19 @@
               (setf (gethash thing (word-refs generator))
                     (vector-push-extend thing (word-index generator)))))))
 
-(defun ensure-word-index (generator word)
+(defun word-index (generator word)
   (if (numberp word) word
       (or (word word generator)
           (setf (word generator) word))))
 
 (defun chain (generator first second)
-  (gethash (cons (ensure-word-index generator first)
-                 (ensure-word-index generator second))
+  (gethash (cons (word-index generator first)
+                 (word-index generator second))
            (chains generator)))
 
 (defun (setf chain) (possibilities generator first second)
-  (setf (gethash (cons (ensure-word-index generator first)
-                       (ensure-word-index generator second))
+  (setf (gethash (cons (word-index generator first)
+                       (word-index generator second))
                  (chains generator))
         possibilities))
 
@@ -56,7 +56,7 @@
 (defun add-chain (generator first second &rest possibilities)
   (let ((chain (ensure-chain generator first second)))
     (dolist (pos possibilities generator)
-      (vector-push-extend (ensure-word-index generator pos) chain))))
+      (vector-push-extend (word-index generator pos) chain))))
 
 (defun next-word-index (generator first second)
   (let ((chain (chain generator first second)))
