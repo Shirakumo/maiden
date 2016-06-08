@@ -6,18 +6,28 @@
 
 (in-package #:org.shirakumo.maiden.agents.markov)
 
-(defvar *end* 0)
+(defparameter *start* 0)
+(defparameter *end* 1)
 
 (defclass generator ()
-  ((words :initform (make-array 1 :adjustable T :fill-pointer 1 :initial-contents '(".")) :accessor words)
+  ((words :initform (make-array 2 :adjustable T :fill-pointer T :initial-contents '("" "")) :accessor words)
    (word-map :initform (make-hash-table :test 'equal) :accessor word-map)
-   (chains :initform (make-hash-table :test 'equal) :accessor chains)))
+   (chains :initform (make-hash-table :test 'eql) :accessor chains)))
 
 (defmethod print-object ((generator generator) stream)
   (print-unreadable-object (generator stream :type T)
     (format stream "~a words, ~a chains"
             (length (words generator))
             (hash-table-count (chains generator)))))
+
+(defun visualize (generator)
+  (loop for k being the hash-keys of (chains generator)
+        for m being the hash-values of (chains generator)
+        do (format T "~&~a" (word k generator))
+           (loop for k being the hash-keys of m
+                 for v being the hash-values of m
+                 do (format T "~&    ~a => ~{~a~^ ~}"
+                            (word k generator) (map 'list (lambda (a) (word a generator)) v)))))
 
 (defun word (thing generator)
   (etypecase thing
@@ -39,14 +49,18 @@
           (setf (word generator) word))))
 
 (defun chain (generator first second)
-  (gethash (cons (word-index generator first)
-                 (word-index generator second))
-           (chains generator)))
+  (gethash (word-index generator second)
+           (or (gethash (word-index generator first)
+                        (chains generator))
+               (return-from chain NIL))))
 
 (defun (setf chain) (possibilities generator first second)
-  (setf (gethash (cons (word-index generator first)
-                       (word-index generator second))
-                 (chains generator))
+  (setf (gethash (word-index generator second)
+                 (or (gethash (word-index generator first)
+                              (chains generator))
+                     (setf (gethash (word-index generator first)
+                                    (chains generator))
+                           (make-hash-table :test 'eql))))
         possibilities))
 
 (defun ensure-chain (generator first second)
@@ -65,29 +79,29 @@
       (aref chain (random (length chain))))))
 
 (defun random-token (generator)
-  (let ((n (random (hash-table-count (chains generator)))))
-    (loop for k being the hash-keys of (chains generator)
-          repeat n finally (return (values (car k) (cdr k))))))
+  (let* ((starters (gethash *start* (chains generator)))
+         (n (random (hash-table-count starters))))
+    (loop for k being the hash-keys of starters
+          repeat n finally (return k))))
 
 (defun make-sentence (generator)
   (with-output-to-string (out)
-    (multiple-value-bind (f s) (random-token generator)
-      (loop for first = f then second
-            for second = s then third
-            for third = (next-word-index generator first second)
-            do (write-string (word first generator) out)
-               (cond ((= second *end*)
-                      (write-char #\. out)
-                      (return))
-                     (T
-                      (write-char #\Space out)))))))
+    (loop for first = (random-token generator) then second
+          for second = (next-word-index generator *start* first) then third
+          for third = (next-word-index generator first second)
+          do (write-string (word first generator) out)
+             (cond ((= second *end*)
+                    (write-char #\. out)
+                    (return))
+                   (T
+                    (write-char #\Space out))))))
 
 (defun learn-sentence (sentence generator)
   (let ((tokens (cl-ppcre:split "[\\s,、\\-_:：；]+" (string-downcase sentence))))
     (when (cddr tokens)
-      (loop for first = (pop tokens) then second
+      (loop for first = *start* then second
             for second = (pop tokens) then third
-            for third in tokens
+            for third in (cdr tokens)
             do (add-chain generator first second third)
             finally (add-chain generator first second *end*))))
   generator)
