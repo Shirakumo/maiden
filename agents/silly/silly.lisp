@@ -62,8 +62,11 @@
 (define-simple-silly tomorrow (sender "(?i)when('s| is)( the next| the new) (.*?)( going to| gonna)?( be| come)?")
   "Tomorrow.")
 
-(define-simple-silly the-ansert (sender "(?i)I('ll| will) let (you|him|her|them|us) decide")
+(define-simple-silly the-answer (sender "(?i)I('ll| will) let (you|him|her|them|us) decide")
   "... but the answer is yes.")
+
+(define-simple-silly great (sender "(?i)it(('s| is) (gonna|going to be)|('ll| will) be) great")
+  "It's gonna be great.")
 
 (define-simple-silly galo-sengen (sender "(?i)go\\s*go\\s*go")
   "GALO SENGEN")
