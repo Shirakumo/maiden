@@ -142,8 +142,8 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
     (loop for line = (read-line s NIL NIL)
           while line collect line)))
 
-(defun fortune (name)
-  (multiple-value-bind (s m h dd mm yy) (decode-universal-time (get-universal-time))
+(defun fortune (name &optional (time (get-universal-time)))
+  (multiple-value-bind (s m h dd mm yy) (decode-universal-time time)
     (declare (ignore s m h))
     (let ((date-hash (+ (+ dd (* mm 31)) (* yy 365)))
           (nick-hash (reduce #'+ name :key #'char-code)))
