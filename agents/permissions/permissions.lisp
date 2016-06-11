@@ -97,8 +97,8 @@
 (defun allowed-p (user perm)
   (with-storage ('permissions)
     (or (and (authenticated-p user) (administrator-p user))
-        (perm-match-p perm (append (data-value :permissions user)
-                                   (value :default-permissions))))))
+        (apply #'perm-match-p perm (append (data-value :permissions user)
+                                           (value :default-permissions))))))
 
 (defun check-allowed (user perm)
   (unless (allowed-p user perm)
