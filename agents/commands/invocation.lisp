@@ -9,7 +9,7 @@
 (defvar *invokers* ())
 
 (defvar *framework-client* (make-instance 'client :name "FRAMEWORK"))
-(defvar *framework-user* (make-instance 'user :name "FRAMEWORK" :client *framework-client*))
+(defvar *framework-user* (make-instance 'user :name "FRAMEWORK" :client *framework-client* :authenticated T))
 (defvar *dispatch-event* NIL)
 (defvar *alternative-distance-threshold* 10)
 
