@@ -6,11 +6,6 @@
 
 (in-package #:org.shirakumo.maiden.agents.permissions)
 
-(defun package-short-name (package)
-  (loop for min = (package-name package) then (if (< (length name) (length min)) name min)
-        for name in (package-nicknames package)
-        finally (return min)))
-
 (defgeneric normalize-permission (perm))
 
 (defmethod normalize-permission ((perm list))
