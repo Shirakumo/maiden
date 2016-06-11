@@ -17,4 +17,5 @@
                (:file "permissions")
                (:file "documentation"))
   :depends-on (:maiden-storage
-               :maiden-commands))
+               :maiden-commands
+               :cl-ppcre))
