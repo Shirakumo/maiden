@@ -23,12 +23,12 @@
   (normalize-permission (string-downcase perm)))
 
 (defmethod normalize-permission ((package package))
-  (normalize-permission (package-name (symbol-package name))))
+  (normalize-permission (package-name package)))
 
 (defmethod normalize-permission ((class standard-class))
   (let ((name (class-name class)))
-    (append (normalize-pathname (symbol-package name))
-            (normalize-pathname (symbol-name name)))))
+    (append (normalize-permission (symbol-package name))
+            (normalize-permission (symbol-name name)))))
 
 (defmethod normalize-permission ((cmd maiden-commands:command-event))
   (normalize-permission (class-of cmd)))
@@ -96,7 +96,7 @@
 (defun allowed-p (user perm)
   (with-storage ('permissions)
     (or (and (authenticated-p user) (administrator-p user))
-        (perm-match-p perm (append (data-value user :permissions)
+        (perm-match-p perm (append (data-value :permissions user)
                                    (value :default-permissions))))))
 
 (defun check-allowed (user perm)
@@ -113,4 +113,5 @@
 
 (define-handler (permissions check command-event) (c ev dispatch-event)
   :before '(:main)
+  :class deeds:locally-blocking-handler
   (check-allowed (user dispatch-event) ev))
