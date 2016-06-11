@@ -74,7 +74,8 @@
 
 (defun add-administrator (name &optional client type)
   (with-storage ('permissions)
-    (pushnew (user-perm name client type) (value :administrators) :test-not #'perm-match-p)))
+    (pushnew (user-perm name client type) (value :administrators)
+             :test #'perm-match-p)))
 
 (defun remove-administrator (name &optional client type)
   (with-storage ('permissions)
@@ -85,7 +86,7 @@
 (defun add-default-permission (perm)
   (with-storage ('permissions)
     (pushnew (normalize-permission perm) (value :default-permissions)
-             :test-not #'perm-match-p)))
+             :test #'perm-match-p)))
 
 (defun remove-default-permission (perm)
   (with-storage ('permissions)
