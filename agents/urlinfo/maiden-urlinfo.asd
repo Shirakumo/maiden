@@ -17,5 +17,6 @@
                (:file "urlinfo")
                (:file "documentation"))
   :depends-on (:maiden-commands
+               :maiden-activatable
                :drakma
                :cl-ppcre))
