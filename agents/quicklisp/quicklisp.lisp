@@ -56,8 +56,9 @@
   (let ((systems (or systems (asdf/operate:already-loaded-systems))))
     (check-systems-upgradable systems)
     (reply ev "Upgrading ~{~a~^, ~}...")
+    (dolist (dist (remove-duplicates (mapcar #'dist-for-system systems)))
+      (when dist (ql:update-dist dist :prompt NIL)))
     (dolist (sys systems)
-      (ql:update-dist (dist-for-system sys) :prompt NIL)
       (ql:quickload sys :prompt NIL))
     (reply ev "~{~a~^, ~} upgraded." system)))
 
