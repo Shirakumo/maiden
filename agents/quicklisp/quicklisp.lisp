@@ -40,9 +40,9 @@
   :command "show version"
   (cond (system
          (let ((dist (dist-for-system system)))
-           (reply ev "~a is on version ~a~@[ (~a ~a)~]"
+           (reply ev "~a is on version ~a~{ (~a ~a)~}"
                   system (asdf:component-version (asdf:find-system system T))
-                  dist (ql-dist:name dist) (ql-dist:version dist))))
+                  (when dist (list (ql-dist:name dist) (ql-dist:version dist))))))
         (T
          (reply ev "~{~{~a ~a~}~^, ~}" (dists-and-versions)))))
 
