@@ -91,9 +91,15 @@
 
 (defun allowed-p (user perm)
   (with-storage ('permissions)
-    (or (and (authenticated-p user) (administrator-p user))
-        (apply #'perm-match-p perm (append (data-value :permissions user)
-                                           (value :default-permissions))))))
+    (multiple-value-bind (user-grant user-deny) (separate-grant-deny (data-value :permissions user))
+      (or (and (authenticated-p user) (administrator-p user))
+          ;; User specific permissions must take precedence, so we have to
+          ;; test for denies specifically after the default permissions to
+          ;; make it possible to deny a user a permission that might be
+          ;; granted by default.
+          (and (or (apply #'perm-match-p perm user-grant)
+                   (apply #'perm-match-p perm (value :default-permissions)))
+               (not (apply #'perm-match-p perm user-deny)))))))
 
 (defun check-allowed (user perm)
   (unless (allowed-p user perm)
