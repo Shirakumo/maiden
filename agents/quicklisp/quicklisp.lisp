@@ -38,13 +38,11 @@
 
 (define-command (quicklisp version) (c ev &optional system)
   :command "show version"
-  (cond (system
-         (let ((dist (dist-for-system system)))
-           (reply ev "~a is on version ~a~{ (~a ~a)~}"
-                  system (asdf:component-version (asdf:find-system system T))
-                  (when dist (list (ql-dist:name dist) (ql-dist:version dist))))))
-        (T
-         (reply ev "~{~{~a ~a~}~^, ~}" (dists-and-versions)))))
+  (let* ((system (or system "maiden"))
+         (dist (dist-for-system system)))
+    (reply ev "~a is on version ~a~{ (~a ~a)~}"
+           system (asdf:component-version (asdf:find-system system T))
+           (when dist (list (ql-dist:name dist) (ql-dist:version dist))))))
 
 (define-command (quicklisp update) (c ev &rest dists)
   (let ((dists (or dists (mapcar #'ql-dist:name (ql-dist:all-dists)))))
