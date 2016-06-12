@@ -6,6 +6,15 @@
 
 (in-package #:org.shirakumo.maiden.agents.permissions)
 
+(define-condition permission-denied (error)
+  ((user :initarg :user)
+   (perm :initarg :perm))
+  (:default-initargs
+   :user (error "USER required")
+   :perm (error "PERM required"))
+  (:report (lambda (c s) (format s "I cannot let you do that, ~s."
+                                 (name (slot-value c 'user))))))
+
 (defgeneric normalize-permission (perm))
 
 (defmethod normalize-permission ((perm list))
@@ -103,8 +112,7 @@
 
 (defun check-allowed (user perm)
   (unless (allowed-p user perm)
-    ;; FIXME
-    (error "I cannot let you do that.")))
+    (error 'permission-denied :user user :perm perm)))
 
 (defmacro with-permission ((user permission) &body body)
   `(when (allowed-p ,user ,permission)
