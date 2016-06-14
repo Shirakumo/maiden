@@ -29,7 +29,8 @@
 (define-event command-event (instruction-event)
   ((dispatch-event :initarg :dispatch-event :reader dispatch-event))
   (:default-initargs
-   :dispatch-event (or *dispatch-event* (make-instance 'framework-message))))
+   :dispatch-event (or *dispatch-event* (make-instance 'framework-message)))
+  (:advice public))
 
 (defun command-invoker (name)
   (cdr (assoc name *invokers* :test #'string-equal)))
