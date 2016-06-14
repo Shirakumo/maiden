@@ -204,7 +204,7 @@
          (define-event ,event-type ,superclasses
            (,@(slot-args->slots args)
             ,@extra-slots)
-           (:advice ,@advice)
+           (:advice ,advice)
            ,@class-options)
          (define-handler (,consumer ,name ,event-type) (,consumer-var ,event-var ,@(lambda-fiddle:extract-lambda-vars args))
            ,@options
