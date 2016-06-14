@@ -22,6 +22,8 @@
    #:add-default-permission
    #:remove-default-permission
    #:allowed-p
+   #:grant
+   #:deny
    #:check-allowed
    #:with-permission
    #:permissions))

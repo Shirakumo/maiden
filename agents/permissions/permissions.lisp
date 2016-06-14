@@ -110,6 +110,18 @@
                    (apply #'perm-match-p perm (value :default-permissions)))
                (not (apply #'perm-match-p perm user-deny)))))))
 
+(defun grant (perm user)
+  (let ((perm (normalize-permission perm)))
+    (pushnew perm (data-value :permissions user))
+    (setf (data-value :permissions user)
+          (remove (cons "!" perm) (data-value :permissions user) :test #'equal))))
+
+(defun deny (perm user)
+  (let ((perm (normalize-permission perm)))
+    (pushnew (cons "!" perm) (data-value :permissions user))
+    (setf (data-value :permissions user)
+          (remove perm (data-value :permissions user) :test #'equal))))
+
 (defun check-allowed (user perm)
   (unless (allowed-p user perm)
     (error 'permission-denied :user user :perm perm)))
@@ -130,3 +142,13 @@
 (define-command (permissions check-access) (c ev perm)
   :command "check access"
   (reply ev "Access to this permission is ~:[denied~;granted~]." (allowed-p (user ev) perm)))
+
+(define-command (permissions grant) (c ev user perm)
+  :advice ((not public))
+  (grant perm (ensure-user user (client ev)))
+  (reply ev "Permission to ~a for ~a granted." perm user))
+
+(define-command (permissions deny) (c ev user perm)
+  :advice ((not public))
+  (deny perm (ensure-user user (client ev)))
+  (reply ev "Permission to ~a for ~a denied." perm user))
