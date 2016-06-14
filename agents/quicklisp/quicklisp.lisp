@@ -45,6 +45,7 @@
            (when dist (list (ql-dist:name dist) (ql-dist:version dist))))))
 
 (define-command (quicklisp update) (c ev &rest dists)
+  :advice ((not public))
   (let ((dists (or dists (mapcar #'ql-dist:name (ql-dist:all-dists)))))
     (check-dist-available dists)
     (reply ev "Updating ~{~a~^, ~}..." dists)
@@ -53,6 +54,7 @@
     (reply ev "Update done. ~{~{~a ~a~}~^, ~}" (dists-and-versions dists))))
 
 (define-command (quicklisp upgrade) (c ev &rest systems)
+  :advice ((not public))
   (let ((systems (or systems (asdf/operate:already-loaded-systems))))
     (check-systems-upgradable systems)
     (reply ev "Upgrading ~{~a~^, ~}...")
@@ -63,11 +65,13 @@
     (reply ev "~{~a~^, ~} upgraded." system)))
 
 (define-command (quicklisp quickload) (c ev &rest systems)
+  :advice ((not public))
   (check-systems-available systems)
   (ql:quickload systems :prompt NIL)
   (reply ev "~{~a~^, ~} quickloaded." systems))
 
 (define-command (quicklisp uninstall) (c ev &rest systems)
+  :advice ((not public))
   (check-systems-available systems)
   (dolist (sys systems)
     (ql-dist:uninstall (ql-dist:find-system sys)))
@@ -76,11 +80,13 @@
 
 (define-command (quicklisp install-dist) (c ev url &key replace)
   :command "install dist"
+  :advice ((not public))
   (ql-dist:install-dist url :prompt NIL :replace replace)
   (reply ev "Dist installed."))
 
 (define-command (quicklisp uninstall-dist) (c ev dist)
   :command "uninstall dist"
+  :advice ((not public))
   (check-dists-available (list dist))
   (ql-dist:uninstall (ql-dist:find-dist dist))
   (reply ev "Dist uninstalled."))
