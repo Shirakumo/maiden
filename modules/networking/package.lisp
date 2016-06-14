@@ -60,4 +60,9 @@
    #:clients
    #:tcp-server-client
    #:server
-   #:socket))
+   #:socket)
+  ;; events.lisp
+  (:export
+   #:connection-event
+   #:connection-initiated
+   #:connection-closed))

@@ -120,9 +120,6 @@
    #:response-event
    #:client-event
    #:client
-   #:connection-event
-   #:connection-initiated
-   #:connection-closed
    #:user-event
    #:user
    #:user-removed

@@ -15,6 +15,7 @@
   :serial T
   :components ((:file "package")
                (:file "conditions")
+               (:file "events")
                (:file "clients")
                (:file "documentation"))
   :depends-on (:maiden
