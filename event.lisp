@@ -25,6 +25,8 @@
       (dolist (direct-advice (direct-advice class))
         (cond ((and (listp direct-advice) (eql (first direct-advice) 'not))
                (setf advice (remove (second direct-advice) advice)))
+              ((listp direct-advice)
+               (setf advice (union advice direct-advice :test #'equalp)))
               (T
                (pushnew direct-advice advice :test #'equalp)))))
     ;; Set effective advice.
