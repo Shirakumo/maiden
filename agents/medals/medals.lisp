@@ -51,14 +51,14 @@
 
 (define-command (medals award) (c ev user &rest medals)
   :command "award medals"
-  :advice ((not public))
+  :advice (not public)
   (apply #'add-medals user medals)
   (reply ev "Medals ~{~a~^, ~} awarded to ~a."
          medals user))
 
 (define-command (medals take) (c ev user &rest medals)
   :command "take medals"
-  :advice ((not public))
+  :advice (not public)
   (apply #'remove-medals user medals)
   (reply ev "Medals ~{~a~^, ~} taken from ~a."
          medals user))

@@ -76,11 +76,11 @@
   ())
 
 (define-command (activatable activate) (c ev &rest modules)
-  :advice ((not public))
+  :advice (not public)
   (apply #'activate ev modules)
   (reply ev "Modules activated."))
 
 (define-command (activatable deactivate) (c ev &rest modules)
-  :advice ((not public))
+  :advice (not public)
   (apply #'deactivate ev modules)
   (reply ev "Modules deactivated."))

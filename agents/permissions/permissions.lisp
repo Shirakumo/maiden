@@ -144,11 +144,11 @@
   (reply ev "Access to this permission is ~:[denied~;granted~]." (allowed-p (user ev) perm)))
 
 (define-command (permissions grant) (c ev user perm)
-  :advice ((not public))
+  :advice (not public)
   (grant perm (ensure-user user (client ev)))
   (reply ev "Permission to ~a for ~a granted." perm user))
 
 (define-command (permissions deny) (c ev user perm)
-  :advice ((not public))
+  :advice (not public)
   (deny perm (ensure-user user (client ev)))
   (reply ev "Permission to ~a for ~a denied." perm user))
