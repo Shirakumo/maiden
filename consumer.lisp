@@ -197,13 +197,14 @@
         collect (kw arg) collect arg))
 
 (defmacro define-function-handler ((consumer name &optional (event-type name)) args &body body)
-  (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation) body
+  (form-fiddle:with-body-options (body options superclasses extra-slots class-options documentation advice) body
     (destructuring-bind (consumer-var event-var &rest args) args
       (when documentation (push `(:documentation ,documentation) class-options))
       `(progn
          (define-event ,event-type ,superclasses
            (,@(slot-args->slots args)
             ,@extra-slots)
+           (:advice ,@advice)
            ,@class-options)
          (define-handler (,consumer ,name ,event-type) (,consumer-var ,event-var ,@(lambda-fiddle:extract-lambda-vars args))
            ,@options
