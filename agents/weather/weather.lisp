@@ -59,6 +59,7 @@
 
 (maiden-commands:define-command (weather set-api-key) (c ev key)
   :command "set weather api key"
+  :advice (not public)
   (with-storage (c)
     (setf (value :api-key) key)
     (Reply ev "API key set.")))
