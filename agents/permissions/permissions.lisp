@@ -124,10 +124,9 @@
 (define-handler (permissions check command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
-  (check-allowed (user dispatch-event) ev))
+  (unless (find 'public (advice ev) :test #'string=)
+    (check-allowed (user dispatch-event) ev)))
 
 (define-command (permissions check-access) (c ev perm)
   :command "check access"
   (reply ev "Access to this permission is ~:[denied~;granted~]." (allowed-p (user ev) perm)))
-
-(add-default-permission "maiden-permissions.check-access")
