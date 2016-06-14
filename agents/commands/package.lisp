@@ -23,6 +23,7 @@
    #:framework-message
    #:issue-message
    #:command-event
+   #:public
    #:dispatch-event
    #:command-invoker
    #:remove-command-invoker
