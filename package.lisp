@@ -9,22 +9,26 @@
 (defpackage #:maiden
   (:nicknames #:org.shirakumo.maiden)
   (:use #:cl #:deeds)
-  (:shadow #:define-handler #:define-command #:with-response #:with-awaiting)
-  ;; re-export from deeds
-  (:export
-   #:running
-   #:start
-   #:stop
+  (:shadow
+   #:event-class
    #:event
    #:define-event
-   #:issue)
-  (:shadow
+   #:define-handler
+   #:define-command
+   #:with-response
+   #:with-awaiting
    #:do-issue
    #:broadcast
    #:message-event
    #:info-event
    #:warning-event
    #:error-event)
+  ;; re-export from deeds
+  (:export
+   #:running
+   #:start
+   #:stop
+   #:issue)
   ;; agent.lisp
   (:export
    #:agent)
@@ -104,6 +108,11 @@
    #:ensure-channel
    #:users)
   ;; event.lisp
+  (:export
+   #:advice
+   #:event
+   #:define-event)
+  ;; standard-events.lisp
   (:export
    #:instruction-event
    #:respond

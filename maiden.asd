@@ -20,6 +20,7 @@
                (:file "toolkit")
                (:file "conditions")
                (:file "event")
+               (:file "standard-events")
                (:file "entity")
                (:file "consumer")
                (:file "core")
