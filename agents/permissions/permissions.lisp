@@ -152,3 +152,27 @@
   :advice (not public)
   (deny perm (ensure-user user (client ev)))
   (reply ev "Permission to ~a for ~a denied." perm user))
+
+(define-command (permissions add-administrator) (c ev user &optional client type)
+  :command "add administrator"
+  :advice (not public)
+  (add-administrator user client type)
+  (reply ev "~a is now an administrator." user))
+
+(define-command (permissions remove-administrator) (c ev user &optional client type)
+  :command "remove administrator"
+  :advice (not public)
+  (remove-administrator user client type)
+  (reply ev "~a is no longer an administrator." user))
+
+(define-command (permissions add-default-permission) (c ev perm)
+  :command "add default permission"
+  :advice (not public)
+  (add-default-permission perm)
+  (reply ev "Default permission to ~a granted." perm))
+
+(define-command (permissions remove-default-permission) (c ev perm)
+  :command "remove default permission"
+  :advice (not public)
+  (remove-default-permission perm)
+  (reply ev "Default permission to ~a revoked." perm))
