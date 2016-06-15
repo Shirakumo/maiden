@@ -16,12 +16,14 @@
 (defun dist-for-system (system)
   (loop for dist in (ql-dist:all-dists)
         thereis (and (ql-dist:find-system-in-dist system dist)
-                     dist)))
+                     (etypecase dist
+                       (string (ql-dist:find-dist dist))
+                       (ql-dist:dist dist)))))
 
 (defun check-dists-available (dists)
   (dolist (dist dists)
     (unless (ql-dist:find-dist dist)
-      (error "No such dist ~s." sys))))
+      (error "No such dist ~s." dist))))
 
 (defun check-systems-available (systems)
   (dolist (sys systems)
