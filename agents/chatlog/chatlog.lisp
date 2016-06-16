@@ -9,6 +9,8 @@
 (define-consumer chatlog (agent)
   ())
 
+;; FIXME: How do we handle messages that we send out?
+
 (define-handler (chatlog message message-event) (c ev user message)
   (let ((channel (if (typep ev 'channel-event) (channel ev) user)))
     (maybe-record-message :message channel user message)))
@@ -19,6 +21,7 @@
 (define-handler (chatlog leave user-left) (c ev user channel)
   (maybe-record-message :leave channel user "** PART"))
 
+;; FIXME
 ;; (define-handler (chatlog kick user-kick) (c ev user channel target)
 ;;   (maybe-record-message :kick channel user "** KICKED ~a" target))
 
