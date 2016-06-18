@@ -6,29 +6,6 @@
 
 (in-package #:org.shirakumo.maiden)
 
-(defmethod core ((event event))
-  (event-loop event))
-
-(define-event instruction-event ()
-  ())
-
-(defgeneric respond (event &rest args &key class &allow-other-keys)
-  (:method ((event event) &rest args &key (class (class-of event)) &allow-other-keys)
-    (issue (apply #'make-instance class args)
-           (event-loop event))))
-
-(define-event query-event (identified-event instruction-event)
-  ())
-
-(defmethod respond ((event query-event) &key payload)
-  (issue (make-instance 'response-event :identifier (identifier event)
-                                        :payload payload)
-         (event-loop event)))
-
-(define-event response-event (identified-event payload-event)
-  ()
-  (:default-initargs :identifier (error "IDENTIFIER required.")))
-
 (define-event client-event ()
   ((client :initarg :client :reader client))
   (:default-initargs
@@ -76,6 +53,26 @@
 
 (define-event user-left (user-event channel-event)
   ())
+
+(define-event instruction-event ()
+  ())
+
+(defgeneric respond (event &rest args &key class &allow-other-keys)
+  (:method ((event event) &rest args &key (class (class-of event)) &allow-other-keys)
+    (issue (apply #'make-instance class args)
+           (event-loop event))))
+
+(define-event query-event (identified-event instruction-event)
+  ())
+
+(defmethod respond ((event query-event) &key payload)
+  (issue (make-instance 'response-event :identifier (identifier event)
+                                        :payload payload)
+         (event-loop event)))
+
+(define-event response-event (identified-event payload-event)
+  ()
+  (:default-initargs :identifier (error "IDENTIFIER required.")))
 
 (define-event core-event ()
   ())

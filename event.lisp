@@ -39,6 +39,9 @@
 (defmethod advice ((event event))
   (advice (class-of event)))
 
+(defmethod core ((event event))
+  (event-loop event))
+
 (defmacro define-event (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
               never (c2mop:subclassp (find-class super) (find-class 'event)))
