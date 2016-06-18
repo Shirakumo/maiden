@@ -14,3 +14,9 @@
 
 (define-event connection-closed (connection-event)
   ())
+
+(define-event outgoing-event (client-event)
+  ())
+
+(define-event incoming-event (client-event)
+  ())

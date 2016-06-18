@@ -65,4 +65,6 @@
   (:export
    #:connection-event
    #:connection-initiated
-   #:connection-closed))
+   #:connection-closed
+   #:outgoing-event
+   #:incoming-event))
