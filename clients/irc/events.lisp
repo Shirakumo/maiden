@@ -6,6 +6,8 @@
 
 (in-package #:org.shirakumo.maiden.clients.irc)
 
+(defvar *reply-events* (make-hash-table :test 'equalp))
+
 (define-event irc-event (client-event)
   ())
 
@@ -25,7 +27,8 @@
   (print-unreadable-object (reply-event stream :type T :identity T)
     (format stream "~s ~a" :user (user reply-event))))
 
-(defvar *reply-events* (make-hash-table :test 'equalp))
+(define-event unknown-event (reply-event)
+  ())
 
 (defun parse-reply (client message)
   (or
@@ -40,9 +43,6 @@
    (error 'message-parse-error :client client :message message)))
 
 (defgeneric make-reply-events (type &key client code args user))
-
-(define-event unknown-event (reply-event)
-  ())
 
 (defmethod make-reply-events ((type (eql 'unknown-event)) &key client code args user)
   (make-instance 'unknown-event :args args :code code :user user :client client))
