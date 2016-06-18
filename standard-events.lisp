@@ -50,7 +50,7 @@
   ())
 
 (define-event user-name-changed (user-event)
-  ((old-name :initarg :old-name :reader user))
+  ((old-name :initarg :old-name :reader old-name))
   (:default-initargs
    :old-name (error "OLD-NAME required.")))
 
