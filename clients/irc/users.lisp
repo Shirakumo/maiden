@@ -136,14 +136,17 @@
 (define-handler (irc-client track-nick irc:msg-nick) (client ev user nickname)
   :match-consumer 'client
   :after '(nick-change)
-  (unless (matches nickname (nickname client))
-    (dolist (channel (channels user))
-      (remhash (name user) (user-map channel))
-      (setf (gethash nickname (user-map channel)) user))
-    (when (find-user user client)
-      (remhash (name user) (user-map client))
-      (setf (gethash nickname (user-map client)) user))
-    (setf (name user) nickname)))
+  (let ((old-nick (name user)))
+    (unless (matches nickname (nickname client))
+      (dolist (channel (channels user))
+        (remhash (name user) (user-map channel))
+        (setf (gethash nickname (user-map channel)) user))
+      (when (find-user user client)
+        (remhash (name user) (user-map client))
+        (setf (gethash nickname (user-map client)) user))
+      (setf (name user) nickname))
+    ;; Issue nick change event
+    (do-issue (core event) 'user-name-changed :client client :user user :old-nick old-nick)))
 
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
   :match-consumer 'client

@@ -95,8 +95,10 @@
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
 ;; Manually edited to suit a more parseable format, and to
 ;; remove conflicting duplicates.
-;; FIXME: Automatically convert CHANNEL and USER/SENDER references into the appropriate objects
 (define-irc-reply MSG-PASS PASS ("(.*)" PASSWORD))
+;; Note: The MSG-NICK is not a subclass of USER-NAME-CHANGED because of the way in which user and old-name are
+;;       reversed in order. Instead we explicitly convert the event and issue the proper one in the track-nick
+;;       handler in user.lisp
 (define-irc-reply MSG-NICK NICK (":?([^ ]+)( (.*))?" NICKNAME NIL HOPCOUNT))
 (define-irc-reply MSG-USER USER ("([^ ]+) ([^ ]+) ([^ ]+) :(.*)" USERNAME HOSTNAME SERVERNAME REALNAME))
 (define-irc-reply MSG-SERVER SERVER ("([^ ]+) ([^ ]+) :(.*)" SERVERNAME HOPCOUNT INFO))
