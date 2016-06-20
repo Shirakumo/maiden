@@ -6,6 +6,12 @@
 
 (in-package #:org.shirakumo.maiden)
 
+(define-event passive-event ()
+  ())
+
+(define-event active-event ()
+  ())
+
 (define-event client-event ()
   ((client :initarg :client :reader client))
   (:default-initargs
@@ -15,7 +21,7 @@
   (issue (apply #'make-instance class :client (client event) args)
          (event-loop event)))
 
-(define-event instruction-event ()
+(define-event instruction-event (active-event)
   ())
 
 (defgeneric respond (event &rest args &key class &allow-other-keys)
@@ -31,14 +37,14 @@
                                         :payload payload)
          (event-loop event)))
 
-(define-event response-event (identified-event payload-event)
+(define-event response-event (identified-event payload-event passive-event)
   ()
   (:default-initargs :identifier (error "IDENTIFIER required.")))
 
 (define-event core-event ()
   ())
 
-(define-event consumer-added (core-event)
+(define-event consumer-added (core-event passive-event)
   ((consumer :initarg :consumer))
   (:default-initargs
    :consumer (error "CONSUMER required.")))
@@ -47,7 +53,7 @@
   (print-unreadable-object (event stream :type T :identity T)
     (format stream "~a" (slot-value event 'consumer))))
 
-(define-event consumer-removed (core-event)
+(define-event consumer-removed (core-event passive-event)
   ((consumer :initarg :consumer))
   (:default-initargs
    :consumer (error "CONSUMER required.")))
@@ -56,7 +62,7 @@
   (print-unreadable-object (event stream :type T :identity T)
     (format stream "~a" (slot-value event 'consumer))))
 
-(define-event instruction-event ()
+(define-event instruction-event (active-event)
   ())
 
 (defgeneric execute-instruction (instruction &key))

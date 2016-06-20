@@ -98,6 +98,8 @@
    #:define-event)
   ;; standard-events.lisp
   (:export
+   #:passive-event
+   #:active-event
    #:instruction-event
    #:respond
    #:query-event
