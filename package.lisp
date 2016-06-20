@@ -34,14 +34,7 @@
    #:agent)
   ;; client.lisp
   (:export
-   #:users
-   #:find-user
-   #:authenticate
-   #:channels
-   #:find-channel
-   #:client
-   #:user-client
-   #:channel-client)
+   #:client)
   ;; conditions.lisp
   (:export
    #:maiden-condition
@@ -97,16 +90,7 @@
    #:name
    #:data-entity
    #:data
-   #:data-value
-   #:client-entity
-   #:client
-   #:server
-   #:user
-   #:ensure-user
-   #:authenticated-p
-   #:channel
-   #:ensure-channel
-   #:users)
+   #:data-value)
   ;; event.lisp
   (:export
    #:advice
@@ -120,20 +104,6 @@
    #:response-event
    #:client-event
    #:client
-   #:user-event
-   #:user
-   #:user-removed
-   #:user-added
-   #:user-name-changed
-   #:message-event
-   #:message
-   #:reply
-   #:channel-event
-   #:channel
-   #:channel-topic-changed
-   #:topic
-   #:user-entered
-   #:user-left
    #:core-event
    #:consumer-added
    #:consumer-removed

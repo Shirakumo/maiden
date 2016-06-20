@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-silly
   (:nicknames #:org.shirakumo.maiden.agents.silly)
-  (:use #:cl #:maiden #:maiden-activatable #:maiden-commands #:maiden-api-access)
+  (:use #:cl #:maiden #:maiden-activatable #:maiden-commands #:maiden-api-access #:maiden-client-entities)
   ;; silly.lisp
   (:export
    #:silly))

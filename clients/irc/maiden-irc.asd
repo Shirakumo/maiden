@@ -20,6 +20,7 @@
                (:file "users")
                (:file "documentation"))
   :depends-on (:maiden-networking
+               :maiden-client-entities
                :babel
                :cl-ppcre
                :form-fiddle))

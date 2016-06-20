@@ -5,18 +5,18 @@
 |#
 
 (in-package #:cl-user)
-(asdf:defsystem maiden-permissions
+(asdf:defsystem maiden-client-entities
   :version "0.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Permission management for maiden"
+  :description "Support for the concepts of users and channels."
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
-               (:file "permissions")
+               (:file "entities")
+               (:file "clients")
+               (:file "events")
                (:file "documentation"))
-  :depends-on (:maiden-storage
-               :maiden-commands
-               :maiden-client-entities
-               :cl-ppcre))
+  :depends-on (:maiden
+               :documentation-utils))

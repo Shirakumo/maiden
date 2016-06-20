@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-permissions
   (:nicknames #:org.shirakumo.maiden.agents.permissions)
-  (:use #:cl #:maiden #:maiden-commands #:maiden-storage)
+  (:use #:cl #:maiden #:maiden-commands #:maiden-storage #:maiden-client-entities)
   ;; permissions.lisp
   (:export
    #:permission-denied

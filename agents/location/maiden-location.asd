@@ -17,4 +17,5 @@
                (:file "location")
                (:file "documentation"))
   :depends-on (:maiden-commands
-               :maiden-api-access))
+               :maiden-api-access
+               :maiden-client-entities))

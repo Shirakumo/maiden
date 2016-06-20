@@ -19,5 +19,6 @@
   :depends-on (:maiden-commands
                :maiden-activatable
                :maiden-api-access
+               :maiden-client-entities
                :cl-ppcre
                :alexandria))

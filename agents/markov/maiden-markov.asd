@@ -20,6 +20,7 @@
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-activatable
+               :maiden-client-entities
                :alexandria
                :cl-ppcre
                :fast-io

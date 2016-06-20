@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-urlinfo
   (:nicknames #:org.shirakumo.maiden.agents.urlinfo)
-  (:use #:cl #:maiden #:maiden-commands)
+  (:use #:cl #:maiden #:maiden-commands #:maiden-client-entities)
   ;; urlinfo.lisp
   (:export
    #:urlinfo))

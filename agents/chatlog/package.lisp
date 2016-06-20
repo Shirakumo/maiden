@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-chatlog
   (:nicknames #:org.shirakumo.maiden.agents.chatlog)
-  (:use #:cl #:maiden #:maiden-storage #:maiden-commands)
+  (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; chatlog.lisp
   (:export
    #:chatlog)

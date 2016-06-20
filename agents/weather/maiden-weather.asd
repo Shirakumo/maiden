@@ -20,4 +20,5 @@
                :maiden-storage
                :maiden-location
                :maiden-api-access
+               :maiden-client-entities
                :local-time))

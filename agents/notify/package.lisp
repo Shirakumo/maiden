@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-notify
   (:nicknames #:org.shirakumo.maiden.agents.notify)
-  (:use #:cl #:maiden #:maiden-storage #:maiden-commands)
+  (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; interface.lisp
   (:export
    #:notify)

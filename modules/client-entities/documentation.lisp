@@ -4,6 +4,4 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.maiden)
-
-(define-consumer client () ())
+(in-package #:org.shirakumo.maiden.modules.client-entities)

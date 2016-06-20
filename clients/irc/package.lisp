@@ -428,7 +428,7 @@
 
 (defpackage #:maiden-irc
   (:nicknames #:org.shirakumo.maiden.clients.irc)
-  (:use #:cl #:maiden #:maiden-networking)
+  (:use #:cl #:maiden #:maiden-networking #:maiden-client-entities)
   ;; client.lisp
   (:export
    #:irc-client

@@ -20,4 +20,5 @@
                (:file "dispatch")
                (:file "documentation"))
   :depends-on (:lambda-fiddle
-               :maiden))
+               :maiden
+               :maiden-client-entities))

@@ -18,5 +18,6 @@
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-activatable
+               :maiden-client-entities
                :drakma
                :cl-ppcre))

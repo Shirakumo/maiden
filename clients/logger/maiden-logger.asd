@@ -16,4 +16,5 @@
   :components ((:file "package")
                (:file "client")
                (:file "documentation"))
-  :depends-on (:maiden))
+  :depends-on (:maiden
+               :maiden-client-entities))
