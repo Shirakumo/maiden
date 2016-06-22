@@ -11,7 +11,7 @@
 ;;        things like rapid nicks or parts/joins could end up confusing
 ;;        the system.
 
-(defclass irc-server (server)
+(defclass irc-server (client-entity)
   ())
 
 (defclass irc-user (user)
