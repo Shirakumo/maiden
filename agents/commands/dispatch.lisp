@@ -9,7 +9,7 @@
 (define-consumer commands (agent)
   ())
 
-(define-handler (commands processor message-event) (c ev message)
+(define-handler (commands processor (and message-event passive-event)) (c ev message)
   (let ((command (extract-command ev)))
     (when command
       (multiple-value-bind (match alternatives) (find-matching-command command)
