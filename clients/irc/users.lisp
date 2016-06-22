@@ -14,6 +14,9 @@
 (defclass irc-server (client-entity)
   ())
 
+(defmethod send-to ((server irc-server) message &rest args)
+  (send (apply #'format NIL message args) (client server)))
+
 (defclass irc-user (user)
   ((user :initarg :user :reader user)
    (host :initarg :host :reader host))
@@ -21,8 +24,14 @@
    :user ""
    :host ""))
 
+(defmethod send-to ((user irc-user) message &rest args)
+  (irc:privmsg (client user) (name user) (apply #'format NIL message args)))
+
 (defclass irc-channel (channel)
   ((users :initform (make-hash-table :test 'equalp) :accessor user-map)))
+
+(defmethod send-to ((channel irc-channel) message &rest args)
+  (irc:privmsg (client channel) (name channel) (apply #'format NIL message args)))
 
 (defmethod users ((client irc-client))
   (loop for v being the hash-values of (user-map client) collect v))
