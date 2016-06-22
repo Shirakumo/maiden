@@ -13,7 +13,7 @@
 (defvar *dispatch-event* NIL)
 (defvar *alternative-distance-threshold* 10)
 
-(define-event framework-message (message-event)
+(define-event framework-message (message-event passive-event)
   ()
   (:default-initargs
    :client *framework-client*
