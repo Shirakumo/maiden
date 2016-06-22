@@ -19,7 +19,7 @@
     (deeds:with-immutable-slots-unlocked ()
       (setf (slot-value event 'channel) (coerce-irc-object channel NIL NIL client)))))
 
-(define-event reply-event (irc-event user-event incoming-event)
+(define-event reply-event (irc-event user-event incoming-event passive-event)
   ((code :initarg :code)
    (args :initarg :args)))
 

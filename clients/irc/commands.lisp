@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.maiden.clients.irc)
 
-(define-event send-event (irc-event outgoing-event)
+(define-event send-event (irc-event outgoing-event active-event)
   ((message :initarg :message :reader message)))
 
 (defmacro define-irc-command (name args &body options-and-body)
