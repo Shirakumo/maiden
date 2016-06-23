@@ -92,6 +92,16 @@
       (values (nreverse args)
               (nreverse kargs)))))
 
+(defun normalize-opt-arg (o)
+  (let ((norm (if (listp o)
+                  (list (first o) (second o) (third o))
+                  (list o NIL NIL))))
+    (unless (symbolp (first norm))
+      (error "Argument ~s is not a symbol." (first norm)))
+    (unless (symbolp (third norm))
+      (error "Provided-p argument ~s is not a symbol." (third norm)))
+    norm))
+
 (defun generate-lambda-list-bindings (lambda-list args kargs)
   (lambda-fiddle:with-destructured-lambda-list
       (:required req :optional opt :key key :rest rest) lambda-list
@@ -100,18 +110,20 @@
                   collect `(,symb (or (pop ,args)
                                       (error 'not-enough-arguments-error :lambda-list ',lambda-list))))
             (loop for o in opt
-                  for (symb val) = (if (listp o) o (list o NIL))
-                  do (unless (symbolp symb) (error "Optional argument ~s is not a symbol." symb))
+                  for (symb val provided) = (normalize-opt-arg o)
+                  when provided collect `(,provided T)
                   collect `(,symb (or (pop ,args)
+                                      ,@(when provided `((setf ,provided NIL)))
                                       ,val)))
             (when rest
               (unless (symbolp rest) (error "Rest argument ~s is not a symbol." rest))
               `((,rest ,args)))
             (loop for k in key
-                  for (symb val) = (if (listp k) k (list k NIL))
-                  do (unless (symbolp symb) (error "Keyword argument ~s is not a symbol." symb))
+                  for (symb val provided) = (normalize-opt-arg k)
+                  when provided collect `(,provided T)
                   collect `(,symb (or (and ,args (pop ,args))
                                       (cdr (assoc ,(string symb) ,kargs :test #'string-equal))
+                                      ,@(when provided `((setf ,provided NIL)))
                                       ,val))))))
 
 (defmacro with-command-destructuring-bind (lambda-list input &body body)
