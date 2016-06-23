@@ -119,5 +119,5 @@
         (kargs (gensym "KARGS")))
     `(multiple-value-bind (,args ,kargs) (lex ,input)
        (declare (ignorable ,args ,kargs))
-       (let ,(generate-lambda-list-bindings lambda-list args kargs)
+       (let* ,(generate-lambda-list-bindings lambda-list args kargs)
          ,@body))))
