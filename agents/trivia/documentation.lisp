@@ -4,5 +4,5 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.maiden.agents.markov)
+(in-package #:org.shirakumo.maiden.agents.trivia)
 
