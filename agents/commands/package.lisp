@@ -17,6 +17,7 @@
    #:remove-command-extractor
    #:define-command-extractor
    #:extract-command
+   #:command-p
    #:prefix)
   ;; invocation.lisp
   (:export

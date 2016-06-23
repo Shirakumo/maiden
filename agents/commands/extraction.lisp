@@ -26,6 +26,9 @@
   (loop for extractor in *extractors*
         thereis (funcall (cdr extractor) event)))
 
+(defmethod command-p ((event message-event))
+  (not (null (extract-command event))))
+
 (define-command-extractor prefix (event)
   (when (starts-with "::" (message event))
     (subseq (message event) 2)))
