@@ -11,10 +11,13 @@
   (:export
    #:config-pathname
    #:storage
-   #:with-storage))
+   #:with-storage
+   #:offload
+   #:restore))
 
 ;; re-export
-(let ((symbs '(ubiquitous:value
+(let ((symbs '(ubiquitous:*storage*
+               ubiquitous:value
                ubiquitous:remvalue
                ubiquitous:defaulted-value)))
   (import symbs '#:maiden-storage)

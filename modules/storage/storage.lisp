@@ -107,3 +107,9 @@
                                    :type :lisp
                                    ,@(unless always-load `(:storage (ensure-storage ,designator))))
      ,@body))
+
+(defun offload (designator &optional (storage ubiquitous:*storage*))
+  (ubiquitous:offload (config-pathname designator) :type :lisp :storage storage))
+
+(defun restore (designator)
+  (ubiquitous:restore (config-pathname designator) :type :lisp))
