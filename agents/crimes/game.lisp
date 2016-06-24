@@ -21,7 +21,7 @@
 
 (defmethod print-object ((player player) stream)
   (print-unreadable-object (player stream :type T)
-    (format stream "~a (~a point~:p)" (name (user player)) (score player))))
+    (format stream "~a (~a point~:p)" (user player) (score player))))
 
 (defmethod complete-p ((player player))
   (complete-p (result player)))
@@ -61,7 +61,7 @@
 (defmethod print-object ((game game) stream)
   (print-unreadable-object (game stream :type T)
     (format stream "~a ~@[~*running~] ~a player~:p"
-            (name (channel game)) (in-session game) (length (players game)))))
+            (channel game) (in-session game) (length (players game)))))
 
 (defmethod add-deck ((deck deck) (game game))
   (when (in-session game)
@@ -93,9 +93,9 @@
 (defmethod end ((game game))
   (setf (in-session game) NIL))
 
-(defmethod join ((user user) (game game))
-  (when (find user (players game) :key #'user)
-    (error "~a is already playing." (name user)))
+(defmethod join (user (game game))
+  (when (find user (players game) :key #'user :test #'matches)
+    (error "~a is already playing." user))
   (let ((player (make-instance 'player :user user :game game)))
     ;; Late-joiner. Draw cards.
     (when (in-session game)
@@ -104,10 +104,10 @@
     ;; the player indexes in SCRAMBLED and the current officer.
     (push-to-end player (players game))))
 
-(defmethod leave ((user user) (game game))
-  (let ((index (position user (players game) :key #'user)))
+(defmethod leave (user (game game))
+  (let ((index (position user (players game) :key #'user :test #'matches)))
     (when index
-      (setf (players game) (remove user (players game) :key #'user))
+      (setf (players game) (remove user (players game) :key #'user :test #'matches))
       ;; Leaving in the middle messes with the scrambling indexes.
       (setf (scrambled game) (loop for i in (scrambled game)
                                    unless (= i index)
@@ -116,7 +116,7 @@
         (end game)))))
 
 (defmethod submit ((response response) (player player) game)
-  (unless (find response (hand player)) (error "~a is not a card in ~a's hand." response (name (user player))))
+  (unless (find response (hand player)) (error "That is not a card in your hand."))
   (setf (hand player) (remove response (hand player)))
   (add-response response (result player)))
 
@@ -124,11 +124,6 @@
   (unless (<= 0 index (length (hand player)))
     (error "Please choose a card between 0 and ~a from your hand." (length (hand player))))
   (submit (elt (hand player) index) player game))
-
-(defmethod submit (response (user user) (game game))
-  (let ((player (find user (players game) :key #'user)))
-    (unless player (error "~a is not a player in this game." (name user)))
-    (submit response player game)))
 
 (defmethod complete-p ((game game))
   ;; Only check scrambled ones because those are players that joined
@@ -149,12 +144,7 @@
   (next-round game)
   winner)
 
-(defmethod finish-round ((winner user) game)
-  (let ((player (find winner (players game) :key #'user)))
-    (unless player (error "~a is not a player in this game." (name winner)))
-    (finish-round player game)))
-
-(defmethod finish-round ((winner string) game)
+(defmethod finish-round (winner (game game))
   (let ((player (find winner (players game) :key #'user :test #'matches)))
     (unless player (error "~a is not a player in this game." winner))
     (finish-round player game)))
