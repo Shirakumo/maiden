@@ -12,13 +12,13 @@
 (defmethod reply ((game game) message &rest args)
   (apply #'reply (channel game) message args))
 
-(defun game (c ev &optional (error T))
+(defun find-game (c ev &optional (error T))
   (or (find (channel ev) (games c) :key #'channel)
       (not error)
       (error "No crimes game going on here.")))
 
-(defun player (c ev &optional (error T))
-  (let ((game (game c ev error)))
+(defun find-player (c ev &optional (error T))
+  (let ((game (find-game c ev error)))
     (and game
          (or (find (user ev) (players game) :key #'user)
              (not error)
@@ -52,7 +52,7 @@
 
 (define-command (crimes open-game) (c ev &key (winning-score "7") (hand-size "10"))
   :command "open crimes"
-  (when (game c ev NIL)
+  (when (find-game c ev NIL)
     (error "A game is already going on."))
   (let ((game (make-instance 'game
                              :channel (channel ev)
@@ -65,34 +65,34 @@
 
 (define-command (crimes start-game) (c ev)
   :command "start crimes"
-  (let ((game (game c ev)))
+  (let ((game (find-game c ev)))
     (start game)
     (handle-next game)))
 
 (define-command (crimes stop-game) (c ev)
   :command "end crimes"
-  (let ((game (game c ev)))
+  (let ((game (find-game c ev)))
     (end game)
     (setf (games c) (remove game (games c)))
     (handle-next game)))
 
 (define-command (crimes join-game) (c ev)
   :command "join crimes"
-  (when (user-game c ev)
+  (when (user-find-game c ev)
     (error "You are already participating in a game!"))
-  (join (user ev) (game c ev))
+  (join (user ev) (find-game c ev))
   (reply ev "Welcome, ~a. We now have ~a player~:p."
          (name (user ev)) (length (players game))))
 
 (define-command (crimes leave-game) (c ev)
   :command "leave crimes"
-  (leave (user ev) (game c ev))
+  (leave (user ev) (find-game c ev))
   (reply ev "Ok. See you later, ~a" (name (user ev))))
 
 (define-command (crimes submit-card) (c ev card)
   :command "submit crime"
-  (let* ((game (game c ev))
-         (player (player c ev))
+  (let* ((game (find-game c ev))
+         (player (find-player c ev))
          (result (result player))))
   (submit (parse-integer card) player game)
   (reply ev "Your submission: ~a" (text result))
@@ -103,7 +103,7 @@
 
 (define-command (crimes select-winner) (c ev winner)
   :command "convict criminal"
-  (let ((game (game c ev)))
+  (let ((game (find-game c ev)))
     (unless (eql (user ev) (officer game))
       (error "Only the officer (~a) may convict a criminal."
              (name (user (officer game)))))
