@@ -6,6 +6,35 @@
 
 (in-package #:org.shirakumo.maiden.agents.crimes)
 
+(defclass player ()
+  ((user :initarg :user :accessor user)
+   (game :initarg :game :accessor game)
+   (hand :initarg :hand :accessor hand)
+   (score :initarg :score :accessor score)
+   (result :initarg :result :accessor result))
+  (:default-initargs
+   :user (error "USER required.")
+   :game (error "GAME required.")
+   :hand ()
+   :score 0
+   :result NIL))
+
+(defmethod complete-p ((player player))
+  (complete-p (result player)))
+
+(defmethod remaining-responses ((player player))
+  (remaining-responses (result player)))
+
+(defmethod draw-cards ((player player))
+  (loop until (= (hand-size (game player)) (length (hand player)))
+        do (push (pop (responses (game player))) (hand player)))
+  player)
+
+(defmethod prep-for-round ((player player))
+  (draw-cards player)
+  (setf (result player) (make-instance 'result
+                                       :call (first (calls (game player))))))
+
 (defclass game ()
   ((channel :initarg :channel :accessor channel)
    (calls :initarg :calls :accessor calls)
@@ -133,32 +162,3 @@
   (mapc #'prep-for-round (rotatef-list (players game)))
   (setf (scrambled game) (alexandria:shuffle (loop for i from 0 below (length (players game)) collect i)))
   game)
-
-(defclass player ()
-  ((user :initarg :user :accessor user)
-   (game :initarg :game :accessor game)
-   (hand :initarg :hand :accessor hand)
-   (score :initarg :score :accessor score)
-   (result :initarg :result :accessor result))
-  (:default-initargs
-   :user (error "USER required.")
-   :game (error "GAME required.")
-   :hand ()
-   :score 0
-   :result NIL))
-
-(defmethod complete-p ((player player))
-  (complete-p (result player)))
-
-(defmethod remaining-responses ((player player))
-  (remaining-responses (result player)))
-
-(defmethod draw-cards ((player player))
-  (loop until (= (hand-size (game player)) (length (hand player)))
-        do (push (pop (responses (game player))) (hand player)))
-  player)
-
-(defmethod prep-for-round ((player player))
-  (draw-cards player)
-  (setf (result player) (make-instance 'result
-                                       :call (first (calls (game player))))))
