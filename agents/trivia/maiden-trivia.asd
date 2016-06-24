@@ -15,6 +15,7 @@
   :serial T
   :components ((:file "package")
                (:file "trivia")
+               (:file "game")
                (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
