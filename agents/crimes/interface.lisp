@@ -32,7 +32,7 @@
 
 (defun handle-next (game)
   (cond ((in-session game)
-         (reply game "~a is the officer!" (user (name (officer game))))
+         (reply game "~a is the officer!" (name (user (officer game))))
          (reply game "~a" (text (first (calls game))))
          (dolist (player (players game))
            (unless (eql player (officer game))
