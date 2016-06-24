@@ -20,4 +20,5 @@
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-client-entities
-               :maiden-storage))
+               :maiden-storage
+               :alexandria))

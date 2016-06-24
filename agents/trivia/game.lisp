@@ -20,6 +20,7 @@
    :scores ()))
 
 (defmethod start ((game game))
+  (setf (questions game) (alexandria:shuffle (questions game)))
   (setf (question-time game) (get-universal-time))
   (setf (scores game) ())
   game)
