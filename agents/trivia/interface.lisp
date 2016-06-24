@@ -29,6 +29,7 @@
   (load-questions)
   (let ((game (make-game (channel ev) categories)))
     (push game (games c))
+    (start game)
     (reply ev "Game started! Quick answers get bonus points. Use the \"hint answer\" or \"skip question\" commands if you don't know further.")
     (handle-next c ev game)))
 
