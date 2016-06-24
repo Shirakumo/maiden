@@ -19,6 +19,10 @@
    :score 0
    :result NIL))
 
+(defmethod print-object ((player player) stream)
+  (print-unreadable-object (player stream :type T)
+    (format stream "~a (~a point~:p)" (name (user player)) (score player))))
+
 (defmethod complete-p ((player player))
   (complete-p (result player)))
 
@@ -53,6 +57,11 @@
    :hand-size 10
    :win-score 7
    :in-session NIL))
+
+(defmethod print-object ((game game) stream)
+  (print-unreadable-object (game stream :type T)
+    (format stream "~a ~@[~*running~] ~a player~:p"
+            (name (channel game)) (in-session game) (length (players game)))))
 
 (defmethod add-deck ((deck deck) (game game))
   (when (in-session game)

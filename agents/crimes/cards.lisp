@@ -22,6 +22,11 @@
    :calls (make-hash-table :test 'equalp)
    :responses (make-hash-table :test 'equalp)))
 
+(defmethod print-object ((deck deck) stream)
+  (print-unreadable-object (deck stream :type T)
+    (format stream "~a ~a call~:p, ~a response~:p"
+            (name deck) (length (calls deck)) (length (responses deck)))))
+
 (defmethod list-calls ((deck deck))
   (alexandria:hash-table-values (calls deck)))
 
@@ -48,6 +53,10 @@
   (:default-initargs
    :text (error "TEXT required.")
    :id (princ-to-string (uuid:make-v4-uuid))))
+
+(defmethod print-object ((card card) stream)
+  (print-unreadable-object (card stream :type T)
+    (format stream "~a ~s" (id card) (text card))))
 
 (defclass call (card)
   ())
