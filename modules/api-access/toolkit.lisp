@@ -7,10 +7,14 @@
 (in-package #:org.shirakumo.maiden.modules.api-access)
 
 (defun construct-url (url get)
-  (format NIL "~a?~{~2{~a=~a~}~^&~}"
-          url (loop for (key val) in get
-                    collect (list (drakma:url-encode (princ-to-string key) :utf8)
-                                  (drakma:url-encode (princ-to-string val) :utf8)))))
+  (flet ((p (val)
+           (typecase val
+             (symbol (string-downcase val))
+             (T (princ-to-string val)))))
+    (format NIL "~a?~{~2{~a=~a~}~^&~}"
+            url (loop for (key val) in get
+                      collect (list (drakma:url-encode (p key) :utf8)
+                                    (drakma:url-encode (p val) :utf8))))))
 
 (defun request (url &key get post (method :get) (external-format :utf8) other-args)
   (let ((drakma:*text-content-types* (list* '("application" . "xml")
