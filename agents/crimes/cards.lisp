@@ -65,14 +65,20 @@
 
 (defclass result ()
   ((call :initarg :call :accessor call)
-   (responses :initarg :responses :accessor responses)))
+   (responses :initarg :responses :accessor responses))
+  (:default-initargs
+   :call (error "CALL required.")
+   :responses ()))
 
 (defmethod required-responses ((result result))
   (required-responses (call result)))
 
+(defmethod remaining-responses ((result result))
+  (- (required-responses result)
+     (length (responses result))))
+
 (defmethod complete-p ((result result))
-  (= (length (responses result))
-     (required-responses result)))
+  (= 0 (remaining-responses result)))
 
 (defmethod (setf responses) :before (resp (result result))
   (when (<= (length (text (call result)))
@@ -81,9 +87,7 @@
            (required-responses result))))
 
 (defmethod add-response ((response response) (result result))
-  (setf (responses result) (if (responses result)
-                               (append (responses result) (list response))
-                               (list response))))
+  (push-to-end response (responses result)))
 
 (defmethod text ((result result))
   (with-output-to-string (out)

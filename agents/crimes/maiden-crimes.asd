@@ -14,6 +14,7 @@
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
+               (:file "toolkit")
                (:file "cards")
                (:file "cardcast")
                (:file "game")
