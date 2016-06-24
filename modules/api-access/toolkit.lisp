@@ -18,9 +18,12 @@
                                             '("application" . "json")
                                             '("application" . "x-sexp")
                                             '("application" . "x-lisp")
-                                            drakma:*text-content-types*)))
+                                            drakma:*text-content-types*))
+        (url (construct-url url get)))
+    (v:debug :maiden-api-access "Requesting ~s by ~a~@[ with params ~s~]"
+             url method post)
     (apply #'drakma:http-request
-           (construct-url url get)
+           url
            :parameters (loop for (key val) in post collect (cons key val))
            :method method
            :external-format-in external-format
