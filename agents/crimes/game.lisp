@@ -107,7 +107,7 @@
         (end game)))))
 
 (defmethod submit ((response response) (player player) game)
-  (unless (find response (hand player)) (error "~a is not a card in ~a's hand." response (name user)))
+  (unless (find response (hand player)) (error "~a is not a card in ~a's hand." response (name (user player))))
   (setf (hand player) (remove response (hand player)))
   (add-response response (result player)))
 
@@ -143,12 +143,12 @@
 (defmethod finish-round ((winner user) game)
   (let ((player (find winner (players game) :key #'user)))
     (unless player (error "~a is not a player in this game." (name winner)))
-    (submit response player game)))
+    (finish-round player game)))
 
 (defmethod finish-round ((winner string) game)
   (let ((player (find winner (players game) :key #'user :test #'matches)))
     (unless player (error "~a is not a player in this game." winner))
-    (finish-round response player game)))
+    (finish-round player game)))
 
 (defmethod finish-round ((winner integer) (game game))
   ;; Translate back from scrambled.
@@ -157,7 +157,7 @@
 (defmethod next-round ((game game))
   (pop (calls game))
   (when (or (not (calls game))
-            (find (win-score game) players :key #'score))
+            (find (win-score game) (players game) :key #'score))
     (end game))
   (mapc #'prep-for-round (rotatef-list (players game)))
   (setf (scrambled game) (alexandria:shuffle (loop for i from 0 below (length (players game)) collect i)))

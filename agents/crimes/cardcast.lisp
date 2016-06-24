@@ -8,7 +8,7 @@
 
 (defvar *cardcast/decks* "https://api.cardcastgame.com/v1/decks")
 (defvar *cardcast/deck* "https://api.cardcastgame.com/v1/decks/~a")
-(defvar *cardcast/dec/cards* "https://api.cardcastgame.com/v1/decks/~a/cards")
+(defvar *cardcast/deck/cards* "https://api.cardcastgame.com/v1/decks/~a/cards")
 
 (defun cardcast/decks (&key (offset 0) (limit 20) search author category)
   (request-as :json *cardcast/decks* :get `((offset ,offset)

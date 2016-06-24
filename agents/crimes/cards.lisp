@@ -9,9 +9,9 @@
 (defun normalize-name (name)
   (remove-if-not
    (lambda (c) (find c "abcdefghijklmnopqrstuvwxyz0123456789-_ " :test #'char-equal))
-   (etypecase deck
-     (string (intern deck #.*package*))
-     (symbol deck))))
+   (etypecase name
+     (string (intern name #.*package*))
+     (symbol name))))
 
 (defclass deck ()
   ((name :initarg :name :accessor name)
@@ -95,6 +95,6 @@
           (resp-parts (mapcar #'text (responses result))))
       (loop for call = (pop call-parts)
             for resp = (pop resp-parts)
+            while call
             do (write-string call out)
-               (write-string (or resp "___") out)
-            while (or call resp)))))
+               (write-string (or resp "___") out)))))

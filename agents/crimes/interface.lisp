@@ -78,11 +78,12 @@
 
 (define-command (crimes join-game) (c ev)
   :command "join crimes"
-  (when (user-find-game c ev)
+  (when (user-game c ev)
     (error "You are already participating in a game!"))
-  (join (user ev) (find-game c ev))
-  (reply ev "Welcome, ~a. We now have ~a player~:p."
-         (name (user ev)) (length (players game))))
+  (let ((game (find-game c ev)))
+    (join (user ev) game)
+    (reply ev "Welcome, ~a. We now have ~a player~:p."
+           (name (user ev)) (length (players game)))))
 
 (define-command (crimes leave-game) (c ev)
   :command "leave crimes"
@@ -93,13 +94,13 @@
   :command "submit crime"
   (let* ((game (find-game c ev))
          (player (find-player c ev))
-         (result (result player))))
-  (submit (parse-integer card) player game)
-  (reply ev "Your submission: ~a" (text result))
-  (if (complete-p result)
-      (reply ev "Your submission is complete.")
-      (reply ev "~a card~:p left to submit." (remaining-responses result)))
-  (handle-complete game))
+         (result (result player)))
+    (submit (parse-integer card) player game)
+    (reply ev "Your submission: ~a" (text result))
+    (if (complete-p result)
+        (reply ev "Your submission is complete.")
+        (reply ev "~a card~:p left to submit." (remaining-responses result)))
+    (handle-complete game)))
 
 (define-command (crimes select-winner) (c ev winner)
   :command "convict criminal"
