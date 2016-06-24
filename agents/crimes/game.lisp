@@ -105,13 +105,20 @@
     (push-to-end player (players game))))
 
 (defmethod leave (user (game game))
-  (let ((index (position user (players game) :key #'user :test #'matches)))
-    (when index
-      (setf (players game) (remove user (players game) :key #'user :test #'matches))
-      ;; Leaving in the middle messes with the scrambling indexes.
-      (setf (scrambled game) (loop for i in (scrambled game)
+  (let ((player (find user (players game)  :key #'user :test #'matches)))
+    (when player
+      ;; Leaving in the middle of a game messes with the scrambling indexes.
+      (setf (scrambled game) (loop with index = (position player (players game))
+                                   for i in (scrambled game)
                                    unless (= i index)
                                    collect (if (< i index) i (1- index))))
+      ;; Restock their cards
+      (dolist (response (responses (result player)))
+        (push-to-end response (responses game)))
+      (dolist (response (hand player))
+        (push-to-end response (responses game)))
+      ;; Remove
+      (setf (players game) (remove player (players game)))
       (unless (players game)
         (end game)))))
 
@@ -158,6 +165,11 @@
   (when (or (not (calls game))
             (find (win-score game) (players game) :key #'score))
     (end game))
+  ;; For each player, restock their used cards onto the stack.
+  (dolist (player (players game))
+    (dolist (response (responses (result player)))
+      (push-to-end response (responses game))))
+  ;; Prepare for next round.
   (mapc #'prep-for-round (rotatef-list (players game)))
   (setf (scrambled game) (alexandria:shuffle (loop for i from 0 below (length (players game)) collect i)))
   game)
