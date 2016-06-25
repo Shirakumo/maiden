@@ -75,6 +75,8 @@
     (let ((deck (deck (or (ignore-errors (deck name/id))
                           (ignore-errors (load-cardcast-deck name/id))
                           (error "No deck ~a found locally or on cardcast." name/id)))))
+      ;; Cache deck
+      (setf (deck (name deck)) deck)
       (add-deck deck game)
       (reply game "Deck ~a has been added. The game now has ~a call~:p and ~a response~:p."
              (name deck) (length (calls game)) (length (responses game))))))
