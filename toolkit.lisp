@@ -131,3 +131,10 @@
            (format NIL "in ~a" (format-relative-time (- time now))))
           (T
            (format NIL "at ~a" (format-absolute-time time))))))
+
+(defun find-consumer-in-package (package)
+  (let ((package (find-package package)))
+    (loop for symbol being the symbols of package
+          for class = (find-class symbol NIL)
+          do (when (and class (c2mop:subclassp class (find-class 'consumer)))
+               (return symbol)))))

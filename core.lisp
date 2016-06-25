@@ -137,5 +137,10 @@
 
 (defun make-simple-core (&rest consumers)
   (let ((core (start (make-instance 'core))))
-    (dolist (consumer consumers core)
-      (start (add-consumer (apply #'make-instance (enlist consumer)) core)))))
+    (loop for consumer in consumers
+          for (class . args) = (enlist consumer)
+          for normalized-class = (etypecase class
+                                   ((or keyword string) (find-consumer-in-package class))
+                                   (symbol class))
+          do (start (add-consumer (apply #'make-instance normalized-class args) core))
+          finally (return core))))
