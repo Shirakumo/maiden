@@ -45,3 +45,8 @@
   ()
   (:report (lambda (c s) (format s "Don't know what to do for ~s from ~a."
                                  (message c) (client c)))))
+
+(define-condition message-too-long-warning (message-condition client-condition warning)
+  ()
+  (:report (lambda (c s) (format s "The message ~s might be truncated or dropped as it is too long for ~a."
+                                 (message c) (client c)))))

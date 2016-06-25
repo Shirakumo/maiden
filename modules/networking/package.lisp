@@ -20,7 +20,8 @@
    #:message-condition
    #:message
    #:message-parse-error
-   #:unknown-message-warning)
+   #:unknown-message-warning
+   #:message-too-long-warning)
   ;; clients.lisp
   (:export
    #:client-connected-p
