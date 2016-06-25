@@ -20,9 +20,6 @@
    :user *framework-user*
    :message ""))
 
-(defmethod send-to ((user (eql *framework-user*)) format-string &rest format-args)
-  (v:info :commands "=> ~?" (list* format-string format-args)))
-
 (defmethod reply ((event framework-message) format-string &rest format-args)
   (apply #'v:info :commands format-string format-args))
 

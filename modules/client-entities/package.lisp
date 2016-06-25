@@ -18,7 +18,6 @@
   ;; entities.lisp
   (:export
    #:client-entity
-   #:send-to
    #:client
    #:user
    #:authenticated

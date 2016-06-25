@@ -11,8 +11,6 @@
   (:default-initargs
    :client (error "CLIENT required.")))
 
-(defgeneric send-to (client-entity format-string &rest format-args))
-
 (defmethod matches ((a client-entity) (b client-entity))
   (and (call-next-method)
        (eql (client a) (client b))))
