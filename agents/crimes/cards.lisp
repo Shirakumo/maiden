@@ -36,17 +36,19 @@
 
 (defclass deck ()
   ((name :initarg :name :accessor name)
+   (title :initarg :title :accessor title)
    (calls :initarg :calls :accessor calls)
    (responses :initarg :responses :accessor responses))
   (:default-initargs
    :name (error "NAME required.")
+   :title ""
    :calls (make-hash-table :test 'equalp)
    :responses (make-hash-table :test 'equalp)))
 
 (defmethod print-object ((deck deck) stream)
   (print-unreadable-object (deck stream :type T)
-    (format stream "~a ~a call~:p, ~a response~:p"
-            (name deck) (hash-table-count (calls deck)) (hash-table-count (responses deck)))))
+    (format stream "~a ~a ~a call~:p, ~a response~:p"
+            (name deck) (title deck) (hash-table-count (calls deck)) (hash-table-count (responses deck)))))
 
 (defmethod list-calls ((deck deck))
   (alexandria:hash-table-values (calls deck)))

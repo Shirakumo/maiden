@@ -41,7 +41,8 @@
     (when (string-equal "not_found" (json-v deckinfo "id"))
       (error "No deck with ID ~a found." deck-id))
     (let ((cards (cardcast/deck/cards deck-id)))
-      (make-instance 'deck :name (json-v deckinfo "name")
+      (make-instance 'deck :name deck-id
+                           :title (json-v deckinfo "name")
                            :calls (cardcast-list->map 'call (json-v cards "calls"))
                            :responses (cardcast-list->map 'response (json-v cards "responses"))))))
 

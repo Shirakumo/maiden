@@ -142,11 +142,11 @@
     (handle-next game)))
 
 
-(define-command (crimes create-deck) (c ev name)
+(define-command (crimes create-deck) (c ev name &optional (title ""))
   :command "create crime deck"
   (let ((deck (ignore-errors (deck name))))
     (when deck (error "A deck with the name ~a already exists." (name deck))))
-  (let ((deck (make-instance 'deck :name name)))
+  (let ((deck (make-instance 'deck :name name :title title)))
     (setf (deck name) deck)
     (reply ev "Deck ~a created. Add cards to it with \"add crime call\" and \"add crime response\"."
            (name deck))))
