@@ -32,9 +32,11 @@
 (defmethod start ((core core))
   (start (event-loop core))
   (start (block-loop core))
+  (mapc #'start (consumers core))
   core)
 
 (defmethod stop ((core core))
+  (mapc #'stop (consumers core))
   (stop (event-loop core))
   (stop (block-loop core))
   core)
