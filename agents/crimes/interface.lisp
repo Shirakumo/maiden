@@ -14,8 +14,8 @@
 
 (defun find-game (c ev &optional (error T))
   (or (find (channel ev) (games c) :key #'channel)
-      (not error)
-      (error "No crimes game going on here.")))
+      (and error
+           (error "No crimes game going on here."))))
 
 (defun find-player (c ev &optional (error T))
   (let ((game (find-game c ev error)))
