@@ -68,12 +68,18 @@
 
 (define-command (accounts destroy) (c ev)
   :command "destroy account"
-  (let ((account (account (user ev) :error nIL)))
+  (let ((account (account (user ev) :error NIL)))
     (unless account
       (error "Please log in to this account first."))
     (delete-account account)
     (setf (account (user ev)) NIL)
     (reply ev "Your account ~a has been deleted and you have been logged out." (name account))))
+
+(define-command (accounts update-password) (c ev new-password)
+  :command "update password"
+  (let ((account (account (user ev))))
+    (setf (password account) new-password)
+    (reply ev "Your password has been updated.")))
 
 (define-command (accounts associate) (c ev account password)
   :command "associate with account"
