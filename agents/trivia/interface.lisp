@@ -18,7 +18,7 @@
   (cond ((null (questions game))
          (setf (games c) (remove game (games c)))
          (multiple-value-bind (winner score) (winner game)
-           (reply ev "The game is over. ~@[~a is the winner with ~a points!~]"
+           (reply ev "The game is over. ~@[~a is the winner with ~a point~:p!~]"
                   (when winner (name winner)) score)))
         (T
          (reply ev "Question: ~a" (text (first (questions game)))))))
