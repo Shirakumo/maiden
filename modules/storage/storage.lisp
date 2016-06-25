@@ -109,7 +109,7 @@
      ,@body))
 
 (defun offload (designator &optional (storage ubiquitous:*storage*))
-  (ubiquitous:offload (config-pathname designator) :type :lisp :storage storage))
+  (ubiquitous:offload (config-pathname designator) :lisp storage))
 
 (defun restore (designator)
-  (ubiquitous:restore (config-pathname designator) :type :lisp))
+  (ubiquitous:restore (config-pathname designator) :lisp))
