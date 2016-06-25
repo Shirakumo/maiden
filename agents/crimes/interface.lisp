@@ -36,10 +36,10 @@
          (reply game "~a" (text (first (calls game))))
          (dolist (player (players game))
            (unless (eql player (officer game))
-             (send-to (user player) "Your hand: ~{~{(~a) ~a~}~^ ~}"
-                      (loop for card in (hand player)
-                            for i from 0
-                            collect (list i (text card)))))))
+             (reply (user player) "Your hand: ~{~{(~a) ~a~}~^ ~}"
+                    (loop for card in (hand player)
+                          for i from 0
+                          collect (list i (text card)))))))
         (T
          (multiple-value-bind (winner score) (winner game)
            (reply game "The game is over. The winner is ~a with ~a point~:p!"
@@ -62,6 +62,16 @@
     (reply ev "Game opened. You can join with \"join crimes\", ~
                             add decks with \"add crimes deck\", ~
                             and finally start with \"start crimes\".")))
+
+(define-command (crimes add-deck) (c ev name/id)
+  :command "add crimes deck"
+  (let ((game (find-game c ev))
+        (deck (or (ignore-errors (deck name/id))
+                  (ignore-errors (load-cardcast-deck name/id)))))
+    (unless deck (error "No deck ~a found locally or on cardcast." name/id))
+    (add-deck deck game)
+    (reply game "Deck ~a has been added. The game now has ~a call~:p and ~a response~:p."
+           (name deck) (length (calls game)) (length (responses game)))))
 
 (define-command (crimes start-game) (c ev)
   :command "start crimes"
@@ -117,33 +127,59 @@
 
 (define-command (crimes create-deck) (c ev name)
   :command "create crime deck"
-  (let ((deck (deck name)))
-    (when deck (error "A deck with the name ~s already exists." (name deck))))
+  (let ((deck (ignore-errors (deck name))))
+    (when deck (error "A deck with the name ~a already exists." (name deck))))
   (let ((deck (make-instance 'deck :name name)))
     (setf (deck name) deck)
-    (reply ev "Deck ~s created. Add cards to it with \"add crime call\" and \"add crime response\"."
+    (reply ev "Deck ~a created. Add cards to it with \"add crime call\" and \"add crime response\"."
            (name deck))))
 
 (define-command (crimes remove-deck) (c ev name)
   :command "remove crime deck"
   (let ((deck (deck name)))
     (remove-deck deck)
-    (reply ev "Deck ~s removed." (name deck))))
+    (reply ev "Deck ~a removed." (name deck))))
+
+(define-command (crimes list-decks) (c ev)
+  :command "list crime decks"
+  (let ((files (uiop:directory-files
+                (uiop:pathname-directory-pathname
+                 (maiden-storage:config-pathname 'local-symbol)))))
+    (reply ev "Local decks: ~{~a~^, ~}" (mapcar #'pathname-name files))))
+
+(define-command (crimes search-deck) (c ev search)
+  :command "search for crime deck"
+  (let ((decks (find-cardcast-decks search)))
+    (if decks
+        (reply ev "Cardcast decks found: ~{~{~a (~a)~}~^, ~}" decks)
+        (reply ev "No decks for that term found on cardcast."))))
+
+(define-command (crimes download-deck) (c ev id &optional new-name)
+  :command "download crime deck"
+  (let* ((deck (load-cardcast-deck id))
+         (name (or new-name (name deck))))
+    (let ((deck (ignore-errors (deck name))))
+      (when deck (error "A deck with the name ~a already exists." (name deck))))
+    (setf (deck name) deck)
+    (reply ev "Cardcast deck downloaded to name ~a." (name deck))))
 
 (define-command (crimes add-call) (c ev deck &rest text)
   :command "add crime call"
   (let* ((deck (deck deck))
-         (card (add-call (cl-ppcre:split "__+" (format NIL "~{~a~^ ~}" text)) deck)))
-    (reply ev "Card ~a added to ~s." (id card) (name deck))))
+         (card (add-call (format NIL "~{~a~^ ~}" text) deck)))
+    (save-deck deck)
+    (reply ev "Card ~a added to ~a." (id card) (name deck))))
 
 (define-command (crimes add-response) (c ev deck &rest text)
   :command "add crime response"
   (let* ((deck (deck deck))
          (card (add-call (format NIL "~{~a~^ ~}" text) deck)))
-    (reply ev "Card ~a added to ~s." (id card) (name deck))))
+    (save-deck deck)
+    (reply ev "Card ~a added to ~a." (id card) (name deck))))
 
 (define-command (crimes remove-card) (c ev card deck)
   :command "remove crime card"
   (let ((deck (deck deck)))
     (remove-card card deck)
-    (reply ev "Card ~a removed from ~s." card (name deck))))
+    (save-deck deck)
+    (reply ev "Card ~a removed from ~a." card (name deck))))

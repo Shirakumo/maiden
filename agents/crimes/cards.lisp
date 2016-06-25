@@ -31,7 +31,8 @@
 (defun remove-deck (name)
   (let ((deck (deck name)))
     (delete-file (maiden-storage:config-pathname (name deck)))
-    (remhash (name deck) *decks*)))
+    (remhash (name deck) *decks*)
+    deck))
 
 (defclass deck ()
   ((name :initarg :name :accessor name)
@@ -45,7 +46,7 @@
 (defmethod print-object ((deck deck) stream)
   (print-unreadable-object (deck stream :type T)
     (format stream "~a ~a call~:p, ~a response~:p"
-            (name deck) (length (calls deck)) (length (responses deck)))))
+            (name deck) (hash-table-count (calls deck)) (hash-table-count (responses deck)))))
 
 (defmethod list-calls ((deck deck))
   (alexandria:hash-table-values (calls deck)))
@@ -68,9 +69,17 @@
                            :calls (maiden-storage:value :calls)
                            :responses (maiden-storage:value :responses)))))
 
-(defmethod remove-card (card (deck deck))
-  (setf (calls deck) (remove card (calls deck) :test #'matches))
-  (setf (responses deck) (remove card (responses deck) :test #'matches)))
+(defmethod remove-card (id (deck deck))
+  (remhash id (calls deck))
+  (remhash id (responses deck))
+  deck)
+
+(defmethod remove-card ((card card) (deck deck))
+  (remove-card (id card) deck))
+
+(defmethod card (id (deck deck))
+  (or (gethash id (calls deck))
+      (gethash id (responses deck))))
 
 (defclass card (entity)
   ((text :initarg :text :accessor text))
@@ -89,19 +98,28 @@
 
 
 (defmethod add-call ((call call) (deck deck))
-  (unless (find call (calls deck))
-    (push call (calls deck)))
+  (unless (gethash call (calls deck))
+    (setf (gethash (id call) (calls deck)) call))
   call)
 
-(defmethod add-call ((text string) (deck deck))
+(defmethod add-call ((text list) (deck deck))
   (add-call (make-instance 'call :text text) deck))
+
+(defun parse-call (string)
+  (let ((parts (cl-ppcre:split "__+" string)))
+    (if (cdr parts)
+        parts
+        (list (car parts) ""))))
+
+(defmethod add-call ((text string) (deck deck))
+  (add-call (parse-call text) deck))
 
 (defclass response (card)
   ())
 
 (defmethod add-response ((response response) (deck deck))
-  (unless (find response (responses deck))
-    (push response (responses deck)))
+  (unless (gethash response (responses deck))
+    (setf (gethash (id response) (responses deck)) response))
   response)
 
 (defmethod add-response ((text string) (deck deck))
