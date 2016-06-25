@@ -62,4 +62,4 @@
   (make-instance 'game :channel channel
                        :questions (loop for category in categories
                                         append (category category))
-                       :limit limit))
+                       :question-limit limit))

@@ -16,6 +16,10 @@
    (id :initarg :id :accessor id))
   (:default-initargs :id (incf (gethash :next-id *questions* 0))))
 
+(defmethod print-object ((question question) stream)
+  (print-unreadable-object (question stream :type T)
+    (format stream "~a ~s" (id question) (text question))))
+
 (defmethod id ((id integer))
   id)
 
@@ -61,15 +65,14 @@
     (setf (question question) question)))
 
 (defun update-question (id &key question answers (hint NIL hint-p) (categories NIL cat-p))
-  (let ((q (question id)))
-    (when q
-      (when question (setf (question q) question))
-      (when answers (setf (answers q) answers))
-      (when hint-p (setf (hint q) hint))
-      (when cat-p
-        (dolist (category (categories)) (remove-category category q))
-        (dolist (category categories) (add-category category q)))
-      q)))
+  (let ((q (or (question id) (error "No question with id ~a found." id))))
+    (when question (setf (question q) question))
+    (when answers (setf (answers q) answers))
+    (when hint-p (setf (hint q) hint))
+    (when cat-p
+      (dolist (category (categories)) (remove-category category q))
+      (dolist (category categories) (add-category category q)))
+    q))
 
 (defun remove-question (id)
   (maphash (lambda (k v) (setf (gethash k *categories*) (remove id v))) *categories*)
