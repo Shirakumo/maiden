@@ -71,7 +71,10 @@
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))
                   (handler-case
-                      (progn ,@body)
+                      (handler-bind ((error (lambda (err)
+                                              (with-simple-restart (continue "Don't handle the error.")
+                                                (invoke-debugger err)))))
+                        ,@body)
                     (error (,error)
                       (v:warn :maiden.agents.commands ,error)
                       (reply ,event "~a" ,error)))))
