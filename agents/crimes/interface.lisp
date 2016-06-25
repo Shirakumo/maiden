@@ -42,8 +42,8 @@
                           collect (list i (text card)))))))
         (T
          (multiple-value-bind (winner score) (winner game)
-           (reply game "The game is over. The winner is ~a with ~a point~:p!"
-                  (name winner) score)))))
+           (reply game "The game is over.~@[ The winner is ~a with ~a point~:p!~]"
+                  (when winner (name winner)) score)))))
 
 (defun handle-complete (game)
   (when (complete-p game)

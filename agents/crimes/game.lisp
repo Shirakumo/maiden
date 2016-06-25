@@ -139,7 +139,7 @@
         always (complete-p (elt (players game) index))))
 
 (defmethod winner ((game game))
-  (when (complete-p game)
+  (when (and (complete-p game) (players game))
     (setf (players game) (sort (players game) #'> :key #'score))
     (let ((winner (first (players game))))
       (values (user winner) (score winner)))))
