@@ -24,4 +24,5 @@
                :maiden-client-entities
                :maiden-api-access
                :maiden-storage
-               :alexandria))
+               :alexandria
+               :cl-ppcre))

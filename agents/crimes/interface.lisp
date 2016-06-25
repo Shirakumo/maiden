@@ -114,3 +114,36 @@
       (reply ev "~a has been convicted! Their score is now at ~a point~:p."
              (name (user winner)) (score winner)))
     (handle-next game)))
+
+(define-command (crimes create-deck) (c ev name)
+  :command "create crime deck"
+  (let ((deck (deck name)))
+    (when deck (error "A deck with the name ~s already exists." (name deck))))
+  (let ((deck (make-instance 'deck :name name)))
+    (setf (deck name) deck)
+    (reply ev "Deck ~s created. Add cards to it with \"add crime call\" and \"add crime response\"."
+           (name deck))))
+
+(define-command (crimes remove-deck) (c ev name)
+  :command "remove crime deck"
+  (let ((deck (deck name)))
+    (remove-deck deck)
+    (reply ev "Deck ~s removed." (name deck))))
+
+(define-command (crimes add-call) (c ev deck &rest text)
+  :command "add crime call"
+  (let* ((deck (deck deck))
+         (card (add-call (cl-ppcre:split "__+" (format NIL "~{~a~^ ~}" text)) deck)))
+    (reply ev "Card ~a added to ~s." (id card) (name deck))))
+
+(define-command (crimes add-response) (c ev deck &rest text)
+  :command "add crime response"
+  (let* ((deck (deck deck))
+         (card (add-call (format NIL "~{~a~^ ~}" text) deck)))
+    (reply ev "Card ~a added to ~s." (id card) (name deck))))
+
+(define-command (crimes remove-card) (c ev card deck)
+  :command "remove crime card"
+  (let ((deck (deck deck)))
+    (remove-card card deck)
+    (reply ev "Card ~a removed from ~s." card (name deck))))
