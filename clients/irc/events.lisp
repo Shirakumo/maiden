@@ -486,4 +486,8 @@
   (irc:privmsg (client event) (name (user event)) (apply #'format NIL fmst args)))
 
 (defmethod reply ((event irc-channel-event) fmst &rest args)
-  (irc:privmsg (client event) (name (channel event)) (apply #'format NIL fmst args)))
+  ;; If the channel is a user (us), we need to reply to them directly.
+  (cond ((typep (channel event) 'user)
+         (irc:privmsg (client event) (name (user event)) (apply #'format NIL fmst args)))
+        (T
+         (irc:privmsg (client event) (name (channel event)) (apply #'format NIL fmst args)))))
