@@ -17,7 +17,7 @@
 
 ;; We also implement methods for account names
 (defmethod data-value (field (name symbol))
-  (data-value field account))
+  (data-value field (account name)))
 
 (defmethod data-value (field (name string))
   (data-value field (account name)))
