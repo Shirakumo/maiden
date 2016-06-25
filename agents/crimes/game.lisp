@@ -71,7 +71,7 @@
   game)
 
 (defmethod add-deck (name (game game))
-  (add-deck (load-deck name) game))
+  (add-deck (deck name) game))
 
 (defmethod officer ((game game))
   (first (players game)))

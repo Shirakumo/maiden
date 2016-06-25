@@ -6,12 +6,32 @@
 
 (in-package #:org.shirakumo.maiden.agents.crimes)
 
+(defvar *decks* (make-hash-table :test 'equal))
+
 (defun normalize-name (name)
-  (remove-if-not
-   (lambda (c) (find c "abcdefghijklmnopqrstuvwxyz0123456789-_ " :test #'char-equal))
-   (etypecase name
-     (string (intern name #.*package*))
-     (symbol name))))
+  (intern
+   (remove-if-not
+    (lambda (c) (find c "abcdefghijklmnopqrstuvwxyz0123456789-_ " :test #'char-equal))
+    (typecase name
+      (deck (name name))
+      (T (string-downcase name))))
+   #.*package*))
+
+(defun deck (name)
+  (let ((name (normalize-name name)))
+    (or (gethash name *decks*)
+        (setf (gethash name *decks*) (load-deck name)))))
+
+(defun (setf deck) (deck name)
+  (let ((name (normalize-name name)))
+    (setf (name deck) name)
+    (setf (gethash name *decks*) deck)
+    (save-deck deck)))
+
+(defun remove-deck (name)
+  (let ((deck (deck name)))
+    (delete-file (maiden-storage:config-pathname (name deck)))
+    (remhash (name deck) *decks*)))
 
 (defclass deck ()
   ((name :initarg :name :accessor name)
@@ -36,23 +56,26 @@
 (defun save-deck (deck)
   (maiden-storage:with-storage ((name deck))
     (setf (maiden-storage:value :calls) (calls deck))
-    (setf (maiden-storage:value :responses) (responses deck))))
+    (setf (maiden-storage:value :responses) (responses deck)))
+  deck)
 
 (defun load-deck (name)
   (let ((name (normalize-name name)))
+    (unless (probe-file (maiden-storage:config-pathname name))
+      (error "No such deck ~s found." name))
     (maiden-storage:with-storage (name)
       (make-instance 'deck :name name
-                           :calls (or (maiden-storage:value :calls)
-                                      (make-hash-table :test 'equalp))
-                           :responses (or (maiden-storage:value :responses)
-                                          (make-hash-table :test 'equalp))))))
+                           :calls (maiden-storage:value :calls)
+                           :responses (maiden-storage:value :responses)))))
 
-(defclass card ()
-  ((text :initarg :text :accessor text)
-   (id :initarg :id :accessor id))
+(defmethod remove-card (card (deck deck))
+  (setf (calls deck) (remove card (calls deck) :test #'matches))
+  (setf (responses deck) (remove card (responses deck) :test #'matches)))
+
+(defclass card (entity)
+  ((text :initarg :text :accessor text))
   (:default-initargs
-   :text (error "TEXT required.")
-   :id (princ-to-string (uuid:make-v4-uuid))))
+   :text (error "TEXT required.")))
 
 (defmethod print-object ((card card) stream)
   (print-unreadable-object (card stream :type T)
@@ -64,13 +87,25 @@
 (defmethod required-responses ((call call))
   (1- (length (text call))))
 
+
+(defmethod add-call ((call call) (deck deck))
+  (unless (find call (calls deck))
+    (push call (calls deck)))
+  call)
+
+(defmethod add-call ((text string) (deck deck))
+  (add-call (make-instance 'call :text text) deck))
+
 (defclass response (card)
   ())
 
-(defclass blank (response)
-  ()
-  (:default-initargs
-   :text "This idiot didn't fill in his blank card."))
+(defmethod add-response ((response response) (deck deck))
+  (unless (find response (responses deck))
+    (push response (responses deck)))
+  response)
+
+(defmethod add-response ((text string) (deck deck))
+  (add-response (make-instance 'response :text text) deck))
 
 (defclass result ()
   ((call :initarg :call :accessor call)
