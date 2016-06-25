@@ -8,9 +8,12 @@
 
 ;; Reroute to account if it is present for the user.
 (defmethod data-value :around (field (user user))
-  (let ((account (account user)))
-    (or (and account (field field account user))
-        (call-next-method))))
+  (if (eql field 'account)
+      (call-next-method)
+      (let ((account (account user)))
+        (v:info :test "? ~a" account)
+        (or (and account (field field account user))
+            (call-next-method)))))
 
 ;; We also implement methods for account names
 (defmethod data-value (field (name symbol))
