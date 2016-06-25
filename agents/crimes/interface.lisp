@@ -12,34 +12,35 @@
 (defmethod reply ((game game) message &rest args)
   (apply #'reply (channel game) message args))
 
+(defmethod reply ((player player) message &rest args)
+  (apply #'reply (user player) message args))
+
 (defun find-game (c ev &optional (error T))
   (or (find (channel ev) (games c) :key #'channel)
-      (and error
-           (error "No crimes game going on here."))))
+      (and error (error "No crimes game going on here."))))
 
 (defun find-player (c ev &optional (error T))
-  (let ((game (find-game c ev error)))
+  (let ((game (user-game c ev error)))
     (and game
          (or (find (user ev) (players game) :key #'user)
-             (not error)
-             (error "You are not part of this game.")))))
+             (and error (error "You are not part of this game."))))))
 
-(defun user-game (c ev)
-  (loop for game in (games c)
-        do (when (loop for player in (players game)
-                       thereis (eql (user ev) (user player)))
-             (return game))))
+(defun user-game (c ev &optional (error T))
+  (or (loop for game in (games c)
+            do (when (loop for player in (players game)
+                           thereis (eql (user ev) (user player)))
+                 (return game)))
+      (and error (error "You are not part of this game."))))
 
 (defun handle-next (game)
   (cond ((in-session game)
          (reply game "~a is the officer!" (name (user (officer game))))
-         (reply game "~a" (text (first (calls game))))
+         (reply game "Prompt: ~a" (text (result (officer game))))
          (dolist (player (players game))
-           (unless (eql player (officer game))
-             (reply (user player) "Your hand: ~{~{(~a) ~a~}~^ ~}"
-                    (loop for card in (hand player)
-                          for i from 0
-                          collect (list i (text card)))))))
+           (reply player "Your hand: ~{~{(~a) ~a~}~^ ~}"
+                  (loop for card in (hand player)
+                        for i from 0
+                        collect (list i (text card))))))
         (T
          (multiple-value-bind (winner score) (winner game)
            (reply game "The game is over.~@[ The winner is ~a with ~a point~:p!~]"
@@ -47,8 +48,12 @@
 
 (defun handle-complete (game)
   (when (complete-p game)
-    (reply game "~a, time to convict a criminal.")
-    ()))
+    (reply game "~a, time to convict a criminal."
+           (name (user (officer game))))
+    (loop for num in (scrambled game)
+          for player = (elt (players game) num)
+          for i from 0
+          do (reply game "(~a): ~a" i (text (result player))))))
 
 (define-command (crimes open-game) (c ev &key (winning-score "7") (hand-size "10"))
   :command "open crimes"
@@ -77,6 +82,8 @@
   :command "start crimes"
   (let ((game (find-game c ev)))
     (start game)
+    (dolist (player (players game))
+      (reply player "Reminder: Use \"commit crime\" with the number of the response you want to use next. Some calls require multiple responses."))
     (handle-next game)))
 
 (define-command (crimes end-game) (c ev)
@@ -88,7 +95,7 @@
 
 (define-command (crimes join-game) (c ev)
   :command "join crimes"
-  (when (user-game c ev)
+  (when (user-game c ev NIL)
     (error "You are already participating in a game!"))
   (let ((game (find-game c ev)))
     (join (user ev) game)
@@ -100,22 +107,23 @@
   (leave (user ev) (find-game c ev))
   (reply ev "Ok. See you later, ~a" (name (user ev))))
 
-(define-command (crimes submit-card) (c ev card)
-  :command "submit crime"
-  (let* ((game (find-game c ev))
+(define-command (crimes submit-card) (c ev &rest cards)
+  :command "commit crime"
+  (let* ((game (user-game c ev))
          (player (find-player c ev))
          (result (result player)))
-    (submit (parse-integer card) player game)
-    (reply ev "Your submission: ~a" (text result))
+    (dolist (card cards)
+      (submit (parse-integer card) player game))
+    (reply player "Your submission: ~a" (text result))
     (if (complete-p result)
-        (reply ev "Your submission is complete.")
-        (reply ev "~a card~:p left to submit." (remaining-responses result)))
+        (reply player "Your submission is complete.")
+        (reply player "~a card~:p left to submit." (remaining-responses result)))
     (handle-complete game)))
 
 (define-command (crimes select-winner) (c ev winner)
   :command "convict criminal"
-  (let ((game (find-game c ev)))
-    (unless (eql (user ev) (officer game))
+  (let ((game (user-game c ev)))
+    (unless (eql (user ev) (user (officer game)))
       (error "Only the officer (~a) may convict a criminal."
              (name (user (officer game)))))
     (unless (complete-p game)
@@ -124,6 +132,7 @@
       (reply ev "~a has been convicted! Their score is now at ~a point~:p."
              (name (user winner)) (score winner)))
     (handle-next game)))
+
 
 (define-command (crimes create-deck) (c ev name)
   :command "create crime deck"

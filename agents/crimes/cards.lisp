@@ -132,6 +132,10 @@
    :call (error "CALL required.")
    :responses ()))
 
+(defmethod print-object ((result result) stream)
+  (print-unreadable-object (result stream :type T)
+    (format stream "~a" (text result))))
+
 (defmethod required-responses ((result result))
   (required-responses (call result)))
 
@@ -140,7 +144,7 @@
      (length (responses result))))
 
 (defmethod complete-p ((result result))
-  (= 0 (remaining-responses result)))
+  (<= (remaining-responses result) 0))
 
 (defmethod (setf responses) :before (resp (result result))
   (when (<= (length (text (call result)))
@@ -149,6 +153,8 @@
            (required-responses result))))
 
 (defmethod add-response ((response response) (result result))
+  (when (complete-p result)
+    (error "The result is already complete."))
   (push-to-end response (responses result)))
 
 (defmethod text ((result result))
@@ -157,6 +163,7 @@
           (resp-parts (mapcar #'text (responses result))))
       (loop for call = (pop call-parts)
             for resp = (pop resp-parts)
-            while call
-            do (write-string call out)
-               (write-string (or resp "___") out)))))
+            do (format out " ~a " (string-trim " " call))
+               (write-string (or resp "___") out)
+            while (cdr call-parts))
+      (format out " ~a" (car call-parts)))))

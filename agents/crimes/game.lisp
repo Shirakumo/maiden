@@ -34,10 +34,14 @@
         do (push (pop (responses (game player))) (hand player)))
   player)
 
-(defmethod prep-for-round ((player player))
+(defmethod next-round ((player player))
+  ;; Remove cards from hand and push them onto the stack.
+  (when (result player)
+    (dolist (response (responses (result player)))
+      (setf (hand player) (remove response (hand player)))
+      (push-to-end response (responses (game player)))))
   (draw-cards player)
-  (setf (result player) (make-instance 'result
-                                       :call (first (calls (game player))))))
+  (setf (result player) (make-instance 'result :call (first (calls (game player))))))
 
 (defclass game ()
   ((channel :initarg :channel :accessor channel)
@@ -77,6 +81,8 @@
   (first (players game)))
 
 (defmethod start ((game game))
+  (when (in-session game)
+    (error "The game is already in session!"))
   (unless (< 2 (length (players game)))
     (error "We can't start yet, there are not enough players!"))
   (unless (calls game)
@@ -124,7 +130,8 @@
 
 (defmethod submit ((response response) (player player) game)
   (unless (find response (hand player)) (error "That is not a card in your hand."))
-  (setf (hand player) (remove response (hand player)))
+  (when (eql player (officer (game player))) (error "Officers cannot commit crimes."))
+  (when (find response (responses (result player))) (error "You already submitted that card."))
   (add-response response (result player)))
 
 (defmethod submit ((index number) (player player) (game game))
@@ -136,7 +143,8 @@
   ;; Only check scrambled ones because those are players that joined
   ;; before the current round.
   (loop for index in (scrambled game)
-        always (complete-p (elt (players game) index))))
+        for player = (elt (players game) index)
+        always (or (eq player (officer game)) (complete-p player))))
 
 (defmethod winner ((game game))
   (when (and (complete-p game) (players game))
@@ -145,7 +153,7 @@
       (values (user winner) (score winner)))))
 
 (defmethod finish-round ((winner player) (game game))
-  (unless (eql winner (officer game))
+  (when (eql winner (officer game))
     (error "The officer cannot elect themselves as the winner."))
   (incf (score winner))
   (next-round game)
@@ -165,11 +173,8 @@
   (when (or (not (calls game))
             (find (win-score game) (players game) :key #'score))
     (end game))
-  ;; For each player, restock their used cards onto the stack.
-  (dolist (player (players game))
-    (dolist (response (responses (result player)))
-      (push-to-end response (responses game))))
   ;; Prepare for next round.
-  (mapc #'prep-for-round (rotatef-list (players game)))
-  (setf (scrambled game) (alexandria:shuffle (loop for i from 0 below (length (players game)) collect i)))
+  (mapc #'next-round (rotatef-list (players game)))
+  ;; Important to start from 1 as we do not want to include the officer.
+  (setf (scrambled game) (alexandria:shuffle (loop for i from 1 below (length (players game)) collect i)))
   game)
