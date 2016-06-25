@@ -15,7 +15,7 @@
       (multiple-value-bind (match alternatives) (find-matching-command command)
         (cond ((not (null match))
                (handler-case
-                   (handler-bind ((error #'invoke-debugger))
+                   (handler-bind ((error #'maybe-invoke-debugger))
                      (funcall (cdr match) ev (if (= (length command) (length (car match)))
                                                  "" (subseq command (1+ (length (car match)))))))
                  (command-condition (err)
