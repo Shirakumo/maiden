@@ -48,6 +48,9 @@
 (defmethod (setf data-value) :after (value field (account account))
   (ubiquitous:offload (account-pathname account) :lisp account))
 
+(defmethod data-value ((field symbol) (account account))
+  (data-value (normalize-field-name field) account))
+
 (defmethod identity ((event user-event))
   (identity (user event)))
 
