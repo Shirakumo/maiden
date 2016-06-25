@@ -79,7 +79,7 @@
     (start game)
     (handle-next game)))
 
-(define-command (crimes stop-game) (c ev)
+(define-command (crimes end-game) (c ev)
   :command "end crimes"
   (let ((game (find-game c ev)))
     (end game)
