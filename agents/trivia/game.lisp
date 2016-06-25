@@ -34,7 +34,7 @@
              (check answer (first (questions game))))
     (let* ((diff (- (get-universal-time) (question-time game)))
            (score (+ 1 (max 0 (- (question-limit game) diff))))
-           (cons (assoc user (scores game) :test #'string-equal)))
+           (cons (assoc user (scores game) :test #'matches)))
       (if cons
           (incf (cdr cons) score)
           (push (cons user score) (scores game)))
