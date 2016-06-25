@@ -139,7 +139,8 @@
    #:get-unix-time
    #:format-relative-time
    #:format-absolute-time
-   #:format-time))
+   #:format-time
+   #:find-consumer-in-package))
 
 (defpackage #:maiden-user
   (:nicknames #:org.shirakumo.maiden.user)
