@@ -27,10 +27,16 @@
 (defmethod send-to ((user irc-user) message &rest args)
   (irc:privmsg (client user) (name user) (apply #'format NIL message args)))
 
+(defmethod reply ((user irc-user) message &rest args)
+  (irc:privmsg (client user) (name user) (apply #'format NIL message args)))
+
 (defclass irc-channel (channel)
   ((users :initform (make-hash-table :test 'equalp) :accessor user-map)))
 
 (defmethod send-to ((channel irc-channel) message &rest args)
+  (irc:privmsg (client channel) (name channel) (apply #'format NIL message args)))
+
+(defmethod reply ((channel irc-channel) message &rest args)
   (irc:privmsg (client channel) (name channel) (apply #'format NIL message args)))
 
 (defmethod users ((client irc-client))
