@@ -49,7 +49,7 @@
            ;; potentially not being able to provide any way to
            ;; authenticate users natively, we can now provide a
            ;; way to provide it from our side.
-           (setf (slot-value user 'maiden::authenticated) T)
+           (setf (slot-value (user ev) 'authenticated) T)
            (reply ev "Welcome back, ~a." (name (user ev)))))))
 
 (define-command (accounts create) (c ev &key password name)
