@@ -37,6 +37,7 @@
    #:user-added
    #:user-name-changed
    #:message-event
+   #:message
    #:reply
    #:channel-event
    #:channel
