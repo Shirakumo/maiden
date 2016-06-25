@@ -14,7 +14,7 @@
    (answers :initarg :answers :accessor answers)
    (hint :initarg :hint :accessor hint)
    (id :initarg :id :accessor id))
-  (:default-initargs :id (incf (gethash :next-id *questions*))))
+  (:default-initargs :id (incf (gethash :next-id *questions* 0))))
 
 (defmethod id ((id integer))
   id)
