@@ -11,7 +11,7 @@
 (defun normalize-field-name (name)
   (etypecase name
     (string name)
-    (keyword (string name))
+    (keyword (string-downcase name))
     (symbol (format NIL "~(~a:~a~)" (package-name (symbol-package name)) (symbol-name name)))))
 
 (defclass field-info ()
