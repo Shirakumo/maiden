@@ -70,17 +70,21 @@
 
 (define-command (crimes add-deck) (c ev name/id)
   :command "add crimes deck"
-  (let ((game (find-game c ev))
-        (deck (or (ignore-errors (deck name/id))
-                  (ignore-errors (load-cardcast-deck name/id)))))
-    (unless deck (error "No deck ~a found locally or on cardcast." name/id))
-    (add-deck deck game)
-    (reply game "Deck ~a has been added. The game now has ~a call~:p and ~a response~:p."
-           (name deck) (length (calls game)) (length (responses game)))))
+  (let ((game (find-game c ev)))
+    (unless (find (user ev) (players game) :key #'user)
+      (error "You are not a player of this game."))
+    (let ((deck (deck (or (ignore-errors (deck name/id))
+                          (ignore-errors (load-cardcast-deck name/id))
+                          (error "No deck ~a found locally or on cardcast." name/id)))))
+      (add-deck deck game)
+      (reply game "Deck ~a has been added. The game now has ~a call~:p and ~a response~:p."
+             (name deck) (length (calls game)) (length (responses game))))))
 
 (define-command (crimes start-game) (c ev)
   :command "start crimes"
   (let ((game (find-game c ev)))
+    (unless (find (user ev) (players game) :key #'user)
+      (error "You are not a player of this game."))
     (start game)
     (dolist (player (players game))
       (reply player "Reminder: Use \"commit crime\" with the number of the response you want to use next. Some calls require multiple responses."))
@@ -89,9 +93,12 @@
 (define-command (crimes end-game) (c ev)
   :command "end crimes"
   (let ((game (find-game c ev)))
-    (end game)
-    (setf (games c) (remove game (games c)))
-    (handle-next game)))
+    (unless (find (user ev) (players game) :key #'user)
+      (error "You are not a player of this game."))
+    (when (in-session game)
+      (end game)
+      (handle-next game))
+    (setf (games c) (remove game (games c)))))
 
 (define-command (crimes join-game) (c ev)
   :command "join crimes"
@@ -104,6 +111,8 @@
 
 (define-command (crimes leave-game) (c ev)
   :command "leave crimes"
+  (unless (find (user ev) (players game) :key #'user)
+    (error "You are not a player of this game."))
   (leave (user ev) (find-game c ev))
   (reply ev "Ok. See you later, ~a" (name (user ev))))
 
