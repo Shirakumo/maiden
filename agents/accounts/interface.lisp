@@ -86,7 +86,7 @@
   (let ((account (account account)))
     (when (account (identity (user ev)) :error NIL)
       (error "This identity is already associated with ~a." (account (identity ev))))
-    (unless (authenticated-p (user ev))
+    (unless (authenticate (user ev) (client ev))
       (error "You must be authenticated to associate this identity with the account."))
     (unless (string= (password account) password)
       (error "Invalid password."))
