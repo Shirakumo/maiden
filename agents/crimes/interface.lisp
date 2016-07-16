@@ -37,9 +37,11 @@
          (reply game "~a is the officer!" (name (user (officer game))))
          (reply game "Prompt: ~a" (text (result (officer game))))
          (dolist (player (players game))
-           (loop for card in (hand player)
-                 for i from 0
-                 do (reply player "(~a) ~a" i (text card)))))
+           (unless (eql player (officer game))
+             (reply player "Prompt: ~a" (text (result (officer game))))
+             (loop for card in (hand player)
+                   for i from 0
+                   do (reply player "(~a) ~a" i (text card))))))
         (T
          (multiple-value-bind (winner score) (winner game)
            (reply game "The game is over.~@[ The winner is ~a with ~a point~:p!~]"
