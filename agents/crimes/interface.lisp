@@ -74,9 +74,9 @@
   (let ((game (find-game c ev)))
     (unless (find (user ev) (players game) :key #'user)
       (error "You are not a player of this game."))
-    (let ((deck (deck (or (ignore-errors (deck name/id))
-                          (ignore-errors (load-cardcast-deck name/id))
-                          (error "No deck ~a found locally or on cardcast." name/id)))))
+    (let ((deck (or (ignore-errors (deck name/id))
+                    (ignore-errors (load-cardcast-deck name/id))
+                    (error "No deck ~a found locally or on cardcast." name/id))))
       ;; Cache deck
       (setf (deck (name deck)) deck)
       (add-deck deck game)
