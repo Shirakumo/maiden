@@ -76,13 +76,6 @@
   (remhash id (responses deck))
   deck)
 
-(defmethod remove-card ((card card) (deck deck))
-  (remove-card (id card) deck))
-
-(defmethod card (id (deck deck))
-  (or (gethash id (calls deck))
-      (gethash id (responses deck))))
-
 (defclass card (entity)
   ((text :initarg :text :accessor text))
   (:default-initargs
@@ -91,6 +84,13 @@
 (defmethod print-object ((card card) stream)
   (print-unreadable-object (card stream :type T)
     (format stream "~a ~s" (id card) (text card))))
+
+(defmethod remove-card ((card card) (deck deck))
+  (remove-card (id card) deck))
+
+(defmethod card (id (deck deck))
+  (or (gethash id (calls deck))
+      (gethash id (responses deck))))
 
 (defclass call (card)
   ())
