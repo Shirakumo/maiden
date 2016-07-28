@@ -47,7 +47,7 @@
   "SERVER ~a ~d :~a" servername hopcount info)
 
 (define-simple-irc-command oper (user password)
-  "OPERA ~a ~a" user password)
+  "OPER ~a ~a" user password)
 
 (define-simple-irc-command quit (&optional comment)
   :superclasses (deeds:blocking-event)
