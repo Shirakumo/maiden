@@ -35,12 +35,12 @@
    (cl-ppcre:register-groups-bind (NIL nick NIL user NIL host code NIL args)
        ("^(:([^! ]+)(!([^@ ]+))?(@([^ ]+))? +)?([^ ]+)( +(.+))?$" message)
      (let ((event-types (or (gethash code *reply-events*)
-                            (progn (warn 'unknown-message-warning :client client :message message)
+                            (progn (warn 'unknown-data-warning :client client :data message)
                                    '(unknown-event))))
            (user (coerce-irc-object nick user host client)))
        (loop for event-type in event-types
              nconc (make-reply-events event-type :client client :code code :args args :user user))))
-   (error 'message-parse-error :client client :message message)))
+   (error 'data-parse-error :client client :data message)))
 
 (defgeneric make-reply-events (type &key client code args user))
 

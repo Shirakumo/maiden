@@ -41,11 +41,11 @@
 
 (defmethod handle-connection :around ((client irc-client))
   (with-simple-restart (abort "Exit the connection handling.")
-    (handler-bind ((message-parse-error
+    (handler-bind ((data-parse-error
                      (lambda (err)
                        (v:error :maiden.client.irc.connection "Parse error: ~a" err)
                        (invoke-restart 'continue)))
-                   (unknown-message-warning
+                   (unknown-data-warning
                      (lambda (err)
                        (v:warn :maiden.client.irc.connection "Parse error: ~a" err))))
       (call-next-method))))
@@ -57,11 +57,15 @@
       (dolist (event events)
         (issue event core)))))
 
+(defmethod send ((list list) (client irc-client))
+  (dolist (item list list)
+    (send item client)))
+
 (defmethod send ((message string) (client irc-client))
   ;; FIXME: Better handling for multilines
   (let ((message (format NIL "~a~c~c" (cl-ppcre:regex-replace-all "\\n" message " ") #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
-      (warn 'data-too-long-warning :data data))
+      (warn 'data-too-long-warning :data message))
     (call-next-method message client))
   client)
 
