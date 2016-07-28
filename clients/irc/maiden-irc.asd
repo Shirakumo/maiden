@@ -23,4 +23,5 @@
                :maiden-client-entities
                :babel
                :cl-ppcre
-               :form-fiddle))
+               :form-fiddle
+               :lambda-fiddle))

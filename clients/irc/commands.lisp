@@ -10,21 +10,20 @@
   ((message :initarg :message :reader message)))
 
 (defmacro define-irc-command (name args &body options-and-body)
-  (flet ((lambda-keyword-p (a) (find a lambda-list-keywords)))
-    (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
-          (pure-args (mapcar #'unlist (remove-if #'lambda-keyword-p args)))
-          (client (gensym "CLIENT")))
-      (form-fiddle:with-body-options (body options superclasses) options-and-body
-        `(progn
-           (define-event ,name (instruction-event send-event ,@superclasses)
-             ,(maiden::slot-args->slots args)
-             ,@options)
-           (defun ,name (,client ,@(maiden::slot-args->args args))
-             (do-issue (first (cores ,client)) ,name
-               :client ,client ,@(loop for var in pure-args collect (kw var) collect var)))
-           (defmethod message ((ev ,name))
-             (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
-               (format NIL ,@body))))))))
+  (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
+        (pure-args (lambda-fiddle:extract-lambda-vars args))
+        (client (gensym "CLIENT")))
+    (form-fiddle:with-body-options (body options superclasses) options-and-body
+      `(progn
+         (define-event ,name (instruction-event send-event ,@superclasses)
+           ,(maiden::slot-args->slots args)
+           ,@options)
+         (defun ,name (,client ,@(maiden::slot-args->args args))
+           (do-issue (first (cores ,client)) ,name
+             :client ,client ,@(loop for var in pure-args collect (kw var) collect var)))
+         (defmethod message ((ev ,name))
+           (deeds:with-fuzzy-slot-bindings ,pure-args (ev ,name)
+             (format NIL ,@body)))))))
 
 (define-irc-command pass (password)
   "PASS ~a" password)
