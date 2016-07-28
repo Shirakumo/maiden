@@ -17,11 +17,11 @@
    #:closing-error
    #:client-timeout-error
    #:timeout
-   #:message-condition
-   #:message
-   #:message-parse-error
-   #:unknown-message-warning
-   #:message-too-long-warning)
+   #:data-condition
+   #:data
+   #:data-parse-error
+   #:unknown-data-warning
+   #:data-too-long-warning)
   ;; clients.lisp
   (:export
    #:client-connected-p

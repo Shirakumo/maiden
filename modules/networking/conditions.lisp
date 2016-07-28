@@ -32,21 +32,21 @@
   (:report (lambda (c s) (format s "Client ~a timed out~@[ after ~d seconds~]."
                                  (client c) (timeout c)))))
 
-(define-condition message-condition (condition)
-  ((message :initarg :message :reader message))
-  (:default-initargs :message (error "MESSAGE required.")))
+(define-condition data-condition (condition)
+  ((data :initarg :data :reader data))
+  (:default-initargs :data (error "DATA required.")))
 
-(define-condition message-parse-error (message-condition client-condition error)
+(define-condition data-parse-error (data-condition client-condition error)
   ()
   (:report (lambda (c s) (format s "Failed to parse ~s from ~a."
-                                 (message c) (client c)))))
+                                 (data c) (client c)))))
 
-(define-condition unknown-message-warning (message-condition client-condition warning)
+(define-condition unknown-data-warning (data-condition client-condition warning)
   ()
   (:report (lambda (c s) (format s "Don't know what to do for ~s from ~a."
-                                 (message c) (client c)))))
+                                 (data c) (client c)))))
 
-(define-condition message-too-long-warning (message-condition client-condition warning)
+(define-condition data-too-long-warning (data-condition client-condition warning)
   ()
-  (:report (lambda (c s) (format s "The message ~s might be truncated or dropped as it is too long for ~a."
-                                 (message c) (client c)))))
+  (:report (lambda (c s) (format s "The data ~s might be truncated or dropped as it is too long for ~a."
+                                 (data c) (client c)))))

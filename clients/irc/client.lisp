@@ -61,7 +61,7 @@
   ;; FIXME: Better handling for multilines
   (let ((message (format NIL "~a~c~c" (cl-ppcre:regex-replace-all "\\n" message " ") #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
-      (warn 'message-too-long-warning :message message))
+      (warn 'data-too-long-warning :data data))
     (call-next-method message client))
   client)
 
