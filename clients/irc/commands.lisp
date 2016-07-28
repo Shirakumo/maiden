@@ -6,6 +6,19 @@
 
 (in-package #:org.shirakumo.maiden.clients.irc)
 
+;; This leaves 152 characters to encode the preamble and CRLF of a message.
+;; That should be enough while still sending a fairly long message over the net.
+;; Calculating the limit precisely would involve querying the hostname as seen
+;; by others as well as the precise manner in which things are encoded on the wire.
+;; Since that is somewhat too complicated and 360 is still plenty long we settle
+;; for this compromise. The protocols don't actually say anything about the length
+;; restrictions of the username, so we cannot make a worst-case estimate limit.
+;; However, we do know that the hostname is limited to 63 characters, we need 2 for
+;; the line ending, ~10 for the command, and ~36 for the nickname. The nick length
+;; here being overly long especially considering the initial RFCs limit it to 9,
+;; which is way too short to be relied upon. Either way, 152 should be a good limit.
+(defvar *message-length-limit* 360)
+
 (define-event send-event (irc-event outgoing-event active-event)
   ((message :initarg :message :reader message)))
 
@@ -33,6 +46,46 @@
          ,@options
          (deeds:with-fuzzy-slot-bindings ,pure-args (,ev ,name)
            (format NIL ,@body))))))
+
+(defun splittable-char-p (char)
+  (or (not (graphic-char-p char))
+      ;; This isn't great, but hey.
+      (find char " .,;:?!　。、：；？！")))
+
+(defun reasonable-message-end (string start end max-backtrack)
+  (let ((pos (position NIL string :start start :end end :from-end T :test-not #'eql :key #'splittable-char-p)))
+    (or (when (and pos (<= (- end pos) max-backtrack)) (1+ pos))
+        end)))
+
+(defun split-message-smartly (length message &key (max-backtrack 10))
+  (cond ((<= (length message) length)
+         message)
+        (T
+         (let ((parts ()))
+           (loop for start = 0 then real-end
+                 for end = length then (min (length message) (+ start length))
+                 for real-end = (reasonable-message-end message start end max-backtrack)
+                 while (< end (length message))
+                 do (push (subseq message start real-end) parts)
+                 finally (push (subseq message start end) parts))
+           (nreverse parts)))))
+
+;; The way we split here is Not Great™ since we do not take into account the other
+;; arguments nor the command string itself and instead just rely on the hope that
+;; *mesage-length-limit* will be conservative enough to suffice for an estimate. This
+;; is obviously not always the case depending on how many arguments there are, how long
+;; they are and how long the bot's nick, username, and hostname are on the server side.
+(defmacro define-message-irc-command (name args &body options-and-body)
+  (let* ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
+         (pure-args (lambda-fiddle:extract-lambda-vars args))
+         (message (car (last pure-args)))
+         (ev (gensym "EVENT")))
+    (form-fiddle:with-body-options (body options) options-and-body
+      `(define-irc-command ,name (,ev ,@args)
+         ,@options
+         (deeds:with-fuzzy-slot-bindings ,pure-args (,ev ,name)
+           (dolist (,message (split-message-smartly *message-length-limit* ,message))
+             (format NIL ,@body)))))))
 
 (define-simple-irc-command pass (password)
   "PASS ~a" password)
@@ -106,10 +159,10 @@
 (define-simple-irc-command info (&key server)
   "INFO~@[ ~a~]" server)
 
-(define-simple-irc-command privmsg (receivers message)
+(define-message-irc-command privmsg (receivers message)
   "PRIVMSG ~{~a~^,~} :~a" (enlist receivers) message)
 
-(define-simple-irc-command notice (nickname text)
+(define-message-irc-command notice (nickname text)
   "NOTICE ~a ~a" nickname text)
 
 (define-simple-irc-command who (&key name opers-only)
@@ -130,7 +183,7 @@
 (define-simple-irc-command pong (daemon &optional other-daemon)
   "PONG ~a~@[ ~a~]" daemon other-daemon)
 
-(define-simple-irc-command error (message)
+(define-message-irc-command error (message)
   "ERROR :~a" message)
 
 (define-simple-irc-command away (&optional message)
