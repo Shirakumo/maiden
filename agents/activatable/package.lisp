@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-activatable
   (:nicknames #:org.shirakumo.maiden.agents.activatable)
-  (:use #:cl #:maiden #:maiden-storage #:maiden-commands)
+  (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; activatable.lisp
   (:export
    #:activatable-handler
