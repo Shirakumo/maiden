@@ -132,7 +132,7 @@
         (reply player "~a card~:p left to submit." (remaining-responses result)))
     (handle-complete game)))
 
-(define-command (crimes select-winner) (c ev winner)
+(define-command (crimes select-winner) (c ev winning-number)
   :command "convict criminal"
   (let ((game (user-game c ev)))
     (unless (eql (user ev) (user (officer game)))
@@ -140,9 +140,9 @@
              (name (user (officer game)))))
     (unless (complete-p game)
       (error "Not everyone has submitted their crimes yet! Stay patient."))
-    (let ((winner (finish-round (parse-integer winner) game)))
-      (reply ev "~a has been convicted! Their score is now at ~a point~:p."
-             (name (user winner)) (score winner)))
+    (let ((winner (finish-round (parse-integer winning-number) game)))
+      (reply game "~a (~a) has been convicted! Their score is now at ~a point~:p."
+             (name (user winner)) winning-number (score winner)))
     (handle-next game)))
 
 
