@@ -110,9 +110,9 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
 (define-command (silly jerkcity) (c ev)
   (multiple-value-bind (content status headers uri) (request-as :html "http://jerkcity.com/random/?_")
     (declare (ignore status headers))
-    (respond event "~a ~a"
-             (cl-ppcre:register-groups-bind (title) ("<title>([^<]*)</title>" content))
-             (puri:render-uri uri NIL))))
+    (reply ev "~a ~a"
+           (cl-ppcre:register-groups-bind (title) ("<title>([^<]*)</title>" content) title)
+           (puri:render-uri uri NIL))))
 
 (define-command (silly roll) (c ev &optional (size "6") (times "1"))
   (cond
