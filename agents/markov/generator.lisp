@@ -97,7 +97,7 @@
                     (write-char #\Space out))))))
 
 (defun learn-sentence (sentence generator)
-  (let ((tokens (cl-ppcre:split "[\\s,、\\-_:：；]+" (string-downcase sentence))))
+  (let ((tokens (cl-ppcre:split "[\\s,、\\-_:/\\\\：；／＼]+" (string-downcase sentence))))
     (when (cddr tokens)
       (loop for first = *start* then second
             for second = (pop tokens) then third
