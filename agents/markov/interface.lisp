@@ -12,7 +12,7 @@
    (save-frequency :initform 20 :accessor save-frequency)
    (file :initform (asdf:system-relative-pathname :maiden-markov "markov.dat") :accessor file)))
 
-(defmethod storage ((markov markov))
+(defmethod generator ((markov markov))
   (or (slot-value markov 'generator)
       (setf (slot-value markov 'generator)
             (read-generator (file markov)))))
@@ -21,7 +21,7 @@
   (incf (save-counter markov))
   (when (<= (save-frequency markov) (save-counter markov))
     (setf (save-counter markov) 0)
-    (write-generator (storage markov) (file markov))))
+    (write-generator (generator markov) (file markov))))
 
 (define-handler (markov handle (or message-event passive-event)) (c ev message)
   :class activatable-handler
