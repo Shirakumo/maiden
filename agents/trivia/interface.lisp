@@ -45,8 +45,8 @@
 
 (define-command (trivia skip) (c ev)
   :command "skip question"
-  (let ((game (game c ev))
-        (trivia (skip game)))
+  (let* ((game (game c ev))
+         (trivia (skip game)))
     (reply ev "The correct answer~p~:* would have been: ~{~a~^, ~}"
            (answers trivia))
     (handle-next c ev game)))
