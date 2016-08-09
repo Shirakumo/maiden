@@ -106,8 +106,13 @@
             finally (add-chain generator first second *end*))))
   generator)
 
+(defun remove-artefacts (string)
+  ;; Strips URLs.
+  (cl-ppcre:regex-replace-all "([a-zA-Z0-9]+:\\/\\/[\\w\\-\\[\\].~:/?#@!$&'()*+,;=%]*)" string ""))
+
 (defun learn (string generator)
-  (dolist (sentence (cl-ppcre:split "[.!?¿¡̣;:<>(){}\\[\\]\"”。！？：；]+"string))
+  (dolist (sentence (cl-ppcre:split "[.!?¿¡̣;:<>(){}\\[\\]\"”。！？：；]+"
+                                    (remove-artefacts string)))
     (learn-sentence sentence generator)))
 
 (defun learn-from-file (file generator)
