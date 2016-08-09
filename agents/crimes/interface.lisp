@@ -114,7 +114,7 @@
 
 (define-command (crimes leave-game) (c ev)
   :command "leave crimes"
-  (unless (find (user ev) (players game) :key #'user)
+  (unless (user-game c ev NIL)
     (error "You are not a player of this game."))
   (leave (user ev) (find-game c ev))
   (reply ev "Ok. See you later, ~a" (name (user ev))))
