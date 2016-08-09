@@ -25,7 +25,7 @@
 ;; (define-handler (chatlog kick user-kick) (c ev user channel target)
 ;;   (maybe-record-message :kick channel user "** KICKED ~a" target))
 
-(define-handler (chatlog remove user-removed) (c ev user)
+(define-handler (chatlog quit user-removed) (c ev user)
   (dolist (channel (channels user))
     (maybe-record-message :disconnect channel user "** QUIT")))
 
