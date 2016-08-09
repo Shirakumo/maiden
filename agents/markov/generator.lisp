@@ -111,4 +111,10 @@
     (learn-sentence sentence generator)))
 
 (defun learn-from-file (file generator)
-  (learn (alexandria:read-file-into-string file) generator))
+  (with-open-file (stream file :direction :input)
+    (loop for i from 0
+          for line = (read-line stream NIL NIL)
+          while line
+          do (learn line generator)
+             (when (= 0 (mod i 100000)) (format T "~&Processed ~a lines..." i)))
+    generator))
