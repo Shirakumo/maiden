@@ -56,14 +56,21 @@
 
 (defun read-chains (stream)
   (let* ((num (fast-io:read32-be stream))
-         (map (make-hash-table :test 'equal :size num)))
-    (dotimes (i num map)
-      (multiple-value-bind (first second refs) (read-chain stream)
-        (setf (gethash second
-                       (or (gethash first map)
-                           (setf (gethash first map)
-                                 (make-hash-table :test 'eql))))
-              refs)))))
+         (map (make-hash-table :test 'eql :size num)))
+    ;; It isn't as simple as looping NUM times. We need to loop NUM times
+    ;; but only count when FIRST changes, as multiple "lines" for each
+    ;; FIRST item may be in the file.
+    (loop with prev = NIL
+          with i = 0
+          do (multiple-value-bind (first second refs) (read-chain stream)
+               (unless (eql first prev) (incf i) (setf prev first))
+               (setf (gethash second
+                              (or (gethash first map)
+                                  (setf (gethash first map)
+                                        (make-hash-table :test 'eql))))
+                     refs))
+          until (= i num))
+    map))
 
 (defun write-chains (chains stream)
   (fast-io:write32-be (hash-table-count chains) stream)
