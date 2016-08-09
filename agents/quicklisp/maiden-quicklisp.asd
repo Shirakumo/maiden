@@ -17,5 +17,6 @@
                (:file "quicklisp")
                (:file "documentation"))
   :depends-on (:maiden-commands
+               :maiden-client-entities
                :quicklisp
                :legit))

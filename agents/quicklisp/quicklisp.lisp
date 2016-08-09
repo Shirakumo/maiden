@@ -71,7 +71,7 @@
 (define-command (quicklisp upgrade) (c ev &rest systems)
   :advice (not public)
   (apply #'upgrade systems)
-  (reply ev "~{~a~^, ~} upgraded." system))
+  (reply ev "~{~a~^, ~} upgraded." systems))
 
 (define-command (quicklisp quickload) (c ev &rest systems)
   :advice (not public)
