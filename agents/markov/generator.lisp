@@ -96,6 +96,11 @@
                    (T
                     (write-char #\Space out))))))
 
+(defun find-sentence (generator words &optional start)
+  (loop for sentence = (make-sentence generator (or start (random-token generator)))
+        when (loop for word in words thereis (search word sentence))
+        do (return sentence)))
+
 (defun learn-sentence (sentence generator)
   (let ((tokens (cl-ppcre:split "[\\s,、\\-_:/\\\\：；／＼]+" (string-downcase sentence))))
     (when (cddr tokens)

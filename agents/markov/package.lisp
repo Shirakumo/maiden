@@ -19,6 +19,7 @@
    #:next-word-index
    #:random-token
    #:make-sentence
+   #:find-sentence
    #:learn-sentence
    #:learn
    #:learn-from-file)
