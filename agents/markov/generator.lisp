@@ -84,9 +84,9 @@
     (loop for k being the hash-keys of starters
           repeat n finally (return k))))
 
-(defun make-sentence (generator)
+(defun make-sentence (generator &optional (start (random-token generator)))
   (with-output-to-string (out)
-    (loop for first = (random-token generator) then second
+    (loop for first = (word-index generator start) then second
           for second = (next-word-index generator *start* first) then third
           for third = (next-word-index generator first second)
           do (write-string (word first generator) out)
