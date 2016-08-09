@@ -23,7 +23,7 @@
     (setf (save-counter markov) 0)
     (write-generator (storage markov) (file markov))))
 
-(define-handler (markov handle (message-event passive-event)) (c ev message)
+(define-handler (markov handle (or message-event passive-event)) (c ev message)
   :class activatable-handler
   (learn message (generator c))
   (maybe-save c))
