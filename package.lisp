@@ -80,7 +80,8 @@
    #:consumers
    #:with-awaiting
    #:with-response
-   #:make-simple-core)
+   #:make-simple-core
+   #:core-simple-add)
   ;; entity.lisp
   (:export
    #:matches
