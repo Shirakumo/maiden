@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.maiden.agents.markov)
 
-(define-consumer markov ()
+(define-consumer markov (agent)
   ((storage :initform NIL)
    (save-counter :initform 0 :accessor save-counter)
    (save-frequency :initform 20 :accessor save-frequency)
