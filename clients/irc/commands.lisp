@@ -70,6 +70,10 @@
                  finally (push (subseq message start end) parts))
            (nreverse parts)))))
 
+(defun split-message-considering-newlines (length message &key (max-backtrack 10))
+  (loop for line in (cl-ppcre:split " *(\\n|\\r)+ *" message)
+        nconc (split-message-smartly length line :max-backtrack max-backtrack)))
+
 ;; The way we split here is Not Great™ since we do not take into account the other
 ;; arguments nor the command string itself and instead just rely on the hope that
 ;; *mesage-length-limit* will be conservative enough to suffice for an estimate. This
@@ -84,8 +88,9 @@
       `(define-irc-command ,name (,ev ,@args)
          ,@options
          (deeds:with-fuzzy-slot-bindings ,pure-args (,ev ,name)
-           (dolist (,message (split-message-smartly *message-length-limit* ,message))
-             (format NIL ,@body)))))))
+           (mapcar
+            (lambda (,message) (format NIL ,@body))
+            (split-message-considering-newlines *message-length-limit* ,message)))))))
 
 (define-simple-irc-command pass (password)
   "PASS ~a" password)
