@@ -58,5 +58,5 @@
 (define-handler (counter respond message-event) (c ev message)
   :class activatable-handler
   (dolist (c (list-counters))
-    (when (cl-ppcre:scan (getf c :match) message)
+    (when (cl-ppcre:scan (getf c :match) (string-downcase message))
       (reply ev (getf c :response) (incf (getf c :count))))))
