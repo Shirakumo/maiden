@@ -71,3 +71,16 @@
   :command "set ramble chance"
   (setf (ramble-chance c) (parse-number:parse-real-number new-value))
   (reply ev "The rambling chance has been set to ~a." new-value))
+
+(defun count-uniques (seq)
+  (let ((table (make-hash-table :test 'eql :size (length seq))))
+    (loop for a across seq do (setf (gethash a table) T))
+    (hash-table-count table)))
+
+(define-command (markov markov-stats) (c ev)
+  :command "markov stats"
+  (reply ev "The markov dictionary knows ~,,'':d word~:p with ~,,'':d possible connection~:p."
+         (length (words (generator c)))
+         (loop for v being the hash-values of (chains (generator c))
+               summing (loop for c being the hash-values of v
+                             summing (count-uniques c)))))
