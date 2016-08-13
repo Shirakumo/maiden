@@ -101,7 +101,7 @@
                    (T
                     (write-char #\Space out))))))
 
-(defun find-sentence (generator words &optional start (max-attempts 100))
+(defun find-sentence (generator words &optional start (max-attempts 10000))
   (let ((words (enlist words)))
     (loop for sentence = (make-sentence generator (or start (random-token generator)))
           repeat max-attempts
