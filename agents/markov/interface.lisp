@@ -38,10 +38,11 @@
       (setf (slot-value markov 'generator)
             (read-generator (file markov)))))
 
-(defun maybe-save (markov)
+(defun maybe-save (markov &key force)
   (incf (save-counter markov))
-  (when (<= (save-frequency markov) (save-counter markov))
+  (when (or force (<= (save-frequency markov) (save-counter markov)))
     (setf (save-counter markov) 0)
+    (ensure-directories-exist (file markov))
     (write-generator (generator markov) (file markov))))
 
 (define-handler (markov handle (and message-event passive-event)) (c ev message)
