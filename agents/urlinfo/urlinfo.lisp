@@ -8,7 +8,7 @@
 
 (defun fetch (url)
   (multiple-value-bind (stream status headers url)
-      (drakma:http-request url :external-format-out :utf8 :external-format-in :utf8 :want-stream T)
+      (drakma:http-request url :want-stream T)
     (unless (= status 200)
       (error "Failed to fetch URL, received status code ~a." status))
     (values (puri:render-uri url NIL) (cdr (assoc :content-type headers)) stream)))
@@ -37,6 +37,12 @@
     (with-output-to-string (s)
       (process-until "</title>" (lambda (c) (write-char c s)) stream))))
 
+(defun nicer-title (title)
+  (cond ((not title) NIL)
+        ((string= "" title) "<empty>")
+        (T (flet ((r (a b m) (cl-ppcre:regex-replace-all a m b)))
+             (string-trim " " (r "  +" " " (r "[\\n\\r]+" " " title)))))))
+
 (defun short-url (url &optional (url-cutoff 50))
   (if (< (length url) url-cutoff)
       url
@@ -46,7 +52,8 @@
   (macrolet ((with-content-type-case (thing &body cases)
                `(cond ,@(loop for (string . body) in cases
                               if (eql string T) collect `(T ,@body)
-                              else collect `((find ,thing ',(enlist string) :test #'string-equal)
+                              else collect `((find ,thing ',(enlist string)
+                                                   :test (lambda (a b) (search b a)))
                                              ,@body)))))
     (with-content-type-case type
       (("text/html") "Website (HTML)")
@@ -65,7 +72,7 @@
       (unwind-protect
            (let ((title (maybe-title type stream)))
              (format NIL "~va ~a~@[, Title: ~a~]"
-                     url-cutoff (short-url url url-cutoff) (nicer-content-type type) title))
+                     url-cutoff (short-url url url-cutoff) (nicer-content-type type) (nicer-title title)))
         (close stream)))))
 
 (defun find-urls-in-string (string)
