@@ -101,13 +101,38 @@
                    (T
                     (write-char #\Space out))))))
 
-(defun find-sentence (generator words &optional start)
-  (loop for sentence = (make-sentence generator (or start (random-token generator)))
-        when (loop for word in words thereis (search word sentence))
-        do (return sentence)))
+(defun find-sentence (generator words &optional start (max-attempts 100))
+  (let ((words (enlist words)))
+    (loop for sentence = (make-sentence generator (or start (random-token generator)))
+          repeat max-attempts
+          when (loop for word in words thereis (search word sentence))
+          do (return sentence))))
+
+(defun remove-artefacts (string)
+  ;; Strips URLs.
+  (cl-ppcre:regex-replace-all "([a-zA-Z0-9]+:\\/\\/[\\w\\-\\[\\].~:/?#@!$&'()*+,;=%]*)" string ""))
+
+(defun find-sentences (string)
+  (cl-ppcre:split "[.!?¿¡̣;:<>(){}\\[\\]\"”。！？：；]+"
+                  (remove-artefacts string)))
+
+(defun find-tokens (string)
+  (cl-ppcre:split "[\\s,、\\-_:/\\\\：；／＼]+" (string-downcase string)))
+
+(defun token-score (token generator)
+  (let* ((index (word token generator))
+         (chains (and index (gethash index (chains generator)))))
+    (cond ((not index) 0)
+          ((not chains) 0)
+          (T (hash-table-count chains)))))
+
+(defun find-topic (string generator)
+  (let* ((tokens (loop for sentence in (find-sentences string) nconc (find-tokens sentence)))
+         (scored (loop for token in tokens collect (cons token (token-score token generator)))))
+    (car (first (sort scored #'< :key #'cdr)))))
 
 (defun learn-sentence (sentence generator)
-  (let ((tokens (cl-ppcre:split "[\\s,、\\-_:/\\\\：；／＼]+" (string-downcase sentence))))
+  (let ((tokens (find-tokens sentence)))
     (when (cddr tokens)
       (loop for first = *start* then second
             for second = (pop tokens) then third
@@ -116,13 +141,8 @@
             finally (add-chain generator first second *end*))))
   generator)
 
-(defun remove-artefacts (string)
-  ;; Strips URLs.
-  (cl-ppcre:regex-replace-all "([a-zA-Z0-9]+:\\/\\/[\\w\\-\\[\\].~:/?#@!$&'()*+,;=%]*)" string ""))
-
 (defun learn (string generator)
-  (dolist (sentence (cl-ppcre:split "[.!?¿¡̣;:<>(){}\\[\\]\"”。！？：；]+"
-                                    (remove-artefacts string)))
+  (dolist (sentence (find-sentences string))
     (learn-sentence sentence generator)))
 
 (defun learn-from-file (file generator)

@@ -21,7 +21,9 @@
   :depends-on (:maiden-commands
                :maiden-activatable
                :maiden-client-entities
+               :maiden-storage
                :alexandria
                :cl-ppcre
                :fast-io
-               :babel))
+               :babel
+               :parse-number))

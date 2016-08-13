@@ -9,8 +9,29 @@
 (define-consumer markov (agent)
   ((generator :initform NIL)
    (save-counter :initform 0 :accessor save-counter)
-   (save-frequency :initform 20 :accessor save-frequency)
-   (file :initform (asdf:system-relative-pathname :maiden-markov "markov.dat") :accessor file)))
+   (storage :initform (make-hash-table :test 'equal) :accessor storage)))
+
+(defmacro with-storage ((c) &body body)
+  `(ubiquitous:with-transaction (:storage (storage ,c)
+                                 :designator 'markov)
+     ,@body))
+
+(defun file (c)
+  (with-storage (c)
+    (ubiquitous:defaulted-value (maiden-storage:config-pathname 'dictionary) :dictionary)))
+
+(defun save-frequency (c)
+  (with-storage (c)
+    (ubiquitous:defaulted-value 20 :save-frequency)))
+
+(defun ramble-chance (c)
+  (with-storage (c)
+    (ubiquitous:defaulted-value 1 :ramble-chance)))
+
+(defun (setf ramble-chance) (val c)
+  (assert (<= 0.0 val 100.0) () "The chance must be in [0, 100].")
+  (with-storage (c)
+    (setf (ubiquitous:value :ramble-chance) val)))
 
 (defmethod generator ((markov markov))
   (or (slot-value markov 'generator)
@@ -26,8 +47,22 @@
 (define-handler (markov handle (and message-event passive-event)) (c ev message)
   :class activatable-handler
   (learn message (generator c))
-  (maybe-save c))
+  (maybe-save c)
+  (when (< (random 100.0) (ramble-chance c))
+    (let ((topic (find-topic message (generator c))))
+      (reply ev "~a" (or (find-sentence (generator c) topic)
+                         (make-sentence (generator c)))))))
 
-(define-command (markov ramble) (c ev)
+(define-command (markov ramble) (c ev &optional topic)
   :command "ramble"
-  (reply ev "~a" (make-sentence (generator c))))
+  (reply ev "~a" (if topic
+                     (find-sentence (generator c) topic)
+                     (make-sentence (generator c)))))
+
+(define-command (markov ramble-chance) (c ev &optional new-value)
+  :command "ramble chance"
+  (cond (new-value
+         (setf (ramble-chance c) (parse-number:parse-real-number new-value))
+         (reply ev "The rambling chance has been set to ~a." new-value))
+        (T
+         (reply ev "The current chance of replying to a message is ~a." (ramble-chance c)))))
