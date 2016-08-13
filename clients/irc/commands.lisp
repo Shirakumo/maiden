@@ -59,7 +59,7 @@
 
 (defun split-message-smartly (length message &key (max-backtrack 10))
   (cond ((<= (length message) length)
-         message)
+         (list message))
         (T
          (let ((parts ()))
            (loop for start = 0 then real-end
