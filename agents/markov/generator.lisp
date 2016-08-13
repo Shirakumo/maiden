@@ -44,9 +44,10 @@
                     (vector-push-extend thing (words generator)))))))
 
 (defun word-index (generator word)
-  (if (numberp word) word
-      (or (word word generator)
-          (setf (word generator) word))))
+  (etypecase word
+    (integer word)
+    (string (or (word word generator)
+                (setf (word generator) word)))))
 
 (defun chain (generator first second)
   (gethash (word-index generator second)
@@ -79,18 +80,22 @@
       (aref chain (random (length chain))))))
 
 (defun random-token (generator)
-  (let* ((starters (gethash *start* (chains generator)))
-         (n (random (hash-table-count starters))))
-    (loop for k being the hash-keys of starters
-          repeat n finally (return k))))
+  (let ((starters (gethash *start* (chains generator))))
+    (when starters
+      (loop with n = (random (hash-table-count starters))
+            for k being the hash-keys of starters
+            repeat n finally (return k)))))
 
-(defun make-sentence (generator &optional (start (random-token generator)))
+(defun make-sentence (generator &optional start)
+  (unless start (setf start (random-token generator)))
+  (unless start (error "The generator does not have any learned words yet."))
   (with-output-to-string (out)
     (loop for first = (word-index generator start) then second
           for second = (next-word-index generator *start* first) then third
           for third = (next-word-index generator first second)
-          do (write-string (word first generator) out)
-             (cond ((= second *end*)
+          for word = (word first generator)
+          do (write-string word out)
+             (cond ((or (not second) (= second *end*))
                     (write-char #\. out)
                     (return))
                    (T
