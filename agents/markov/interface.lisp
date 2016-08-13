@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.maiden.agents.markov)
 
 (define-consumer markov (agent)
-  ((storage :initform NIL)
+  ((generator :initform NIL)
    (save-counter :initform 0 :accessor save-counter)
    (save-frequency :initform 20 :accessor save-frequency)
    (file :initform (asdf:system-relative-pathname :maiden-markov "markov.dat") :accessor file)))
@@ -23,10 +23,11 @@
     (setf (save-counter markov) 0)
     (write-generator (generator markov) (file markov))))
 
-(define-handler (markov handle (or message-event passive-event)) (c ev message)
+(define-handler (markov handle (and message-event passive-event)) (c ev message)
   :class activatable-handler
   (learn message (generator c))
   (maybe-save c))
 
 (define-command (markov ramble) (c ev)
+  :command "ramble"
   (reply ev "~a" (make-sentence (generator c))))
