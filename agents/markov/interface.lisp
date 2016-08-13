@@ -54,17 +54,20 @@
       (reply ev "~a" (or (find-sentence (generator c) topic)
                          (make-sentence (generator c)))))))
 
-(define-command (markov ramble) (c ev &optional topic)
+(define-command (markov ramble) (c ev)
   :command "ramble"
-  (reply ev "~a" (if topic
-                     (or (find-sentence (generator c) topic)
-                         (format NIL "Couldn't think of anything about ~a." topic))
-                     (make-sentence (generator c)))))
+  (reply ev "~a" (make-sentence (generator c))))
 
-(define-command (markov ramble-chance) (c ev &optional new-value)
+(define-command (markov ramble-about) (c ev &optional topic)
+  :command "ramble about"
+  (reply ev "~a" (or (find-sentence (generator c) topic)
+                     (format NIL "Couldn't think of anything about ~a." topic))))
+
+(define-command (markov ramble-chance) (c ev)
   :command "ramble chance"
-  (cond (new-value
-         (setf (ramble-chance c) (parse-number:parse-real-number new-value))
-         (reply ev "The rambling chance has been set to ~a." new-value))
-        (T
-         (reply ev "The current chance of replying to a message is ~a." (ramble-chance c)))))
+  (reply ev "The current chance of replying to a message is ~a." (ramble-chance c)))
+
+(define-command (markov set-ramble-chance) (c ev new-value)
+  :command "set ramble chance"
+  (setf (ramble-chance c) (parse-number:parse-real-number new-value))
+  (reply ev "The rambling chance has been set to ~a." new-value))
