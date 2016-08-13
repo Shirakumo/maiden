@@ -58,11 +58,7 @@
     (with-content-type-case type
       (("text/html") "Website (HTML)")
       (("application/xhtml+xml") "Website (XHTML)")
-      (("image/jpeg" "image/jpg") "Image (JPEG)")
-      (("image/png" "image/mpng") "Image (PNG)")
-      (("image/svg+xml" "image/svg") "Image (SVG)")
-      (("audio/mp3" "audio/mpeg") "Audio (MP3)")
-      (T (or (cl-ppcre:register-groups-bind (type NIL format) ("([\\w]+)/(x-)?(.+)" type)
+      (T (or (cl-ppcre:register-groups-bind (type NIL format) ("^([\\w]+)/(x-)?(.+?)(;.*)?$" type)
                (format NIL "~:(~a~) (~:@(~a~))" type format))
              type)))))
 
