@@ -94,7 +94,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
              (< (random 100) 30))
     "That's Numberwang!"))
 
-(define-consumer silly ()
+(define-consumer silly (agent)
   ())
 
 (define-handler (silly handle (and message-event passive-event)) (c ev user message)

@@ -71,7 +71,7 @@
 (defun find-urls-in-string (string)
   (cl-ppcre:all-matches-as-strings "[a-zA-Z-]+://[\\w\\d\\-.]+\\.\\w{2,}[\\w\\d\\-%+?=&@#.:;/]*" string))
 
-(define-consumer urlinfo ()
+(define-consumer urlinfo (agent)
   ())
 
 (define-command (urlinfo test) (c ev url)

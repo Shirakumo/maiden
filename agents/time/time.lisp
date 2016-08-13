@@ -44,7 +44,7 @@
       (data-value :location user)
       (error "I don't know where ~a is located." user)))
 
-(define-consumer time ()
+(define-consumer time (agent)
   ())
 
 (define-command (time timezone-location) (c ev location)
