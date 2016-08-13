@@ -57,7 +57,8 @@
 (define-command (markov ramble) (c ev &optional topic)
   :command "ramble"
   (reply ev "~a" (if topic
-                     (find-sentence (generator c) topic)
+                     (or (find-sentence (generator c) topic)
+                         (format NIL "Couldn't think of anything about ~a." topic))
                      (make-sentence (generator c)))))
 
 (define-command (markov ramble-chance) (c ev &optional new-value)
