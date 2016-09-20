@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.maiden.agents.weather)
 
-(defparameter *weather-api* "https://api.forecast.io/forecast/~a/~f,~f")
+(defparameter *weather-api* "https://api.darksky.net/forecast/~a/~f,~f")
 
 (defun weather-data (apikey lat lng &key (time-frame :currently))
   (let* ((data (request-as :json (format NIL *weather-api* apikey lat lng)
