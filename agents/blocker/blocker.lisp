@@ -98,6 +98,7 @@
 
 (define-handler (blocker block-commands command-event) (c ev dispatch-event)
   :before :main
+  :class deeds:locally-blocking-handler
   (when (blocking dispatch-event c)
     (cancel ev)))
 
