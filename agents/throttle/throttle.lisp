@@ -48,6 +48,7 @@
 (defmethod clear-tax (user (throttle throttle))
   (setf (record user throttle) (make-instance 'record)))
 
+;; FIXME: People with an excemption permission should not be taxed.
 (defmethod tax (user (throttle throttle))
   (let ((record (or (record user throttle)
                     (clear-tax user throttle))))
