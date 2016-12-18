@@ -13,7 +13,8 @@
    #:storage
    #:with-storage
    #:offload
-   #:restore))
+   #:restore
+   #:define-stored-accessor))
 
 ;; re-export
 (let ((symbs '(ubiquitous:*storage*

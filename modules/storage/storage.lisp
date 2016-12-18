@@ -113,3 +113,9 @@
 
 (defun restore (designator)
   (ubiquitous:restore (config-pathname designator) :lisp))
+
+(defmacro define-stored-accessor (class accessor &rest path)
+  (let ((path (or path (list accessor))))
+    `(defmethod (setf ,accessor) :after (value (,class ,class))
+       (with-storage (,class)
+         (setf (value ,@path) value)))))
