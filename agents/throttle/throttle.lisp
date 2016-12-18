@@ -106,3 +106,14 @@
   (when cooldown-max
     (setf (cooldown-max c) (parse-integer cooldown-max)))
   (reply ev "Throttle configuration updated."))
+
+(define-command (throttle clear-tax) (c ev user &key client)
+  :command "clear throttling for"
+  :advice (not public)
+  (clear-tax (or (find-user user (if client
+                                     (or (consumer client (core ev))
+                                         (error "No client named ~s found." client))
+                                     (client ev)))
+                 (error "No user with name ~s found." user))
+             c)
+  (reply ev "Throttling tax has been lifted from ~a." user))
