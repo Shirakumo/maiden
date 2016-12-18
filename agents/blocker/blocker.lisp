@@ -154,11 +154,13 @@
 
 (define-command (blocker add-rule) (c ev name rule)
   :command "block"
+  :advice (not public)
   (add-rule name rule c)
   (reply ev "Rule ~s added." name))
 
 (define-command (blocker block-channel) (c ev channel &key client name)
   :command "block channel"
+  :advice (not public)
   (add-rule (or name channel)
             `(:and (:channel ,channel)
                    (:client ,(or client (name (client ev)))))
@@ -167,6 +169,7 @@
 
 (define-command (blocker block-user) (c ev user &key client name)
   :command "block user"
+  :advice (not public)
   (add-rule c (or name user)
             `(:and (:user ,user)
                    (:client ,(or client (name (client ev))))))
@@ -174,6 +177,7 @@
 
 (define-command (blocker block-regex) (c ev regex &key client name)
   :command "block regex"
+  :advice (not public)
   (add-rule (or name regex)
             `(:and (:regex ,regex)
                    (:client ,(or client (name (client ev)))))
@@ -182,6 +186,7 @@
 
 (define-command (blocker block-prefix) (c ev prefix &key client name)
   :command "block prefix"
+  :advice (not public)
   (add-rule (or name prefix)
             `(:and (:prefix ,prefix)
                    (:client ,(or client (name (client ev)))))
@@ -190,6 +195,7 @@
 
 (define-command (blocker update-rule) (c ev name rule)
   :command "update block rule"
+  :advice (not public)
   (unless (rule name c)
     (error "No such rule exists."))
   (setf (rule name c) (parse-rule rule))
@@ -197,6 +203,7 @@
 
 (define-command (blocker remove-rule) (c ev name)
   :command "unblock"
+  :advice (not public)
   (unless (rule name c)
     (error "No such rule exists."))
   (remove-rule name c)
@@ -204,6 +211,7 @@
 
 (define-command (blocker view-rule) (c ev name)
   :command "view block rule"
+  :advice (not public)
   (unless (rule name c)
     (error "No such rule exists."))
   (let ((*print-case* :downcase))
@@ -211,5 +219,6 @@
 
 (define-command (blocker view-rules) (c ev)
   :command "view block rules"
+  :advice (not public)
   (reply ev "~:[No rules are defined.~;~:*The following rules are known: ~{~a~^, ~}~]"
          (loop for k being the hash-keys of (rules c) collect k)))
