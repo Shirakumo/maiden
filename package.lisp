@@ -28,7 +28,8 @@
    #:running
    #:start
    #:stop
-   #:issue)
+   #:issue
+   #:cancel)
   ;; agent.lisp
   (:export
    #:agent)
