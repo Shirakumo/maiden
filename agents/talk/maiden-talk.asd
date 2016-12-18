@@ -14,6 +14,7 @@
   :homepage "https://github.com/Shinmera/maiden"
   :serial T
   :components ((:file "package")
+               (:file "codes")
                (:file "talk")
                (:file "documentation"))
   :depends-on (:maiden-commands

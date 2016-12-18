@@ -21,14 +21,18 @@
     (setf (output talk) NIL)))
 
 (defun get-speech-stream (text language)
-  (drakma:http-request "http://translate.google.com/translate_tts"
-                       :parameters `(("ie" . "UTF-8")
-                                     ("client" . "tw-ob")
-                                     ("tl" . ,language)
-                                     ("q" . ,text))
-                       :external-format-out :utf-8
-                       :external-format-in :utf-8
-                       :want-stream T))
+  (multiple-value-bind (stream code)
+      (drakma:http-request "http://translate.google.com/translate_tts"
+                           :parameters `(("ie" . "UTF-8")
+                                         ("client" . "tw-ob")
+                                         ("tl" . ,(language-code language))
+                                         ("q" . ,text))
+                           :external-format-out :utf-8
+                           :external-format-in :utf-8
+                           :want-stream T)
+    (if (/= 200 code)
+        (error "Failed to translate into speech. This failure is most likely due to an invalid language.")
+        stream)))
 
 (defun call-with-speech-file (function text language)
   (uiop:with-temporary-file (:stream out :pathname path :prefix "maiden-talk")
