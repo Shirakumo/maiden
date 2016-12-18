@@ -18,4 +18,5 @@
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-storage
-               :maiden-client-entities))
+               :maiden-client-entities
+               :cl-ppcre))

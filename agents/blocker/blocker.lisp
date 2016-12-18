@@ -6,20 +6,72 @@
 
 (in-package #:org.shirakumo.maiden.agents.blocker)
 
-(defun parse-command (in)
+(defvar *clauses* ())
+
+(defun clause (name)
+  (cdr (assoc name *clauses* :test #'string-equal)))
+
+(defun (setf clause) (handler name)
+  (remove-clause name)
+  (push (cons (intern (string-upcase name) :keyword) handler) *clauses*))
+
+(defun remove-clause (name)
+  (setf *clauses* (remove name *clauses* :key #'car :test #'string-equal)))
+
+(defmacro define-clause (name (ev &rest args) &body body)
+  `(setf (clause ,(string name))
+         (lambda (,ev ,@args)
+           ,@body)))
+
+(define-clause or (event &rest clauses)
+  (loop for clause in clauses
+        thereis (match-rule clause event)))
+
+(define-clause and (event &rest clauses)
+  (loop for clause in clauses
+        always (match-rule clause event)))
+
+(define-clause not (event clause)
+  (not (match-rule clause event)))
+
+(define-clause channel (event channel)
+  (and (typep event 'channel-event)
+       (matches (channel event) channel)))
+
+(define-clause client (event client)
+  (and (typep event 'client-event)
+       (matches (client event) client)))
+
+(define-clause user (event user)
+  (and (typep event 'user-event)
+       (matches (user event) user)))
+
+(define-clause regex (event regex)
+  (and (typep event 'message-event)
+       (cl-ppcre:scan regex (message event))))
+
+(define-clause prefix (event prefix)
+  (and (typep event 'message-event)
+       (<= (length prefix) (length (message event)))
+       (string= prefix (message event) :end2 (length prefix))))
+
+(defun match-rule (rule event)
+  (apply (or (clause (first rule))
+             (error "No such rule clause ~s." (first rule)))
+         event
+         (rest rule)))
+
+(defun parse-clause (in)
   (when (char/= #\( (read-char in))
     (error "Invalid list."))
   (let ((first (parse-word in)))
-    (cons (cond ((string-equal first "or") :or)
-                ((string-equal first "and") :and)
-                ((string-equal first "not") :not)
-                ((string-equal first "channel") :channel)
-                ((string-equal first "client") :client)
-                ((string-equal first "user") :user)
-                (T (error "Invalid rule command: ~s" first)))
-          (loop for char = (peek-char T in)
-                until (char= char #\))
-                collect (parse-token in)))))
+    (list* (or (car (find first *clauses* :key #'car :test #'string-equal))
+               (error "Invalid rule command: ~s" first))
+           (loop for char = (peek-char T in)
+                 do (when (char= char #\))
+                      (read-char in)
+                      (loop-finish))
+                 collect (parse-token in)))))
 
 (defun parse-word (in)
   (with-output-to-string (out)
@@ -41,36 +93,26 @@
 
 (defun parse-token (in)
   (case (peek-char T in)
-    (#\( (parse-command in))
+    (#\( (parse-clause in))
     (#\" (parse-string in))
     (T (parse-word in))))
 
 (defun parse-rule (string)
   (handler-case
       (with-input-from-string (in string)
-        (parse-command in))
+        (parse-clause in))
     (error (err)
       (error "The rule ~s is malformed: ~a" string err))))
 
-(defun match-rule (rule event)
-  (ecase (first rule)
-    (:or
-     (loop for r in (cdr rule)
-           thereis (match-rule r event)))
-    (:and
-     (loop for r in (cdr rule)
-           always (match-rule r event)))
-    (:not
-     (not (match-rule (second rule) event)))
-    (:channel
-     (and (typep event 'channel-event)
-          (matches (channel event) (second rule))))
-    (:client
-     (and (typep event 'client-event)
-          (matches (client event) (second rule))))
-    (:user
-     (and (typep event 'user-event)
-          (matches (user event) (second rule))))))
+(defun ensure-rule (rule)
+  (etypecase rule
+    (string (ensure-rule (parse-rule rule)))
+    (cons
+     (handler-case
+         (match-rule rule (make-instance 'framework-message))
+       (error (err)
+         (error "Malformed rule: ~a" err)))
+     rule)))
 
 (define-consumer blocker (agent)
   ((rules :initarg :rules :accessor rules)))
@@ -84,61 +126,90 @@
   (with-storage (blocker)
     (setf (value :rules) rules)))
 
-(defun blocking (event blocker)
+(defmethod rule (name (blocker blocker))
+  (gethash name (rules blocker)))
+
+(defmethod (setf rule) (rule name (blocker blocker))
+  (setf (gethash name (rules blocker)) (ensure-rule rule)))
+
+(defun remove-rule (name blocker)
+  (remhash name (rules blocker)))
+
+(defun add-rule (name rule blocker)
+  (when (gethash name (rules blocker))
+    (error "A rule named ~s already exists." name))
+  (setf (rule name blocker) rule))
+
+(defun blocked-p (event blocker)
   (loop for rule being the hash-values of (rules blocker)
         thereis (match-rule rule event)))
 
-(defun add-rule (blocker name rule)
-  (when (gethash name (rules blocker))
-    (error "A rule named ~s already exists." name))
-  (setf (gethash name (rules blocker))
-        (etypecase rule
-          (cons rule)
-          (string (parse-rule rule)))))
-
 (define-handler (blocker block-commands command-event) (c ev dispatch-event)
-  :before :main
+  :before '(:main)
   :class deeds:locally-blocking-handler
-  (when (blocking dispatch-event c)
-    (cancel ev)))
+  (when (blocked-p dispatch-event c)
+    (cancel ev)
+    (reply dispatch-event "I can't let you do that, ~a."
+           (name (user dispatch-event)))))
 
 (define-command (blocker add-rule) (c ev name rule)
   :command "block"
-  (add-rule c name rule))
+  (add-rule name rule c)
+  (reply ev "Rule ~s added." name))
 
 (define-command (blocker block-channel) (c ev channel &key client name)
   :command "block channel"
-  (add-rule c (or name channel)
+  (add-rule (or name channel)
             `(:and (:channel ,channel)
-                   (:client ,(or client (name (client ev)))))))
+                   (:client ,(or client (name (client ev)))))
+            c)
+  (reply ev "Rule ~s added." (or name channel)))
 
-(define-command (blocker block-channel) (c ev user &key client name)
+(define-command (blocker block-user) (c ev user &key client name)
   :command "block user"
   (add-rule c (or name user)
             `(:and (:user ,user)
-                   (:client ,(or client (name (client ev)))))))
+                   (:client ,(or client (name (client ev))))))
+  (reply ev "Rule ~s added." (or name user)))
 
-(define-command (blocker update-rule) (c ev name)
+(define-command (blocker block-regex) (c ev regex &key client name)
+  :command "block regex"
+  (add-rule (or name regex)
+            `(:and (:regex ,regex)
+                   (:client ,(or client (name (client ev)))))
+            c)
+  (reply ev "Rule ~s added." (or name regex)))
+
+(define-command (blocker block-prefix) (c ev prefix &key client name)
+  :command "block prefix"
+  (add-rule (or name prefix)
+            `(:and (:prefix ,prefix)
+                   (:client ,(or client (name (client ev)))))
+            c)
+  (reply ev "Rule ~s added." (or name prefix)))
+
+(define-command (blocker update-rule) (c ev name rule)
   :command "update block rule"
-  (unless (gethash name (rules c))
+  (unless (rule name c)
     (error "No such rule exists."))
-  (setf (gethash name (rules c))
-        (parse-rule rule)))
+  (setf (rule name c) (parse-rule rule))
+  (reply ev "Rule ~s updated." name))
 
 (define-command (blocker remove-rule) (c ev name)
   :command "unblock"
-  (unless (gethash name (rules c))
+  (unless (rule name c)
     (error "No such rule exists."))
-  (remhash name (rules c)))
+  (remove-rule name c)
+  (reply ev "Rule ~s removed." name))
 
 (define-command (blocker view-rule) (c ev name)
   :command "view block rule"
-  (unless (gethash name (rules c))
+  (unless (rule name c)
     (error "No such rule exists."))
   (let ((*print-case* :downcase))
     (reply ev "~s" (gethash name (rules c)))))
 
 (define-command (blocker view-rules) (c ev)
   :command "view block rules"
-  (reply ev "The following rules are known: ~{~a~^, ~}"
+  (reply ev "~:[No rules are defined.~;~:*The following rules are known: ~{~a~^, ~}~]"
          (loop for k being the hash-keys of (rules c) collect k)))
