@@ -6,9 +6,19 @@
 
 (in-package #:org.shirakumo.maiden.agents.talk)
 
-;; FIXME: re-use output
 (define-consumer talk (agent)
-  ())
+  ((device :initarg :device :accessor device)
+   (output :initform NIL :accessor output))
+  (:default-initargs
+   :device "pulse"))
+
+(defmethod start :after ((talk talk))
+  (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk)))))
+
+(defmethod stop :before ((talk talk))
+  (when (output talk)
+    (cl-out123:disconnect (output talk))
+    (setf (output talk) NIL)))
 
 (defun get-speech-stream (text language)
   (drakma:http-request "http://translate.google.com/translate_tts"
@@ -37,29 +47,32 @@
           (progn ,@body)
        (cl-out123:disconnect ,out))))
 
-(defun play-file (file &key out)
-  (if out
+(defun play-file (file &key output)
+  (if output
       (let ((file (cl-mpg123:connect (cl-mpg123:make-file file))))
         (multiple-value-bind (rate channels encoding) (cl-mpg123:file-format file)
-          (cl-out123:start out :rate rate :channels channels :encoding encoding))
+          (cl-out123:start output :rate rate :channels channels :encoding encoding))
         (unwind-protect
              (loop with buffer = (cl-mpg123:buffer file)
                    for read = (cl-mpg123:process file)
-                   do (cl-out123:play out buffer read)
+                   do (cl-out123:play output buffer read)
                    while (< 0 read))
-          (cl-out123:stop out)
+          (cl-out123:stop output)
           (cl-mpg123:disconnect file)))
       (with-output (out "pulse")
-        (play-file file :out out))))
+        (play-file file :out output))))
 
-(defun talk (text &key (language "en-US"))
+(defun talk (text &key (language "en-US") output)
   (with-speech-file (path text :language language)
-    (play-file path)))
+    (play-file path :output output)))
 
-(define-command (talk talk) (c ev &rest text)
+(define-command (talk talk-en) (c ev &rest text)
   :command "talk"
-  (talk (format NIL "~{~a~^ ~}" text)))
+  (talk (format NIL "~{~a~^ ~}" text)
+        :output (output c)))
 
 (define-command (talk talk-lang) (c ev language &rest text)
   :command "talk in"
-  (talk (format NIL "~{~a~^ ~}" text) :language language))
+  (talk (format NIL "~{~a~^ ~}" text)
+        :language language
+        :output (output c)))

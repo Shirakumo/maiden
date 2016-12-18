@@ -19,4 +19,4 @@
   :depends-on (:maiden-commands
                :cl-mpg123
                :cl-out123
-               :dexador))
+               :drakma))
