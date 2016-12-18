@@ -70,6 +70,11 @@
              (setf timestamp (get-universal-time))))
       record)))
 
+(defun ensure-cooldown-function (cooldown-function)
+  (or (find cooldown-function '(:constant :linear :exponential) :test #'string-equal)
+      (error "Invalid cooldown function ~s. Must be one of ~a"
+             cooldown-function '(:constant :linear :exponential))))
+
 (define-handler (throttle block-commands command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
@@ -80,3 +85,24 @@
                (- (+ (timestamp record) (timeout record)) (get-universal-time)))
         (cancel ev)))))
 
+(define-command (throttle view-config) (c ev)
+  :command "view throttle configuration"
+  (reply ev "Throttling happens after ~d attempt~:p within ~a, which incurs a ~(~a~) cooldown of ~a for each additional attempt, up to a maximal cooldown of ~a."
+         (attempts c) (format-relative-time (time-frame c))
+         (cooldown-function c) (format-relative-time (cooldown-step c))
+         (format-relative-time (cooldown-max c))))
+
+(define-command (throttle set-config) (c ev &key attempts time-frame cooldown-function cooldown-step cooldown-max)
+  :command "set throttle configuration"
+  :advice (not public)
+  (when attempts
+    (setf (attempts c) (parse-integer attempts)))
+  (when time-frame
+    (setf (time-frame c) (parse-integer time-frame)))
+  (when cooldown-function
+    (setf (cooldown-function c) (ensure-cooldown-function cooldown-function)))
+  (when cooldown-step
+    (setf (cooldown-step c) (parse-integer cooldown-step)))
+  (when cooldown-max
+    (setf (cooldown-max c) (parse-integer cooldown-max)))
+  (reply ev "Throttle configuration updated."))
