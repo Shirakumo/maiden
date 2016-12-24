@@ -45,7 +45,10 @@
 
 (define-command (emoticon list) (c ev)
   :command "list emoticons"
-  (reply ev "~{:~a:~^ ~}" (list-emoticons)))
+  (let ((emoticons (list-emoticons)))
+    (if emoticons
+        (reply ev "~{:~a:~^ ~}" (list-emoticons))
+        (reply ev "No emoticons have been defined yet."))))
 
 (define-handler (emoticon respond message-event) (c ev message)
   (let ((counter 0))
