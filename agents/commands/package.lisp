@@ -31,6 +31,7 @@
    #:define-command-invoker
    #:define-simple-command-invoker
    #:define-command
+   #:remove-command
    #:find-matching-command)
   ;; parsing.lisp
   (:export

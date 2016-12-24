@@ -84,6 +84,10 @@
                 :message-event-initarg :dispatch-event)
               (list ',consumer ',name)))))
 
+(defun remove-command (consumer name &optional (event-type name) (command (string name)))
+  (remove-function-handler consumer name event-type)
+  (remove-command-invoker command))
+
 (defun find-matching-command (message)
   (let ((match NIL)
         (alternatives ()))

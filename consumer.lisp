@@ -57,11 +57,20 @@
   (c2mop:finalize-inheritance class))
 
 (defun update-handler (handler class-ish)
-  (let ((class (etypecase class-ish
-                 (consumer-class class-ish)
-                 (consumer (class-of class-ish))
-                 (symbol (find-class class-ish)))))
-    (update-list handler (direct-handlers class) :key #'name)))
+  (check-type handler abstract-handler)
+  (etypecase class-ish
+    (consumer-class (update-list handler (direct-handlers class-ish) :key #'name))
+    (consumer (update-handler handler (class-of class-ish)))
+    (symbol (update-handler handler (find-class class-ish)))))
+
+(defun remove-handler (handler class-ish)
+  (etypecase class-ish
+    (consumer-class (setf (direct-handlers class-ish)
+                          (etypecase handler
+                            (abstract-handler (delete handler (direct-handlers class-ish)))
+                            (symbol (delete handler (direct-handlers class-ish) :key #'name)))))
+    (consumer (update-handler handler (class-of class-ish)))
+    (symbol (update-handler handler (find-class class-ish)))))
 
 (defclass consumer (named-entity)
   ((handlers :initform () :accessor handlers)
@@ -210,6 +219,10 @@
            ,@options
            ,@body)))))
 
+(defun remove-function-handler (consumer name &optional (event-type name))
+  (setf (find-class event-type) NIL)
+  (remove-handler name consumer))
+
 (defmacro define-instruction ((consumer instruction &optional (event-type instruction)) args &body body)
   (form-fiddle:with-body-options (body options superclasses documentation) body
     (let ((core (gensym "CORE")))
@@ -222,6 +235,10 @@
          (defun ,instruction (,core ,@(slot-args->args (cddr args)))
            ,documentation
            (broadcast ,core ',event-type ,@(args->initargs (cddr args))))))))
+
+(defun remove-instruction (consumer instruction &optional (event-type instruction))
+  (remove-function-handler consumer instruction event-type)
+  (fmakunbound instruction))
 
 (defmacro define-query ((consumer instruction &optional (event-type instruction) event-response-type) args &body body)
   (form-fiddle:with-body-options (body options superclasses documentation) body
@@ -246,6 +263,12 @@
                  (core :filter `(matches identifier ,(identifier ,event)))
                  (issue ,event core)
                (values-list payload))))))))
+
+(defun remove-query (consumer instruction &optional (event-type instruction) event-response-type)
+  (remove-function-handler consumer instruction event-type)
+  (when event-response-type
+    (setf (find-class event-response-type) NIL))
+  (fmakunbound instruction))
 
 (defmacro define-consumer (name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses

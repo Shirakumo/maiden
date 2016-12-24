@@ -66,9 +66,13 @@
    #:name
    #:instantiate-handler
    #:define-handler
+   #:remove-handler
    #:define-function-handler
+   #:remove-function-handler
    #:define-instruction
+   #:remove-instruction
    #:define-query
+   #:remove-query
    #:define-consumer)
   ;; core.lisp
   (:export
