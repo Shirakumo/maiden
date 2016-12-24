@@ -77,10 +77,16 @@
 
 (define-command (activatable activate) (c ev &rest modules)
   :advice (not public)
-  (apply #'activate ev modules)
-  (reply ev "Modules activated."))
+  (cond (modules
+         (apply #'activate ev modules)
+         (reply ev "Modules activated."))
+        (T
+         (error "I need to know at least one module that should be activated."))))
 
 (define-command (activatable deactivate) (c ev &rest modules)
   :advice (not public)
-  (apply #'deactivate ev modules)
-  (reply ev "Modules deactivated."))
+  (cond (modules
+         (apply #'deactivate ev modules)
+         (reply ev "Modules deactivated."))
+        (T
+         (error "I need to know at least one module that should be deactivated."))))

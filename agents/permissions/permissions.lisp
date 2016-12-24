@@ -12,8 +12,8 @@
   (:default-initargs
    :user (error "USER required")
    :perm (error "PERM required"))
-  (:report (lambda (c s) (format s "I cannot let you do that, ~s."
-                                 (name (slot-value c 'user))))))
+  (:report (lambda (c s) (format s "User ~s does not have access to ~s."
+                                 (name (slot-value c 'user)) (slot-value c 'perm)))))
 
 (defgeneric normalize-permission (perm))
 
@@ -74,7 +74,7 @@
 
 (defun administrator-p (user &optional client type)
   (with-storage ('permissions)
-    (perm-match-p (user-perm user client type) (value :administrators))))
+    (apply #'perm-match-p (user-perm user client type) (value :administrators))))
 
 (defun add-administrator (name &optional client type)
   (with-storage ('permissions)
@@ -136,8 +136,10 @@
 (define-handler (permissions check command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
-  (unless (find 'public (advice ev) :test #'string=)
-    (check-allowed (user dispatch-event) ev)))
+  (unless (or (find 'public (advice ev) :test #'string=)
+              (allowed-p (user dispatch-event) ev))
+    (cancel ev)
+    (reply dispatch-event "I can't let you do that, ~a." (name (user dispatch-event)))))
 
 (define-command (permissions check-access) (c ev perm)
   :command "check access"

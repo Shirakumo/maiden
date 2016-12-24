@@ -11,7 +11,6 @@
   (if (eql field 'account)
       (call-next-method)
       (let ((account (account user)))
-        (v:info :test "? ~a" account)
         (or (and account (field field account user))
             (call-next-method)))))
 
@@ -52,6 +51,14 @@
            (setf (slot-value (user ev) 'authenticated) T)
            (reply ev "Welcome back, ~a." (name (user ev)))))))
 
+(define-command (accounts logout) (c ev)
+  :command "logout"
+  (cond ((not (account (account (user ev))))
+         (error "This identity is not associated with any account."))
+        (T
+         (setf (account (user ev)) NIL)
+         (reply ev "Goodbye, ~a." (name (user ev))))))
+
 (define-command (accounts create) (c ev &key password name)
   :command "create account"
   (let ((name (if (or (not name) (string= name "")) (name (user ev)) name))
@@ -64,6 +71,7 @@
       (cond ((authenticated-p (user ev))
              (add-identity account ev))
             (T
+             (setf (slot-value (user ev) 'authenticated) T)
              (reply ev "Since this identity is not authenticated, you will not be logged in automatically in the future."))))))
 
 (define-command (accounts destroy) (c ev)
