@@ -17,7 +17,7 @@
     (cond ((string-equal status "ok")
            (json-v data "results" 0))
           ((string-equal status "zero_results")
-           (values))
+           (error "No location called ~s could be found." location))
           ((string-equal status "over_query_limit")
            (error "Exceeded allowed amount of queries against the Google Maps API."))
           (T

@@ -10,7 +10,7 @@
 (defmethod data-value :around (field (user user))
   (if (eql field 'account)
       (call-next-method)
-      (let ((account (account user)))
+      (let ((account (account user :error NIL)))
         (or (and account (field field account user))
             (call-next-method)))))
 

@@ -40,8 +40,8 @@
        (getf data :dst-offset))))
 
 (defun user-location (user)
-  (or (data-value :timezone user)
-      (data-value :location user)
+  (or (ignore-errors (data-value :timezone user))
+      (ignore-errors (data-value :location user))
       (error "I don't know where ~a is located." user)))
 
 (define-consumer time (agent)
@@ -54,11 +54,14 @@
     (reply ev "The time zone for ~s is ~a (UTC~@f)"
            (getf data :zone) (/ secs 60))))
 
-
-
-(define-command (time time-utc) (c ev)
+(define-command (time time-dwim) (c ev &optional signifier)
   :command "time"
-  (reply ev "The time in UTC is ~a." (format-absolute-time (get-universal-time))))
+  (cond ((not signifier)
+         (do-issue (core ev) time-user :user (name (user ev)) :dispatch-event ev))
+        ((find-user signifier (client ev))
+         (do-issue (core ev) time-user :user signifier :dispatch-event ev))
+        (T
+         (do-issue (core ev) time-location :location signifier :dispatch-event ev))))
 
 (define-command (time time-location) (c ev location)
   :command "time in"

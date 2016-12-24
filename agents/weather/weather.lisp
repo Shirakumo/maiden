@@ -68,6 +68,15 @@
   (or (with-storage (c) (value :api-key))
       (error "You must set an API key before you can use this service. See http://forecast.io/ to get a key and finally set it with `set weather api key <key>`.")))
 
+(maiden-commands:define-command (weather weather-dwim) (c ev &optional signifier)
+  :command "weather"
+  (cond ((not signifier)
+         (do-issue (core ev) weather-user :user (name (user ev)) :dispatch-event ev))
+        ((find-user signifier (client ev))
+         (do-issue (core ev) weather-user :user signifier :dispatch-event ev))
+        (T
+         (do-issue (core ev) weather-location :location signifier :dispatch-event ev))))
+
 (maiden-commands:define-command (weather weather-location) (c ev location)
   :command "weather in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
@@ -84,7 +93,7 @@
       (location-weather-data (get-api-key c) (data-value :location user))
     (reply ev "Weather for ~a in ~a: ~a" user resolved-location (format-weather-data data))))
 
-(maiden-commands:define-command (weather weather-user) (c ev user)
+(maiden-commands:define-command (weather forecast-user) (c ev user)
   :command "forecast for"
   (multiple-value-bind (data resolved-location)
       (location-weather-data (get-api-key c) (data-value :location user) :time-frame :daily)
