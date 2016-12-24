@@ -54,6 +54,12 @@
     (reply ev "The time zone for ~s is ~a (UTC~@f)"
            (getf data :zone) (/ secs 60))))
 
+
+
+(define-command (time time-utc) (c ev)
+  :command "time"
+  (reply ev "The time in UTC is ~a." (format-absolute-time (get-universal-time))))
+
 (define-command (time time-location) (c ev location)
   :command "time in"
   (reply ev "The time in ~a is ~a." location (format-absolute-time (time location))))
