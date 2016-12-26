@@ -80,6 +80,7 @@
    #:add-consumer
    #:remove-consumer
    #:core
+   #:abort-handling
    #:event-loop
    #:block-loop
    #:consumers
@@ -128,6 +129,8 @@
   ;; toolkit.lisp
   (:export
    #:*root*
+   #:*debugger*
+   #:maybe-invoke-debugger
    #:xor
    #:xnor
    #:kw

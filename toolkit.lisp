@@ -12,6 +12,13 @@
                         :type NIL
                         :version NIL
                         :defaults #.(or *compile-file-pathname* *load-pathname*)))
+(defvar *debugger* (find-package :swank))
+
+(defun maybe-invoke-debugger (condition &optional (restart 'abort) &rest values)
+  (if *debugger*
+      (with-simple-restart (continue "Don't handle ~a." condition)
+        (invoke-debugger condition))
+      (apply #'invoke-restart restart values)))
 
 (defun update-root-for-image ()
   (let ((argv0 (uiop:argv0)))

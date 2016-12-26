@@ -58,13 +58,6 @@
                              ,@fun-kargs)
               (event-loop ,event)))))
 
-(defun maybe-invoke-debugger (condition)
-  ;; We only want to call the debugger if we're connected through SWANK.
-  (when (and (find-package :swank)
-             (symbol-value (find-symbol (string :*emacs-connection*) :swank)))
-    (with-simple-restart (continue "Don't handle the error.")
-      (invoke-debugger condition))))
-
 (defmacro define-command ((consumer name &optional (event-type name)) (instance event &rest args) &body body)
   (form-fiddle:with-body-options (body options superclasses command command-event-variable) body
     (let ((command-event-variable (or command-event-variable (gensym "COMMAND-EVENT")))
@@ -75,7 +68,8 @@
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))
                   (handler-case
-                      (handler-bind ((error #'maybe-invoke-debugger))
+                      (handler-bind ((error (lambda (e)
+                                              (maybe-invoke-debugger e 'abort-handling))))
                         ,@body)
                     (error (,error)
                       (v:warn :maiden.agents.commands ,error)

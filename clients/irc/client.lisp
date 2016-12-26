@@ -26,6 +26,8 @@
    :services :unknown))
 
 (defmethod initialize-instance :after ((client irc-client) &key)
+  (unless (name client)
+    (setf (name client) (host client)))
   (unless (slot-boundp client 'intended-nickname)
     (setf (intended-nickname client) (nickname client))))
 
@@ -33,7 +35,10 @@
   (with-slots (nickname username password realname) client
     (when password (irc:pass client password))
     (irc:nick client nickname)
-    (irc:user client username 0 "*" realname)))
+    (irc:user client username 0 "*" realname)
+    ;; Rejoin.
+    (loop for k being the hash-keys of (channel-map client)
+          do (irc:join client k))))
 
 (defmethod close-connection :before ((client irc-client))
   (when (client-connected-p client)

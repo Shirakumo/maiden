@@ -68,7 +68,7 @@
   (:default-initargs
    :module *package*))
 
-(defmethod handle :around ((event client-event) (handler activatable-handler))
+(defmethod deeds:handle :around ((event client-event) (handler activatable-handler))
   (when (active-p event (module handler))
     (call-next-method)))
 

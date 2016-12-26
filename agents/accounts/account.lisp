@@ -45,8 +45,14 @@
            (name account)))
   (setf (account (name account)) account))
 
-(defmethod (setf data-value) :after (value field (account account))
+(defmethod offload ((account account))
   (ubiquitous:offload (account-pathname account) :lisp account))
+
+(defmethod offload (account-ish)
+  (offload (account account-ish)))
+
+(defmethod (setf data-value) :after (value field (account account))
+  (offload account))
 
 (defmethod data-value ((field symbol) (account account))
   (data-value (normalize-field-name field) account))
@@ -106,21 +112,22 @@
 (defmethod maiden-storage:config-pathname ((account account))
   (account-pathname (name account)))
 
-(defmethod account ((account account) &key)
+(defmethod account ((account account) &key error)
+  (declare (ignore error))
   account)
 
-(defmethod account ((user user) &rest args)
+(defmethod account ((user user) &key error)
   (or (data-value 'account user)
       (and (authenticated-p user)
-           (setf (account user) (apply #'account (identity user) args)))))
+           (setf (account user) (account (identity user) :error error)))))
 
 (defmethod account ((identity cons) &key (error T))
   (let ((identity (identity identity)))
     (or (gethash identity *identity-account-map*)
         (when error (error 'no-account-for-identity :identity identity)))))
 
-(defmethod account ((name symbol) &rest args)
-  (apply #'account (string name) args))
+(defmethod account ((name symbol) &key error)
+  (account (string name) :error error))
 
 (defmethod account ((name string) &key (error T))
   (let ((name (normalize-account-name name)))
@@ -140,7 +147,7 @@
   (dolist (identity (identities account))
     (setf (account identity) account))
   (setf (gethash name *accounts*) account)
-  (ubiquitous:offload (account-pathname name) :lisp account))
+  (offload account))
 
 (defmethod (setf account) (account (identity cons))
   (add-identity account identity))
@@ -157,7 +164,8 @@
                       (make-pathname :name pathname-utils:*wild-component*
                                      :type "lisp"
                                      :directory '(:relative "account")))))
-    (let ((account (ubiquitous:restore pathname)))
-      (setf (account (name account)) account))))
+    (with-simple-restart (abort "Abort restoring the account from ~a." pathname)
+      (let ((account (ubiquitous:restore pathname)))
+        (setf (account (name account)) account)))))
 
 (load-all-accounts)

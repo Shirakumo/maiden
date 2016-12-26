@@ -20,7 +20,7 @@
 (defvar *message-length-limit* 360)
 
 (define-event send-event (irc-event outgoing-event active-event)
-  ((message :initarg :message :reader message)))
+  ())
 
 (defmacro define-irc-command (name args &body options-and-body)
   (let ((name (intern (string name) '#:org.shirakumo.maiden.clients.irc.events))
@@ -28,7 +28,7 @@
         (client (gensym "CLIENT")))
     (form-fiddle:with-body-options (body options superclasses) options-and-body
       `(progn
-         (define-event ,name (instruction-event send-event ,@superclasses)
+         (define-event ,name (,@superclasses instruction-event send-event)
            ,(maiden::slot-args->slots (rest args))
            ,@options)
          (defun ,name (,client ,@(maiden::slot-args->args (rest args)))
@@ -46,6 +46,13 @@
          ,@options
          (deeds:with-fuzzy-slot-bindings ,pure-args (,ev ,name)
            (format NIL ,@body))))))
+
+(define-event send-message-event (send-event message-event)
+  ()
+  (:default-initargs :user NIL))
+
+(defmethod initialize-instance :around ((ev send-message-event) &rest args &key client)
+  (apply #'call-next-method ev :user (find-user (nickname client) client) args))
 
 (defun splittable-char-p (char)
   (or (not (graphic-char-p char))
@@ -84,8 +91,9 @@
          (pure-args (lambda-fiddle:extract-lambda-vars args))
          (message (car (last pure-args)))
          (ev (gensym "EVENT")))
-    (form-fiddle:with-body-options (body options) options-and-body
+    (form-fiddle:with-body-options (body options superclasses) options-and-body
       `(define-irc-command ,name (,ev ,@args)
+         :superclasses ,(list* 'send-message-event superclasses)
          ,@options
          (deeds:with-fuzzy-slot-bindings ,pure-args (,ev ,name)
            (mapcar

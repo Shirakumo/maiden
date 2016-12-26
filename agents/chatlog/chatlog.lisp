@@ -7,44 +7,56 @@
 (in-package #:org.shirakumo.maiden.agents.chatlog)
 
 (define-consumer chatlog (agent)
-  ())
-
-;; FIXME: How do we handle messages that we send out?
+  ((back-queue :initform () :accessor back-queue)))
 
 (define-handler (chatlog message message-event) (c ev user message)
   (let ((channel (if (typep ev 'channel-event) (channel ev) user)))
-    (maybe-record-message :message channel user message)))
+    (maybe-record-message c :message channel user message)))
 
 (define-handler (chatlog enter user-entered) (c ev user channel)
-  (maybe-record-message :enter channel user "** JOIN"))
+  (maybe-record-message c :enter channel user "** JOIN"))
 
 (define-handler (chatlog leave user-left) (c ev user channel)
-  (maybe-record-message :leave channel user "** PART"))
+  (maybe-record-message c :leave channel user "** PART"))
 
 ;; FIXME
 ;; (define-handler (chatlog kick user-kick) (c ev user channel target)
-;;   (maybe-record-message :kick channel user "** KICKED ~a" target))
+;;   (maybe-record-message c :kick channel user "** KICKED ~a" target))
 
 (define-handler (chatlog quit user-removed) (c ev user)
   (dolist (channel (channels user))
-    (maybe-record-message :disconnect channel user "** QUIT")))
+    (maybe-record-message c :disconnect channel user "** QUIT")))
 
 (define-handler (chatlog name-change user-name-changed) (c ev user old-name)
   (dolist (channel (channels user))
-    (maybe-record-message :name channel old-name "** NICK ~a" (name user))))
+    (maybe-record-message c :name channel old-name "** NICK ~a" (name user))))
 
 (define-handler (chatlog topic channel-topic-changed) (c ev channel)
   (let ((user (if (typep ev 'user-event) (user ev) channel)))
-    (maybe-record-message :name channel user  "** TOPIC ~a" (topic channel))))
+    (maybe-record-message c :name channel user  "** TOPIC ~a" (topic channel))))
 
-(define-command (chatlog activate) (c ev client channel)
+(define-command (chatlog activate) (c ev)
+  :command "activate chatlog"
+  :advice (not public)
+  (let ((channel (cons (name (client ev)) (name (channel ev)))))
+    (add-channel channel)
+    (reply ev "Activated logging for ~a." channel)))
+
+(define-command (chatlog activate-on) (c ev client channel)
   :command "activate chatlog on"
   :advice (not public)
   (let ((channel (cons client channel)))
     (add-channel channel)
     (reply ev "Activated logging for ~a." channel)))
 
-(define-command (chatlog deactivate) (c ev client channel)
+(define-command (chatlog deactivate) (c ev)
+  :command "deactivate chatlog"
+  :advice (not public)
+  (let ((channel (cons (name (client ev)) (name (channel ev)))))
+    (remove-channel channel)
+    (reply ev "Deactivated logging for ~a." channel)))
+
+(define-command (chatlog deactivate-on) (c ev client channel)
   :command "deactivate chatlog on"
   :advice (not public)
   (let ((channel (cons client channel)))
@@ -52,6 +64,7 @@
     (reply ev "Deactivated logging for ~a." channel)))
 
 (define-command (chatlog initialize) (c ev &key (host "localhost") (db "chatlog") (user "chatlog") password (port 5432))
+  :command "initialize chatlog"
   :advice (not public)
   (initialize-database :host host
                        :database db

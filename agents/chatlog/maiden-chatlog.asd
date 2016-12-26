@@ -20,4 +20,5 @@
   :depends-on (:maiden-commands
                :maiden-storage
                :maiden-client-entities
-               :postmodern))
+               :postmodern
+               :bordeaux-threads))

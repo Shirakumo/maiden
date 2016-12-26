@@ -50,7 +50,8 @@
   (issue event (event-loop core)))
 
 (defmethod handle ((event event) (core core))
-  (handle event (event-loop core)))
+  (with-simple-restart (abort-handling "Abort handling ~a on ~a." event core)
+    (handle event (event-loop core))))
 
 (defmethod consumer (id (core core))
   (find id (consumers core) :test #'matches))

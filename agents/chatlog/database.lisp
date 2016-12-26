@@ -136,7 +136,19 @@
                           (car channel) (cdr channel) user (get-unix-time) (type->char type)
                           (apply #'format NIL message format-args)))))
 
-(defun maybe-record-message (type channel user message &rest format-args)
+(defun process-back-queue (c)
   (with-db ()
-    (when (channel-exists-p channel)
-      (apply #'record-message type channel user message format-args))))
+    (loop for (type channel user message format-args) in (back-queue c)
+          do (when (channel-exists-p channel)
+               (apply #'record-message type channel user message format-args))
+             (pop (back-queue c)))))
+
+(defun maybe-record-message (c type channel user message &rest format-args)
+  (bt:with-lock-held ((lock c))
+    (handler-case
+        (with-db ()
+          (push (list type channel user message format-args)
+                (back-queue c))
+          (process-back-queue c))
+      (error (err)
+        (v:warn :maiden.chatlog "Failed to record message: ~a" err)))))
