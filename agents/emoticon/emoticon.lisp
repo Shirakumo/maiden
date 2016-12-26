@@ -50,7 +50,7 @@
         (reply ev "~{:~a:~^ ~}" (list-emoticons))
         (reply ev "No emoticons have been defined yet."))))
 
-(define-handler (emoticon respond message-event) (c ev message)
+(define-handler (emoticon respond (and passive-event message-event)) (c ev message)
   (let ((counter 0))
     (cl-ppcre:do-register-groups (name) (":(.*?):" message)
       (let ((emoticon (emoticon name)))
