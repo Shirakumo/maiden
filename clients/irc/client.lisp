@@ -25,6 +25,8 @@
    :port 6667
    :services :unknown))
 
+;; FIXME: nickserv password
+
 (defmethod initialize-instance :after ((client irc-client) &key)
   (unless (name client)
     (setf (name client) (host client)))
