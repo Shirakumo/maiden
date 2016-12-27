@@ -11,3 +11,5 @@
   (:export
    #:serialize
    #:deserialize))
+
+(use-package '#:maiden-serialize '#:maiden-user)

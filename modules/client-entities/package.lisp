@@ -44,3 +44,5 @@
    #:old-topic
    #:user-entered
    #:user-left))
+
+(use-package '#:maiden-client-entities '#:maiden-user)

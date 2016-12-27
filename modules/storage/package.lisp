@@ -23,3 +23,5 @@
                ubiquitous:defaulted-value)))
   (import symbs '#:maiden-storage)
   (export symbs '#:maiden-storage))
+
+(use-package '#:maiden-storage '#:maiden-user)

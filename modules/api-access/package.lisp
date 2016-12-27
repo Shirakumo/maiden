@@ -13,3 +13,5 @@
    #:parse-to
    #:request-as
    #:json-v))
+
+(use-package '#:maiden-api-access '#:maiden-user)

@@ -69,3 +69,5 @@
    #:connection-closed
    #:outgoing-event
    #:incoming-event))
+
+(use-package '#:maiden-networking '#:maiden-user)
