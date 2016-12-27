@@ -7,6 +7,9 @@
 (in-package #:org.shirakumo.maiden.agents.permissions)
 
 (docs:define-docs
+  (type permissions
+    "This agent provides selective protection of resources by implementing a permissions system. Each user can be granted or denied access to protected resources.")
+  
   (command check-access
     "Check whether you have access to a permission branch.")
 

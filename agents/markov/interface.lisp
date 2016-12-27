@@ -77,7 +77,7 @@
     (loop for a across seq do (setf (gethash a table) T))
     (hash-table-count table)))
 
-(define-command (markov markov-stats) (c ev)
+(define-command (markov stats) (c ev)
   :command "markov stats"
   (reply ev "The markov dictionary knows ~,,'':d word~:p with ~,,'':d possible connection~:p."
          (length (words (generator c)))
