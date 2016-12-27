@@ -57,11 +57,11 @@
 (define-command (time time-dwim) (c ev &optional signifier)
   :command "time"
   (cond ((not signifier)
-         (do-issue (core ev) time-user :user (name (user ev)) :dispatch-event ev))
+         (relay ev 'time-user :user (name (user ev))))
         ((find-user signifier (client ev))
-         (do-issue (core ev) time-user :user signifier :dispatch-event ev))
+         (relay ev 'time-user :user signifier))
         (T
-         (do-issue (core ev) time-location :location signifier :dispatch-event ev))))
+         (relay ev 'time-location :location signifier))))
 
 (define-command (time time-location) (c ev location)
   :command "time in"

@@ -71,11 +71,11 @@
 (maiden-commands:define-command (weather weather-dwim) (c ev &optional signifier)
   :command "weather"
   (cond ((not signifier)
-         (do-issue (core ev) weather-user :user (name (user ev)) :dispatch-event ev))
+         (maiden-commands:relay ev 'weather-user :user (name (user ev))))
         ((find-user signifier (client ev))
-         (do-issue (core ev) weather-user :user signifier :dispatch-event ev))
+         (maiden-commands:relay ev 'weather-user :user signifier))
         (T
-         (do-issue (core ev) weather-location :location signifier :dispatch-event ev))))
+         (maiden-commands:relay ev 'weather-location :location signifier))))
 
 (maiden-commands:define-command (weather weather-location) (c ev location)
   :command "weather in"
