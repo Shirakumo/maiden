@@ -47,6 +47,12 @@
   (print-unreadable-object (command-invoker stream :type T)
     (format stream "~a" (name command-invoker))))
 
+(defmethod documentation ((command-invoker command-invoker) type)
+  (docstring command-invoker))
+
+(defmethod (setf documentation) (value (command-invoker command-invoker) type)
+  (setf (docstring command-invoker) value))
+
 (defun command-invoker (name)
   (find name *invokers* :key #'name))
 
@@ -81,10 +87,10 @@
                             :docstring ,(form-fiddle:lambda-docstring `(lambda () ,@body)))))))
 
 (defmethod documentation (slot (type (eql 'command)))
-  (docstring (command-invoker slot)))
+  (documentation (command-invoker slot) T))
 
 (defmethod (setf documentation) (docstring slot (type (eql 'command)))
-  (setf (docstring (command-invoker slot)) docstring))
+  (setf (documentation (command-invoker slot) T) docstring))
 
 (defmacro define-simple-command-invoker (name args event-type &key message-event-initarg documentation)
   (let ((event (gensym "EVENT"))
