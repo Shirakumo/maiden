@@ -42,7 +42,8 @@
       (clear-notes (user ev))
       (dolist (note (user-notes target))
         (when (string-equal (name (user ev)) (from note))
-          (remove-note note)))))
+          (remove-note note))))
+  (reply ev "Ok, I forgot all about the notes."))
 
 (define-command (notify send-join-note) (c ev target &rest message)
   :command "notify on join"
