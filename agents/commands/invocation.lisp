@@ -139,7 +139,7 @@
                           (or (= (length message)
                                  (length prefix))
                               (char= #\  (aref message (length prefix))))
-                          (or (null match) (< (length (car match))
+                          (or (null match) (< (length (prefix match))
                                               (length prefix))))
                  (setf match command))
                (when (< distance *alternative-distance-threshold*)

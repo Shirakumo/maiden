@@ -91,7 +91,7 @@
   (setf (field (normalize-field-name field) account user) value))
 
 (defmethod (setf field) (value (field string) account user)
-  (setf (field field (account account) user) value))
+  (setf (field field (account account :error T) user) value))
 
 (defmethod (setf field) (value (field string) (account account) user)
   (when (and user (not (eql user :system)))
