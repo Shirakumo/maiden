@@ -26,9 +26,17 @@
    #:command-event
    #:public
    #:dispatch-event
+   #:relay
    #:command-invoker
+   #:name
+   #:docstring
+   #:invoker
+   #:lambda-list
    #:remove-command-invoker
+   #:list-command-invokers
+   #:find-command-invoker
    #:define-command-invoker
+   #:command
    #:define-simple-command-invoker
    #:define-command
    #:remove-command

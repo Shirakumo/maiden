@@ -32,27 +32,66 @@
    :dispatch-event (or *dispatch-event* (make-instance 'framework-message)))
   (:advice public))
 
-(defun command-invoker (name)
-  (cdr (assoc name *invokers* :test #'string-equal)))
+(defun relay (ev new-command &rest args)
+  (issue (apply #'make-instance new-command :dispatch-event ev args)
+         (core ev)))
 
-(defun (setf command-invoker) (function name)
-  (update-list (cons (string-downcase name) function) *invokers* :key #'car :test #'string-equal)
-  function)
+(defclass command-invoker ()
+  ((name :initarg :name :accessor name)
+   (prefix :initarg :prefix :accessor prefix)
+   (lambda-list :initarg :lambda-list :accessor lambda-list)
+   (invoker :initarg :invoker :accessor invoker)
+   (docstring :initarg :docstring :accessor docstring)))
+
+(defmethod print-object ((command-invoker command-invoker) stream)
+  (print-unreadable-object (command-invoker stream :type T)
+    (format stream "~a" (name command-invoker))))
+
+(defun command-invoker (name)
+  (find name *invokers* :key #'name))
+
+(defun (setf command-invoker) (invoker name)
+  (remove-command-invoker name)  
+  (setf *invokers* (sort (cons invoker *invokers*) #'string< :key #'prefix))
+  invoker)
 
 (defun remove-command-invoker (name)
-  (setf *invokers* (remove name *invokers* :key #'car :test #'string-equal)))
+  (setf *invokers* (remove name *invokers* :key #'name)))
 
-(defmacro define-command-invoker (command (event &rest args) &body body)
-  `(setf (command-invoker ',command)
-         (lambda (,event message)
-           (with-command-destructuring-bind ,args message
-             ,@body))))
+(defun list-command-invokers ()
+  (copy-list *invokers*))
 
-(defmacro define-simple-command-invoker (command args event-type &key message-event-initarg)
+(defun find-command-invoker (name)
+  (loop for invoker in *invokers*
+        do (when (or (eql name (name invoker))
+                     (string-equal name (prefix invoker)))
+             (return invoker))))
+
+(defmacro define-command-invoker (name (event &rest lambda-list) &body body)
+  (let ((message (gensym "MESSAGE")))
+    (destructuring-bind (name prefix) (enlist name name)
+      `(setf (command-invoker ',name)
+             (make-instance 'command-invoker
+                            :name ',name
+                            :prefix ,(string-downcase prefix)
+                            :lambda-list ',lambda-list
+                            :invoker (lambda (,event ,message)
+                                       (with-command-destructuring-bind ,lambda-list ,message
+                                         ,@body))
+                            :docstring ,(form-fiddle:lambda-docstring `(lambda () ,@body)))))))
+
+(defmethod documentation (slot (type (eql 'command)))
+  (docstring (command-invoker slot)))
+
+(defmethod (setf documentation) (docstring slot (type (eql 'command)))
+  (setf (docstring (command-invoker slot)) docstring))
+
+(defmacro define-simple-command-invoker (name args event-type &key message-event-initarg documentation)
   (let ((event (gensym "EVENT"))
         (fun-kargs (loop for arg in (lambda-fiddle:extract-lambda-vars args)
                          collect (kw arg) collect arg)))
-    `(define-command-invoker ,command (,event ,@args)
+    `(define-command-invoker ,name (,event ,@args)
+       ,documentation
        (issue (make-instance ',event-type
                              ,@(when message-event-initarg `(,message-event-initarg ,event))
                              ,@fun-kargs)
@@ -74,8 +113,9 @@
                     (error (,error)
                       (v:warn :maiden.agents.commands ,error)
                       (reply ,event "~a" ,error)))))
-              (define-simple-command-invoker ,(or command (string name)) ,args ,event-type
-                :message-event-initarg :dispatch-event)
+              (define-simple-command-invoker (,name ,(or command (string name))) ,args ,event-type
+                :message-event-initarg :dispatch-event
+                :documentation ,(form-fiddle:lambda-docstring `(lambda () ,@body)))
               (list ',consumer ',name)))))
 
 (defun remove-command (consumer name &optional (event-type name) (command (string name)))
@@ -86,7 +126,7 @@
   (let ((match NIL)
         (alternatives ()))
     (loop for command in *invokers*
-          for prefix = (car command)
+          for prefix = (prefix command)
           do (let* ((cut (subseq message 0 (min (length message) (length prefix))))
                     (distance (levenshtein-distance prefix cut)))
                (when (and (= 0 distance)
