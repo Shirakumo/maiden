@@ -30,7 +30,8 @@
 
 (define-command (accounts login) (c ev password &optional account)
   :command "login"
-  (let ((account (account (or account (user ev)))))
+  (let ((account (or (account (or account (user ev)))
+                     (account (name (user ev))))))
     (cond ((not account)
            (error "This identity is not associated with any account."))
           ((account (user ev))
