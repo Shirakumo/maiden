@@ -6,3 +6,24 @@
 
 (in-package #:org.shirakumo.maiden.agents.permissions)
 
+(docs:define-docs
+  (command check-access
+    "Check whether you have access to a permission branch.")
+
+  (command grant
+    "Grant access to a permission branch to a user.")
+
+  (command deny
+    "Deny access to a permission branch to a user.")
+
+  (command add-administrator
+    "Add a user as an administrator.")
+
+  (command remove-administrator
+    "Remove an administrator.")
+
+  (command add-default-permission
+    "Register a permission branch that should be granted to all users unless explicitly denied.")
+
+  (command remove-default-permission
+    "Remove a permission branch that was set as a default."))
