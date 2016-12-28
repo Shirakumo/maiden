@@ -15,6 +15,7 @@
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
    (services :initarg :services :accessor services)
+   (services-password :initarg :services-password :accessor services-password)
    (channels :initform (make-hash-table :test 'equalp) :accessor channel-map)
    (users :initform (make-hash-table :test 'equalp) :accessor user-map))
   (:default-initargs
@@ -23,9 +24,8 @@
    :password NIL
    :realname (machine-instance)
    :port 6667
-   :services :unknown))
-
-;; FIXME: nickserv password
+   :services :unknown
+   :services-password NIL))
 
 (defmethod initialize-instance :after ((client irc-client) &key)
   (unless (name client)
@@ -36,11 +36,8 @@
 (defmethod initiate-connection :after ((client irc-client))
   (with-slots (nickname username password realname) client
     (when password (irc:pass client password))
-    (irc:nick client nickname)
-    (irc:user client username 0 "*" realname)
-    ;; Rejoin.
-    (loop for k being the hash-keys of (channel-map client)
-          do (irc:join client k))))
+    (setf (nickname client) (irc:nick* client nickname))
+    (irc:user client username 0 "*" realname)))
 
 (defmethod close-connection :before ((client irc-client))
   (when (client-connected-p client)
@@ -105,7 +102,11 @@
   :match-consumer 'client
   (when (string-equal (name user) (nickname client))
     (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." user nickname)
-    (setf (nickname client) nickname)))
+    (setf (nickname client) nickname)
+    ;; If we reclaimed our proper nick, we can try re-identifying.
+    (when (and (services-password client)
+               (string= (intended-nickname client) nickname))
+      (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client))))))
 
 (define-handler (irc-client yank-nick irc:msg-quit) (client ev user)
   :match-consumer 'client
@@ -113,6 +114,14 @@
              (not (string-equal user (nickname client))))
     (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." user)
     (irc:nick client user)))
+
+(define-handler (irc-client handle-init irc:rpl-welcome) (client ev)
+  :match-consumer'client
+  (when (and (services-password client)
+             (string= (nickname client) (intended-nickname client)))
+    (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client))))
+  (loop for k being the hash-keys of (channel-map client)
+        do (irc:join client k)))
 
 (defmethod authenticate (nick (client irc-client))
   (case (services client)
