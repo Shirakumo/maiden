@@ -222,3 +222,17 @@
 
 (define-simple-irc-command ison (nicknames)
   "ISON~{ ~a~}" (enlist nicknames))
+
+(defun irc:nick* (client nickname &key (max-attempts 5))
+  (let ((attempts 0))
+    (tagbody
+     try-nick
+       (with-awaiting irc:err-nicknameinuse ((first (cores client)) :timeout 1)
+                      (irc:nick client nickname)
+         (v:warn :maiden.client.irc "Failed to change nick to ~a, retrying with ~:*~a_." nickname)
+         (setf nickname (format NIL "~a_" nickname))
+         (incf attempts)
+         (when (<= attempts max-attempts)
+           (go try-nick))))
+    (when (<= attempts max-attempts)
+      nickname)))

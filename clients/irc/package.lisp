@@ -49,7 +49,8 @@
    #:users
    #:wallops
    #:userhost
-   #:ison)
+   #:ison
+   #:nick*)
   ;; events.lisp
   (:export
    #:msg-pass
