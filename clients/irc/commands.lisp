@@ -130,8 +130,8 @@
 (define-simple-irc-command part (channels)
   "PART ~{~a~^,~}" (enlist channels))
 
-(define-simple-irc-command mode (target mode &key limit user ban-mask)
-  "MODE ~a ~a~@[ ~a~@[ ~a~@[ ~a~]~]~]" target mode limit user ban-mask)
+(define-simple-irc-command mode (target &key mode limit user ban-mask)
+  "MODE ~a~@[ ~a~@[ ~a~@[ ~a~@[ ~a~]~]~]~]" target mode limit user ban-mask)
 
 (define-simple-irc-command topic (channel &optional topic)
   "TOPIC ~a~@[ :~a~]" channel topic)
