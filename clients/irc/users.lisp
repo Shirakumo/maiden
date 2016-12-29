@@ -161,7 +161,7 @@
         (setf (find-user nickname client) user))
       (setf (name user) nickname))
     ;; Issue nick change event
-    (do-issue (core ev) user-name-changed :client client :user user :old-nick old-nick)))
+    (do-issue (core ev) user-name-changed :client client :user user :old-name old-nick)))
 
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
   :match-consumer 'client
