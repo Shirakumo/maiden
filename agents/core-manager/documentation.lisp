@@ -22,5 +22,8 @@
   (command add-consumer
     "Create and add a new consumer to the current core.")
 
+  (command list-consumers
+    "Show a list of all consumers on the current core by their names or IDs.")
+
   (command stop-core
     "Stop the current core completely. Note that this will effectively shut down the bot, but not the lisp instance."))

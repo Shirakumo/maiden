@@ -46,6 +46,12 @@
       (start (add-consumer consumer (core ev)))
       (reply ev "~a added to core." consumer))))
 
+(define-command (core-manager list-consumers) (c ev)
+  :command "list consumers"
+  :advice public
+  (reply ev "Active consumers: ~{~a~^ ~}"
+         (mapcar (lambda (c) (or (name c) (id c))) (consumers (core ev)))))
+
 (define-command (core-manager stop-core) (c ev)
   :command "stop core"
   :advice (not public)
