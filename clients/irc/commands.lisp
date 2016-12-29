@@ -223,7 +223,7 @@
 (define-simple-irc-command ison (nicknames)
   "ISON~{ ~a~}" (enlist nicknames))
 
-(defun irc:nick* (client nickname &key (max-attempts 5) (timeout 1))
+(defun irc:nick* (client nickname &key (max-attempts 5) (timeout 2))
   (let ((attempts 0))
     (tagbody
      try-nick
