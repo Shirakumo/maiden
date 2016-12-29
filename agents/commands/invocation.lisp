@@ -113,7 +113,7 @@
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))
                   (handler-case
-                      (handler-bind ((error (lambda (e) (maybe-invoke-debugger e NIL))))
+                      (handler-bind ((error #'maybe-invoke-debugger))
                         ,@body)
                     (error (,error)
                       (v:debug :maiden.agents.commands ,error)

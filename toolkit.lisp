@@ -14,11 +14,12 @@
                         :defaults #.(or *compile-file-pathname* *load-pathname*)))
 (defvar *debugger* (find-package :swank))
 
-(defun maybe-invoke-debugger (condition &optional (restart 'abort) &rest values)
+(defun maybe-invoke-debugger (condition &optional restart &rest values)
   (cond (*debugger*
          (with-simple-restart (continue "Don't handle ~a." condition)
            (invoke-debugger condition)))
         (restart
+         (v:warn :maiden "Escaping with restart ~s from unhandled error: ~a" restart condition)
          (apply #'invoke-restart restart values))))
 
 (defun update-root-for-image ()
