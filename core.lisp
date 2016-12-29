@@ -50,8 +50,13 @@
   (issue event (event-loop core)))
 
 (defmethod handle ((event event) (core core))
-  (with-simple-restart (abort-handling "Abort handling ~a on ~a." event core)
-    (handle event (event-loop core))))
+  (handle event (event-loop core)))
+
+(defmethod handle :around ((event event) (delivery deeds:event-delivery))
+  (with-simple-restart (abort-handling "Abort handling ~a on ~a." event delivery)
+    (handler-bind ((error (lambda (err)
+                            (maybe-invoke-debugger err 'abort-handling))))
+      (call-next-method))))
 
 (defmethod consumer (id (core core))
   (find id (consumers core) :test #'matches))
