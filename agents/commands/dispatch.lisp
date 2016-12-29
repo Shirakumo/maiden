@@ -27,13 +27,13 @@
               (T
                (setf alternatives (sort alternatives #'compare-alternatives))
                (reply ev "Unknown command. Possible matches: ~10{~a~^, ~}"
-                      (mapcar #'second alternatives))))))))
+                      (mapcar #'prefix (mapcar #'cdr alternatives)))))))))
 
 (defun compare-alternatives (a b)
-  (let ((a-distance (first a))
-        (a-length (length (second a)))
-        (b-distance (first b))
-        (b-length (length (second b))))
+  (let ((a-distance (car a))
+        (a-length (length (prefix (cdr a))))
+        (b-distance (car b))
+        (b-length (length (prefix (cdr b)))))
     (or (< a-distance b-distance)
         (and (= a-distance b-distance)
              (< b-length a-length)))))
