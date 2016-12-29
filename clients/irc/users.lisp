@@ -187,3 +187,8 @@
   :match-consumer 'client
   (let ((user (find-user nickname client)))
     (when user (remove-user user client))))
+
+(define-handler (irc-client track-topic irc:rpl-topic) (client ev channel topic)
+  :match-consumer 'client
+  (let ((channel (ensure-channel channel client)))
+    (setf (topic channel) topic)))
