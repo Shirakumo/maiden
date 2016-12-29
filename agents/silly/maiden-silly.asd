@@ -20,5 +20,6 @@
                :maiden-activatable
                :maiden-api-access
                :maiden-client-entities
+               :lquery
                :cl-ppcre
                :alexandria))

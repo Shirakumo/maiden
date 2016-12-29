@@ -65,7 +65,7 @@
 (define-simple-silly the-answer (sender "(?i)I('ll| will) let (you|him|her|them|us) decide")
   "... but the answer is yes.")
 
-(define-simple-silly great (sender "(?i)it(('s| is) (gonna|going to be)|('ll| will) be) great")
+(define-simple-silly great (sender "(?i)it(('s| is) (gonna be|going to be)|('ll| will) be) great")
   "It's gonna be great.")
 
 (define-simple-silly galo-sengen (sender "(?i)go\\s*go\\s*go")
@@ -108,11 +108,12 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
   (reply ev "Eight."))
 
 (define-command (silly jerkcity) (c ev)
-  (multiple-value-bind (content status headers uri) (request-as :html "http://jerkcity.com/random/?_")
-    (declare (ignore status headers))
-    (reply ev "~a ~a"
-           (cl-ppcre:register-groups-bind (title) ("<title>([^<]*)</title>" content) title)
-           (puri:render-uri uri NIL))))
+  (multiple-value-bind (content status headers uri) (request-as :html "http://jerkcity.com/random/")
+    (declare (ignore headers))
+    (when (= 200 status)
+      (reply ev "~a ~a"
+             (lquery:$ content "title" (text) (node))
+             (puri:render-uri uri NIL)))))
 
 (define-command (silly roll) (c ev &optional (size "6") (times "1"))
   (cond
