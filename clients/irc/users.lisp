@@ -50,14 +50,23 @@
 (defmethod find-user ((name string) (client irc-client))
   (gethash name (user-map client)))
 
+(defmethod (setf find-user) ((user user) (name string) (client irc-client))
+  (setf (gethash name (user-map client)) user))
+
 (defmethod find-user ((name string) (channel channel))
   (gethash name (user-map channel)))
+
+(defmethod (setf find-user) ((user user) (name string) (channel channel))
+  (setf (gethash name (user-map channel)) user))
 
 (defmethod find-channel ((channel channel) thing)
   (find-channel (name channel) thing))
 
 (defmethod find-channel ((name string) (client irc-client))
   (gethash name (channel-map client)))
+
+(defmethod (setf find-channel) ((channel channel) (name string) (client irc-client))
+  (setf (gethash name (channel-map client)) channel))
 
 (defmethod find-channel ((name string) (user irc-user))
   (find name (channels user) :test #'matches))
@@ -102,7 +111,7 @@
              (remove-user user client))))
 
 (defun coerce-irc-object (name user host client)
-  (let ((name (string-left-trim "=+*@" name)))
+  (let ((name (string-left-trim "~=+*@" name)))
     (cond ((find #\. name)
            (make-instance 'irc-server :name name :client client))
           ((find #\# name)
@@ -127,17 +136,17 @@
          ;;        identity! This can actually happen no matter what if we are particularly
          ;;        unlucky about concurrency and other parts of the system retaining user
          ;;        objects for a prolonged period of time.
-         (setf (gethash (name user) (user-map client)) user)
-         (setf (gethash (name user) (user-map channel)) user))))
+         (setf (find-user (name user) client) user)
+         (setf (find-user (name user) channel) user))))
 
 (define-handler (irc-client track-namreply irc:rpl-namreply) (client ev channel info)
   :match-consumer 'client
   (dolist (user (cl-ppcre:split " +" info))
     (let ((object (coerce-irc-object user NIL NIL client)))
-      (setf (gethash (name object) (user-map channel)) object)
+      (setf (find-user (name object) channel) object)
       ;; We somehow missed a JOIN, but we trust NAMREPLY more.
       (unless (find-user object client)
-        (setf (gethash (name object) (user-map client)) object)))))
+        (setf (find-user (name object) client) object)))))
 
 (define-handler (irc-client track-nick irc:msg-nick) (client ev user nickname)
   :match-consumer 'client
@@ -145,21 +154,21 @@
   (let ((old-nick (name user)))
     (unless (matches nickname (nickname client))
       (dolist (channel (channels user))
-        (remhash (name user) (user-map channel))
-        (setf (gethash nickname (user-map channel)) user))
+        (remove-user (name user) channel)
+        (setf (find-user nickname channel) user))
       (when (find-user user client)
-        (remhash (name user) (user-map client))
-        (setf (gethash nickname (user-map client)) user))
+        (remove-user (name user) client)
+        (setf (find-user nickname client) user))
       (setf (name user) nickname))
     ;; Issue nick change event
-    (do-issue (core ev) 'user-name-changed :client client :user user :old-nick old-nick)))
+    (do-issue (core ev) user-name-changed :client client :user user :old-nick old-nick)))
 
 (define-handler (irc-client track-leave irc:msg-part) (client ev channel user)
   :match-consumer 'client
   (cond ((matches user (nickname client))
          (remove-channel channel client))
         (T
-         (remhash (name user) (user-map channel))))
+         (remove-user (name user) channel)))
   (prune-users client))
 
 (define-handler (irc-client track-kick irc:msg-kick) (client ev channel nickname)
@@ -167,7 +176,7 @@
   (cond ((matches nickname (nickname client))
          (remove-channel channel client))
         (T
-         (remhash nickname (user-map channel))))
+         (remove-user nickname channel)))
   (prune-users client))
 
 (define-handler (irc-client track-quit irc:msg-quit) (client ev user)
