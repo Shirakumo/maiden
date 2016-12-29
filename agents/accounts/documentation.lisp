@@ -35,4 +35,7 @@
     "Retrieve the value of a user account field.")
 
   (command set-field
-    "Update the value of a user account field."))
+    "Update the value of a user account field.")
+
+  (command test-authentication
+    "Test whether the bot can verify the authenticity of a user, or yourself."))

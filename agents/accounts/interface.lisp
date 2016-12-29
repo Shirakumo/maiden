@@ -30,6 +30,7 @@
 
 (define-command (accounts login) (c ev password &optional account)
   :command "login"
+  :advice public
   (let ((account (or (account (or account (user ev)))
                      (account (name (user ev))))))
     (cond ((not account)
@@ -54,6 +55,7 @@
 
 (define-command (accounts logout) (c ev)
   :command "logout"
+  :advice public
   (cond ((not (account (account (user ev))))
          (error "This identity is not associated with any account."))
         (T
@@ -62,6 +64,7 @@
 
 (define-command (accounts create) (c ev &key password name)
   :command "create account"
+  :advice public
   (let ((name (if (or (not name) (string= name "")) (name (user ev)) name))
         (password (if (or (not password) (string= password "")) (random-string 6) password)))
     (when (account (identity (user ev)) :error NIL)
@@ -77,6 +80,7 @@
 
 (define-command (accounts destroy) (c ev)
   :command "destroy account"
+  :advice public
   (let ((account (account (user ev) :error NIL)))
     (unless account
       (error "Please log in to this account first."))
@@ -86,12 +90,14 @@
 
 (define-command (accounts update-password) (c ev new-password)
   :command "update password"
+  :advice public
   (let ((account (account (user ev))))
     (setf (password account) new-password)
     (reply ev "Your password has been updated.")))
 
 (define-command (accounts associate) (c ev account password)
   :command "associate with account"
+  :advice public
   (let ((account (account account)))
     (when (account (identity (user ev)) :error NIL)
       (error "This identity is already associated with ~a." (account (identity ev))))
@@ -105,12 +111,14 @@
 
 (define-command (accounts deassociate) (c ev)
   :command "deassociate from account"
+  :advice public
   (let ((account (account (user ev))))
     (remove-identity account ev)
     (reply ev "Identity deassociated.")))
 
 (define-command (accounts field) (c ev field &optional account)
   :command "show account field"
+  :advice public
   (let* ((account (account (or account (user ev))))
          (value (field field account (user ev))))
     (if value
@@ -119,6 +127,14 @@
 
 (define-command (accounts set-field) (c ev field value &optional account)
   :command "set account field"
+  :advice public
   (let ((account (account (or account (user ev)))))
     (setf (field field account (user ev)) value)
     (reply ev "The field has been set to ~s." value)))
+
+(define-command (accounts test-authentication) (c ev &optional user)
+  :command "test authentication"
+  :advice public
+  (let ((user (or user (name (user ev)))))
+    (reply ev "~@(~:[~a is not authenticated.~;~a is authenticated.~]~)"
+           (authenticate user (client ev)) user)))
