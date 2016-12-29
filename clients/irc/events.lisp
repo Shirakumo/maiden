@@ -25,7 +25,7 @@
 
 (defmethod print-object ((reply-event reply-event) stream)
   (print-unreadable-object (reply-event stream :type T :identity T)
-    (format stream "~s ~a" :user (user reply-event))))
+    (format stream "~s ~a" :user (name (user reply-event)))))
 
 (define-event unknown-event (reply-event)
   ())
