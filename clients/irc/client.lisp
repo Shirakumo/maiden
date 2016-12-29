@@ -24,7 +24,7 @@
    :password NIL
    :realname (machine-instance)
    :port 6667
-   :services :unknown
+   :services :generic
    :services-password NIL))
 
 (defmethod initialize-instance :after ((client irc-client) &key)
@@ -124,18 +124,42 @@
         do (irc:join client k)))
 
 (defmethod authenticate (nick (client irc-client))
-  (case (services client)
-    (:unknown
-     NIL)
-    (:anope
-     ;; (with-response
-     ;;     (irc:privmsg client "NickServ" (format NIL "STATUS ~a" nick))
-     ;;     (irc:rpl-notice ev message)
-     ;;     (:filter '(eql 0 (search "STATUS" message))
-     ;;      :timeout 5)
-     ;;   (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
-     ;;     (and (string= nick status-nick)
-     ;;          (string= code "3"))))
-     )
+  (authenticate-with (services client) nick client))
+
+(defun authenticate-with (method nick client &key (timeout 2))
+  (case method
+    ((:acc :freenode)
+     (with-awaiting (irc:msg-notice ev message)
+         ((first (cores client))
+          :filter `(and (search "ACC" message)
+                        (search ,nick message :test ,#'char-equal))
+          :timeout timeout)
+         (irc:privmsg client "NickServ" (format NIL "ACC ~a" nick))
+       (cl-ppcre:register-groups-bind (status-nick code) ("^([^ ]+) ACC (\\d)" message)
+         (and (string= nick status-nick)
+              (string= code "3")))))
+    ((:status :anope :tynet :rizon)
+     (with-awaiting (irc:msg-notice ev message)
+         ((first (cores client))
+          :filter `(and (search "STATUS" message)
+                        (search ,nick message :test #'char-equal))
+          :timeout timeout)
+         (irc:privmsg client "NickServ" (format NIL "STATUS ~a" nick))
+       (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
+         (and (string= nick status-nick)
+              (string= code "3")))))
+    ((:r-mode)
+     ;; Not sure if this is actually correct.
+     (with-awaiting (irc:mode ev target mode)
+         ((first (cores client))
+          :filter `(string-equal ,nick target)
+          :timeout timeout)
+         (irc:mode client nick)
+       (and (string= nick target)
+            (find #\r mode))))
+    (:generic
+     (or (authenticate-with :acc nick client)
+         (authenticate-with :status nick client)
+         (authenticate-with :r-mode nick client)))
     ((NIL)
      T)))
