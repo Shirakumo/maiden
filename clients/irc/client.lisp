@@ -126,8 +126,11 @@
   (loop for k being the hash-keys of (channel-map client)
         do (irc:join client k)))
 
-(defmethod authenticate (nick (client irc-client))
+(defmethod authenticate ((nick string) (client irc-client))
   (authenticate-with (services client) nick client))
+
+(defmethod authenticate ((user user) (client irc-client))
+  (authenticate (name user) client))
 
 (defun authenticate-with (method nick client &key (timeout 2))
   (case method
