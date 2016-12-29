@@ -27,7 +27,10 @@
    :services :generic
    :services-password NIL))
 
-(defmethod initialize-instance :after ((client irc-client) &key)
+(defmethod initialize-instance :after ((client irc-client) &key channels)
+  (dolist (channel channels)
+    (setf (find-channel channel client)
+          (make-instance 'irc-channel :client client :name channel)))
   (unless (name client)
     (setf (name client) (host client)))
   (unless (slot-boundp client 'intended-nickname)
