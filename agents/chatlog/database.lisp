@@ -151,4 +151,4 @@
                 (back-queue c))
           (process-back-queue c))
       (error (err)
-        (v:warn :maiden.chatlog "Failed to record message: ~a" err)))))
+        (v:debug :maiden.chatlog "Failed to record message: ~a" err)))))
