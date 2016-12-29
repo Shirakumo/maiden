@@ -113,11 +113,10 @@
                 (let* ((,event (dispatch-event ,command-event-variable))
                        (*dispatch-event* ,event))
                   (handler-case
-                      (handler-bind ((error (lambda (e)
-                                              (maybe-invoke-debugger e 'abort-handling))))
+                      (handler-bind ((error (lambda (e) (maybe-invoke-debugger e NIL))))
                         ,@body)
                     (error (,error)
-                      (v:warn :maiden.agents.commands ,error)
+                      (v:debug :maiden.agents.commands ,error)
                       (reply ,event "~a" ,error)))))
               (define-simple-command-invoker (,name ,(or command (string name))) ,args ,event-type
                 :message-event-initarg :dispatch-event
