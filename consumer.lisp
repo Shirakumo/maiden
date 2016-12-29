@@ -69,8 +69,8 @@
                           (etypecase handler
                             (abstract-handler (delete handler (direct-handlers class-ish)))
                             (symbol (delete handler (direct-handlers class-ish) :key #'name)))))
-    (consumer (update-handler handler (class-of class-ish)))
-    (symbol (update-handler handler (find-class class-ish)))))
+    (consumer (remove-handler handler (class-of class-ish)))
+    (symbol (remove-handler handler (find-class class-ish)))))
 
 (defclass consumer (named-entity)
   ((handlers :initform () :accessor handlers)
