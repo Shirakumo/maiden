@@ -63,10 +63,14 @@
             (value (normalize-ident ident))
             :test #'string-equal)))
 
+(defun list-active (ident)
+  (with-storage ('activatable)
+    (value (normalize-ident ident))))
+
 (defclass activatable-handler (deeds:queued-handler)
   ((module :initarg :module :reader module))
   (:default-initargs
-   :module *package*))
+   :module (error "MODULE required.")))
 
 (defmethod deeds:handle :around ((event client-event) (handler activatable-handler))
   (when (active-p event (module handler))
@@ -90,3 +94,7 @@
          (reply ev "Modules deactivated."))
         (T
          (error "I need to know at least one module that should be deactivated."))))
+
+(define-command (activatable list-activated) (c ev)
+  :command "list activated"
+  (reply ev "Active modules: ~{~a~^, ~}" (list-active ev)))

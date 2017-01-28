@@ -47,6 +47,7 @@
 
 (define-handler (markov handle (and message-event passive-event)) (c ev message)
   :class activatable-handler
+  :module #.*package*
   (learn message (generator c))
   (maybe-save c)
   (when (< (random 100.0) (ramble-chance c))

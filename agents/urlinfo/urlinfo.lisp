@@ -83,5 +83,6 @@
 
 (define-handler (urlinfo auto-respond message-event) (c ev message)
   :class activatable-handler
+  :module #.*package*
   (dolist (url (find-urls-in-string message))
     (reply ev "~a" (urlinfo url))))

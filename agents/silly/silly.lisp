@@ -99,6 +99,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
 
 (define-handler (silly handle (and message-event passive-event)) (c ev user message)
   :class activatable-handler
+  :module #.*package*
   (dolist (response (dispatch-silly (name user) message))
     (sleep (+ 0.5 (random 3)))
     (reply ev "~a" response)))
