@@ -28,6 +28,7 @@
   (with-output-to-string (out)
     (loop repeat length do (write-char (elt "abcdefghijklmnopqrstuvwxyz0123456789" (random 36)) out))))
 
+;; FIXME: hash passwords
 (define-command (accounts login) (c ev password &optional account)
   :command "login"
   :advice public
