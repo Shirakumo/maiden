@@ -34,8 +34,9 @@
 (defun maybe-title (type stream)
   (when (search "html" type :test #'char-equal)
     (process-until "<title>" (lambda (c) c) stream)
-    (with-output-to-string (s)
-      (process-until "</title>" (lambda (c) (write-char c s)) stream))))
+    (plump-dom:decode-entities
+     (with-output-to-string (s)
+       (process-until "</title>" (lambda (c) (write-char c s)) stream)))))
 
 (defun nicer-title (title)
   (cond ((not title) NIL)

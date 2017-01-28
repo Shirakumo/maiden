@@ -20,4 +20,5 @@
                :maiden-activatable
                :maiden-client-entities
                :drakma
-               :cl-ppcre))
+               :cl-ppcre
+               :plump))
