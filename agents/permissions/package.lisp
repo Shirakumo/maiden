@@ -10,6 +10,7 @@
   (:use #:cl #:maiden #:maiden-commands #:maiden-storage #:maiden-client-entities)
   ;; permissions.lisp
   (:export
+   #:generate-token
    #:permission-denied
    #:user
    #:perm

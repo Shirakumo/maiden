@@ -6,6 +6,17 @@
 
 (in-package #:org.shirakumo.maiden.agents.permissions)
 
+(defvar *tokens* ())
+
+(defun random-string (length)
+  (with-output-to-string (out)
+    (loop repeat length do (write-char (elt "abcdefghijklmnopqrstuvwxyz0123456789" (random 36)) out))))
+
+(defun generate-token ()
+  (let ((token (random-string 32)))
+    (push token *tokens*)
+    token))
+
 (define-condition permission-denied (error)
   ((user :initarg :user)
    (perm :initarg :perm))
@@ -178,3 +189,12 @@
   :advice (not public)
   (remove-default-permission perm)
   (reply ev "Default permission to ~a revoked." perm))
+
+(define-command (permissions administrate-self) (c ev token)
+  :command "upgrade to administrator"
+  (cond ((find token *tokens* :test #'string=)
+         (setf *tokens* (remove token *tokens* :test #'string=))
+         (add-administrator (user ev))
+         (reply ev "You have successfully been upgraded to administrator."))
+        (T
+         (error "That is not a valid token. Please generate one using (MAIDEN-PERMISSIONS:GENERATE-TOKEN)."))))
