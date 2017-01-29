@@ -12,6 +12,7 @@
    #:config-pathname
    #:storage
    #:with-storage
+   #:reload
    #:offload
    #:restore
    #:define-stored-accessor))

@@ -6,6 +6,8 @@
 
 (in-package #:org.shirakumo.maiden.modules.storage)
 
+(defvar *storages* (make-hash-table :test 'eql))
+
 (defun package-short-name (package)
   (loop for min = (package-name package) then (if (< (length name) (length min)) name min)
         for name in (package-nicknames package)
@@ -74,7 +76,7 @@
 (defgeneric (setf storage) (storage thing))
 
 (defmethod storage ((thing symbol))
-  (get thing :storage))
+  (gethash thing *storages*))
 
 (defmethod storage ((thing string))
   (storage (intern thing :keyword)))
@@ -86,7 +88,7 @@
   (storage (type-of thing)))
 
 (defmethod (setf storage) (storage (thing symbol))
-  (setf (get thing :storage) storage))
+  (setf (gethash thing *storages*) storage))
 
 (defmethod (setf storage) (storage (thing string))
   (setf (storage (intern thing :keyword)) storage))
@@ -108,7 +110,12 @@
                                    ,@(unless always-load `(:storage (ensure-storage ,designator))))
      ,@body))
 
-(defun offload (designator &optional (storage ubiquitous:*storage*))
+(defun reload (&optional designator)
+  (if designator
+      (setf (storage designator) NIL)
+      (clrhash *storages*)))
+
+(defun offload (designator &optional (storage (storage designator)))
   (ubiquitous:offload (config-pathname designator) :lisp storage))
 
 (defun restore (designator)
