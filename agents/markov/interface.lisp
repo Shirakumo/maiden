@@ -8,30 +8,26 @@
 
 (define-consumer markov (agent)
   ((generator :initform NIL)
-   (save-counter :initform 0 :accessor save-counter)
-   (storage :initform (make-hash-table :test 'equal) :accessor storage)))
-
-(defmacro with-storage ((c) &body body)
-  `(ubiquitous:with-transaction (:storage (storage ,c)
-                                 :designator 'markov)
-     ,@body))
+   (save-counter :initform 0 :accessor save-counter)))
 
 (defun file (c)
   (with-storage (c)
-    (ubiquitous:defaulted-value (maiden-storage:config-pathname 'dictionary) :dictionary)))
+    (defaulted-value
+     (make-pathname :type "dat" :defaults (config-pathname 'dictionary))
+     :dictionary)))
 
 (defun save-frequency (c)
   (with-storage (c)
-    (ubiquitous:defaulted-value 20 :save-frequency)))
+    (defaulted-value 20 :save-frequency)))
 
 (defun ramble-chance (c)
   (with-storage (c)
-    (ubiquitous:defaulted-value 1 :ramble-chance)))
+    (defaulted-value 1 :ramble-chance)))
 
 (defun (setf ramble-chance) (val c)
   (assert (<= 0.0 val 100.0) () "The chance must be in [0, 100].")
   (with-storage (c)
-    (setf (ubiquitous:value :ramble-chance) val)))
+    (setf (value :ramble-chance) val)))
 
 (defmethod generator ((markov markov))
   (or (slot-value markov 'generator)

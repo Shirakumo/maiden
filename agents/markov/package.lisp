@@ -7,7 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-markov
   (:nicknames #:org.shirakumo.maiden.agents.markov)
-  (:use #:cl #:maiden #:maiden-activatable #:maiden-commands #:maiden-client-entities)
+  (:use #:cl #:maiden #:maiden-activatable #:maiden-commands #:maiden-storage #:maiden-client-entities)
   ;; generator.lisp
   (:export
    #:generator
