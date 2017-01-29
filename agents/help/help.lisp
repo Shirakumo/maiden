@@ -56,6 +56,14 @@
                    Documentation:  ~:[None.~;~:*~a~]"
            (prefix invoker) (lambda-list invoker) (docstring invoker))))
 
+(define-command (help list-consumers) (c ev)
+  :command "list consumers"
+  (reply ev "Active consumers on the current core: ~{~a~^, ~}"
+         (loop for consumer in (consumers (core ev))
+               when (running consumer)
+               collect (or (name consumer)
+                           (class-name (class-of consumer))))))
+
 (define-command (help about-consumer) (c ev consumer)
   :command "about consumer"
   (let ((consumer (find-consumer (core ev) consumer)))
@@ -63,7 +71,10 @@
       (error "No consumer of that name or ID found on the current core."))
     (unless (documentation (class-of consumer) T)
       (error "No documentation for ~a is available." (name consumer)))
-    (reply ev "~a" (documentation (class-of consumer) T))))
+    (reply ev "~a" (documentation (class-of consumer) T))
+    (reply ev "~:[This consumer does not provide any commands.~;~
+               ~:*This consumer provides the following commands: ~{~a~^, ~}~]"
+           (mapcar #'prefix (consumer-commands consumer)))))
 
 (define-command (help about-term) (c ev term)
   :command "search"
