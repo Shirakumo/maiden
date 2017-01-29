@@ -101,7 +101,7 @@
 
 (defun ensure-storage (designator)
   (or (storage designator)
-      (setf (storage designator) (ubiquitous:restore (config-pathname designator) :lisp))))
+      (setf (storage designator) (restore designator))))
 
 (defmacro with-storage ((designator &key (transaction T) always-load) &body body)
   `(ubiquitous:with-local-storage ((config-pathname ,designator)
@@ -116,10 +116,12 @@
       (clrhash *storages*)))
 
 (defun offload (designator &optional (storage (storage designator)))
-  (ubiquitous:offload (config-pathname designator) :lisp storage))
+  (let ((*package* #.(find-package '#:maiden-user)))
+    (ubiquitous:offload (config-pathname designator) :lisp storage)))
 
 (defun restore (designator)
-  (ubiquitous:restore (config-pathname designator) :lisp))
+  (let ((*package* #.(find-package '#:maiden-user)))
+    (ubiquitous:restore (config-pathname designator) :lisp)))
 
 (defmacro define-stored-accessor (class accessor &rest path)
   (let ((path (or path (list accessor))))
