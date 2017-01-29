@@ -45,20 +45,23 @@
   ())
 
 (define-command (medals show) (c ev &optional user)
-  :command "show medals"
-  (reply ev "Medals for ~a: ~{~a~^, ~}"
-         (or user (name (user ev))) (medals (or user (user ev)))))
+  :command "show medals of"
+  (let* ((user (or user (name (user ev))))
+         (medals (medals user)))
+    (if medals
+        (reply ev "~a has been awarded the ~{~a~^, ~} medal~p." user medals (length medals))
+        (reply ev "~a has not been awarded for anything yet!" user))))
 
 (define-command (medals award) (c ev user &rest medals)
-  :command "award medals"
+  :command "award"
   :advice (not public)
   (apply #'add-medals user medals)
-  (reply ev "Medals ~{~a~^, ~} awarded to ~a."
-         medals user))
+  (reply ev "Congratulations, ~a! You have been awarded the ~{~a~^, ~} medal~p."
+         user medals (length medals)))
 
 (define-command (medals take) (c ev user &rest medals)
-  :command "take medals"
+  :command "take medals from"
   :advice (not public)
   (apply #'remove-medals user medals)
-  (reply ev "Medals ~{~a~^, ~} taken from ~a."
-         medals user))
+  (reply ev "Medal~p ~{~a~^, ~} have been taken from ~a."
+         (length medals) medals user))
