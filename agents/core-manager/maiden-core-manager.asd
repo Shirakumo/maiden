@@ -17,4 +17,5 @@
                (:file "core-manager")
                (:file "documentation"))
   :depends-on (:maiden-commands
-               :maiden-client-entities))
+               :maiden-client-entities
+               :maiden-storage))

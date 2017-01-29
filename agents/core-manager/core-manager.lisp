@@ -59,3 +59,9 @@
   ;; Maybe it'll get through in time.
   (sleep 0.1)
   (stop (core ev)))
+
+(define-command (core-manager reload) (c ev)
+  :command "reload"
+  :advice (not public)
+  (reply ev "Clearing out configuration caches...")
+  (maiden-storage:reload))
