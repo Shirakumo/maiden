@@ -24,12 +24,14 @@
                 collect k) #'string<)))
 
 (define-consumer emoticon (agent)
-  ())
+  ((maximum :initarg :maximum :initform 5 :accessor maximum)))
 
 (define-command (emoticon add) (c ev name emoticon)
   :command "add emoticon"
   (when (emoticon name)
     (error "An emoticon named :~a: already exists. Use 'change emoticon' or remove it first." name))
+  (when (string=  "" name)
+    (error "The name can't be empty."))
   (setf (emoticon name) emoticon)
   (reply ev "Emoticon :~a: added." name))
 
@@ -55,6 +57,6 @@
     (cl-ppcre:do-register-groups (name) (":(.*?):" message)
       (let ((emoticon (emoticon name)))
         (when emoticon
-          (when (= 5 (incf counter))
+          (when (= (incf counter) (maximum c))
             (return))
           (reply ev "~a" emoticon))))))
