@@ -46,14 +46,14 @@
          (format-relative-time (- (get-universal-time) (start-time c)))
          (format-absolute-time (start-time c))))
 
-(define-command (help about-command) (c ev command)
+(define-command (help about-command) (c ev &rest command)
   :command "about command"
-  (let ((invoker (find-command-invoker command))
+  (let ((invoker (find-command-invoker (format NIL "~{~a~^ ~}" command)))
         (*print-case* :downcase))
     (unless invoker
       (reply ev "No such command found."))
     (reply ev "Command Syntax: ~a ~{~a~^ ~}~%~
-                   Documentation:  ~:[None.~;~:*~a~]"
+               Documentation:  ~:[None.~;~:*~a~]"
            (prefix invoker) (lambda-list invoker) (docstring invoker))))
 
 (define-command (help list-consumers) (c ev)
@@ -74,7 +74,7 @@
     (reply ev "~a" (documentation (class-of consumer) T))
     (reply ev "~:[This consumer does not provide any commands.~;~
                ~:*This consumer provides the following commands: ~{~a~^, ~}~]"
-           (mapcar #'prefix (consumer-commands consumer)))))
+           (sort (mapcar #'prefix (consumer-commands consumer)) #'string<))))
 
 (define-command (help about-term) (c ev term)
   :command "search"

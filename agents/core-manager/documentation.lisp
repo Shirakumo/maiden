@@ -26,4 +26,7 @@
     "Show a list of all consumers on the current core by their names or IDs.")
 
   (command stop-core
-    "Stop the current core completely. Note that this will effectively shut down the bot, but not the lisp instance."))
+    "Stop the current core completely. Note that this will effectively shut down the bot, but not the lisp instance.")
+
+  (command reload
+    "Reload the bot configuration files lazily by clearing out the internal configuration cache."))

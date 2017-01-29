@@ -22,6 +22,9 @@
   (command about-command
     "This displays available information about a command that the bot supports.")
 
+  (command list-consumers
+    "List all the consumers (systems) that are running on the bot.")
+
   (command about-consumer
     "This displays documentation information about a consumer (system) that's running on the bot.")
 
