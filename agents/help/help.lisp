@@ -26,7 +26,7 @@
           ((string= command "about")
            (relay ev 'about-self))
           ((find-command-invoker command)
-           (relay ev 'about-command :command command))
+           (relay ev 'about-command :command about))
           ((find-consumer (core ev) command)
            (relay ev 'about-consumer :consumer command))
           (T

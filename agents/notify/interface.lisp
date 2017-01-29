@@ -33,10 +33,10 @@
   (handle-note-notification ev user :message))
 
 (define-handler (notify user-enter user-entered) (c ev user)
-  (handle-note-notification ev user :Join))
+  (handle-note-notification ev user :join))
 
 (define-command (notify forget-notes) (c ev &optional target)
-  :command "forget notifications"
+  :command "forget notes"
   :before '(new-message)
   (if target
       (clear-notes (user ev))
