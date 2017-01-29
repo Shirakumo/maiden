@@ -127,6 +127,19 @@
   (remove-function-handler consumer name event-type)
   (remove-command-invoker command))
 
+(defun flatten-typespec (type)
+  (if (listp type)
+      (loop for item in (rest type)
+            nconc (flatten-typespec item))
+      (list type)))
+
+(defun consumer-commands (consumer)
+  (loop for handler in (handlers (class-of consumer))
+        when (loop for type in (flatten-typespec (getf (options handler) :event-type))
+                   thereis (c2mop:subclassp (find-class type)
+                                            (find-class 'command-event)))
+        collect (command-invoker (name handler))))
+
 (defun find-matching-command (message)
   (let ((match NIL)
         (alternatives ()))
