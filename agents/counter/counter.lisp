@@ -43,7 +43,8 @@
   (let ((counter (counter name)))
     (unless counter (error "A counter named ~a does not exist." name))
     (when match (setf (getf counter :match) match))
-    (when response (setf (getf counter :response) response)))
+    (when response (setf (getf counter :response) response))
+    (setf (counter name) counter))
   (reply ev "Counter ~a changed." name))
 
 (define-command (counter remove) (c ev name)
