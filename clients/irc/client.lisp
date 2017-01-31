@@ -8,16 +8,14 @@
 
 (defvar *send-length-limit* 512)
 
-(define-consumer irc-client (text-tcp-client reconnecting-client timeout-client user-client channel-client)
+(define-consumer irc-client (text-tcp-client reconnecting-client timeout-client simple-user-channel-client)
   ((nickname :initarg :nickname :accessor nickname)
    (username :initarg :username :accessor username)
    (password :initarg :password :accessor password)
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
    (services :initarg :services :accessor services)
-   (services-password :initarg :services-password :accessor services-password)
-   (channels :initform (make-hash-table :test 'equalp) :accessor channel-map)
-   (users :initform (make-hash-table :test 'equalp) :accessor user-map))
+   (services-password :initarg :services-password :accessor services-password))
   (:default-initargs
    :nickname "Maiden"
    :username (machine-instance)

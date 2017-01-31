@@ -14,7 +14,7 @@
 (defclass irc-server (client-entity)
   ())
 
-(defclass irc-user (user)
+(defclass irc-user (simple-user)
   ((user :initarg :user :reader user)
    (host :initarg :host :reader host))
   (:default-initargs
@@ -24,52 +24,11 @@
 (defmethod reply ((user irc-user) message &rest args)
   (irc:privmsg (client user) (name user) (apply #'format NIL message args)))
 
-(defclass irc-channel (channel)
-  ((users :initform (make-hash-table :test 'equalp) :accessor user-map)))
+(defclass irc-channel (simple-channel)
+  ())
 
 (defmethod reply ((channel irc-channel) message &rest args)
   (irc:privmsg (client channel) (name channel) (apply #'format NIL message args)))
-
-(defmethod users ((client irc-client))
-  (loop for v being the hash-values of (user-map client) collect v))
-
-(defmethod users ((channel channel))
-  (loop for v being the hash-values of (user-map channel) collect v))
-
-(defmethod channels ((user irc-user))
-  (loop for channel being the hash-values of (channel-map (client user))
-        when (find-user user channel)
-        collect channel))
-
-(defmethod channels ((client irc-client))
-  (loop for v being the hash-values of (channel-map client) collect v))
-
-(defmethod find-user ((user user) thing)
-  (find-user (name user) thing))
-
-(defmethod find-user ((name string) (client irc-client))
-  (gethash name (user-map client)))
-
-(defmethod (setf find-user) ((user user) (name string) (client irc-client))
-  (setf (gethash name (user-map client)) user))
-
-(defmethod find-user ((name string) (channel channel))
-  (gethash name (user-map channel)))
-
-(defmethod (setf find-user) ((user user) (name string) (channel channel))
-  (setf (gethash name (user-map channel)) user))
-
-(defmethod find-channel ((channel channel) thing)
-  (find-channel (name channel) thing))
-
-(defmethod find-channel ((name string) (client irc-client))
-  (gethash name (channel-map client)))
-
-(defmethod (setf find-channel) ((channel channel) (name string) (client irc-client))
-  (setf (gethash name (channel-map client)) channel))
-
-(defmethod find-channel ((name string) (user irc-user))
-  (find name (channels user) :test #'matches))
 
 (defmethod ensure-user ((name string) (client irc-client))
   (or (find-user name client)
@@ -78,32 +37,6 @@
 (defmethod ensure-channel ((name string) (client irc-client))
   (or (find-channel name client)
       (make-instance 'irc-channel :name name :client client)))
-
-(defmethod remove-user ((name string) (channel irc-channel))
-  (remhash name (user-map channel)))
-
-(defmethod remove-user ((user irc-user) (channel irc-channel))
-  (remove-user (name user) channel))
-
-(defmethod remove-user ((name string) (client irc-client))
-  (remove-user (find-user name client) client))
-
-(defmethod remove-user ((user irc-user) (client irc-client))
-  (dolist (channel (channels user))
-    (remove-user user channel))
-  (remhash (name user) (user-map client)))
-
-(defmethod remove-channel ((name string) (client irc-client))
-  (remhash name (channel-map client)))
-
-(defmethod remove-channel ((name string) (user irc-user))
-  (remove-channel (find-channel name user) user))
-
-(defmethod remove-channel ((channel irc-channel) (user irc-user))
-  (remove-user user channel))
-
-(defmethod remove-channel ((channel irc-channel) (client irc-client))
-  (remove-channel (name channel) client))
 
 (defun prune-users (client)
   (loop for user being the hash-values of (user-map client)
@@ -136,6 +69,7 @@
          ;;        identity! This can actually happen no matter what if we are particularly
          ;;        unlucky about concurrency and other parts of the system retaining user
          ;;        objects for a prolonged period of time.
+         (setf (find-channel (name channel) user) channel)
          (setf (find-user (name user) client) user)
          (setf (find-user (name user) channel) user))))
 
@@ -168,6 +102,7 @@
   (cond ((matches user (nickname client))
          (remove-channel channel client))
         (T
+         (remove-channel channel user)
          (remove-user (name user) channel)))
   (prune-users client))
 
@@ -176,6 +111,7 @@
   (cond ((matches nickname (nickname client))
          (remove-channel channel client))
         (T
+         (remove-channel channel user)
          (remove-user nickname channel)))
   (prune-users client))
 
