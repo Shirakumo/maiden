@@ -14,7 +14,14 @@
    #:find-user
    #:authenticate
    #:channel-client
-   #:find-channel)
+   #:find-channel
+   #:user-container
+   #:user-map
+   #:channel-container
+   #:channel-map
+   #:simple-user-channel-client
+   #:simple-user
+   #:simple-channel)
   ;; entities.lisp
   (:export
    #:client-entity
