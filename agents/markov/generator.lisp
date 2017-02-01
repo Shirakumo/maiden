@@ -105,7 +105,7 @@
   (let ((words (enlist words)))
     (loop for sentence = (make-sentence generator (or start (random-token generator)))
           repeat max-attempts
-          when (loop for word in words thereis (search word sentence))
+          when (loop for word in words thereis (search word sentence :test #'char-equal))
           do (return sentence))))
 
 (defun remove-artefacts (string)
