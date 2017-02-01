@@ -39,8 +39,9 @@
       (make-instance 'channel :name name :client client)))
 
 ;; FIXME: lock for concurrent access
-(defclass user-container ()
-  ((users :initform (make-hash-table :test 'equalp) :accessor user-map)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass user-container ()
+    ((users :initform (make-hash-table :test 'equalp) :accessor user-map))))
 
 (defmethod users ((container user-container))
   (loop for v being the hash-values of (user-map container) collect v))
@@ -57,11 +58,12 @@
 (defmethod remove-user ((name string) (container user-container))
   (remhash name (user-map container)))
 
-(defmethod remove-user ((user simple-user) (container user-container))
+(defmethod remove-user ((user user) (container user-container))
   (remove-user (name user) container))
 
-(defclass channel-container ()
-  ((channels :initform (make-hash-table :test 'equalp) :accessor channel-map)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass channel-container ()
+    ((channels :initform (make-hash-table :test 'equalp) :accessor channel-map))))
 
 (defmethod channels ((container channel-container))
   (loop for v being the hash-values of (channel-map container) collect v))
@@ -78,10 +80,11 @@
 (defmethod remove-channel ((name string) (container channel-container))
   (remhash name (channel-map container)))
 
-(defmethod remove-channel ((channel simple-channel) (container channel-container))
+(defmethod remove-channel ((channel channel) (container channel-container))
   (remove-channel (name channel) container))
 
-(define-consumer simple-user-channel-client (user-client channel-client user-container channel-container))
+(define-consumer simple-user-channel-client (user-client channel-client user-container channel-container)
+  ())
 
 (defclass simple-user (user channel-container)
   ())

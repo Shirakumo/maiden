@@ -17,8 +17,10 @@
    #:find-channel
    #:user-container
    #:user-map
+   #:remove-channel
    #:channel-container
    #:channel-map
+   #:remove-user
    #:simple-user-channel-client
    #:simple-user
    #:simple-channel)
