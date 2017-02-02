@@ -9,21 +9,44 @@
 (defclass lichat-user (simple-user)
   ())
 
+(defun find-conversation-channel (user)
+  (loop for channel in (channels user)
+        when (and (anonymous-p channel)
+                  (every (lambda (u)
+                           (or (matches u user)
+                               (matches u (username (client user)))))
+                         (users channel)))
+        do (return channel)))
+
+(defun make-anonymous-channel (client &rest users)
+  (let ((message (make-instance 'lichat-cmd:create :channel NIL :from (username client))))
+    (with-awaiting (lichat:join ev channel)
+        ((first (cores client))
+         :filter `(= id ,(slot-value message 'id))
+         :timeout 5)
+        (send message client)
+      (dolist (user users)
+        (lichat-cmd:pull client user channel))
+      channel)))
+
 (defmethod reply ((user lichat-user) message &rest args)
-  (lichat-cmd:message (client user) (name user) (apply #'format NIL message args)))
+  (let ((channel (or (find-conversation-channel user)
+                     (make-anonymous-channel (client user) user))))
+    (lichat-cmd:message (client user) channel (apply #'format NIL message args))))
 
 (defclass lichat-channel (simple-channel)
   ())
 
 (defmethod reply ((channel lichat-channel) message &rest args)
-  (lichat-cmd:message (client channel) (name channel) (apply #'format NIL message args)))
+  (lichat-cmd:message (client channel) channel (apply #'format NIL message args)))
 
 (define-consumer lichat-client (tcp-client reconnecting-client timeout-client simple-user-channel-client)
   ((username :initarg :username :accessor username)
    (password :initarg :password :accessor password))
   (:default-initargs
    :username "Maiden"
-   :password NIL))
+   :password NIL
+   :port 1111))
 
 (defmethod initialize-instance :after ((client lichat-client) &key channels)
   (dolist (channel channels)

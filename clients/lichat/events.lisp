@@ -21,8 +21,13 @@
    `(,(find-symbol (string (class-name (class-of event))) #:lichat-protocol)
      ,@(loop for slot in (c2mop:class-slots (class-of wireable))
              for initarg = (car (last (c2mop:slot-definition-initargs slot)))
+             for value = (slot-value wireable (c2mop:slot-definition-name slot))
              when name collect initarg
-             when name collect (slot-value wireable (c2mop:slot-definition-name slot))))
+             when name collect (typecase value
+                                 (named-entity (name value))
+                                 (lichat-client (username value))
+                                 ((or string list symbol real) value)
+                                 (T (error 'lichat-protocol:unprintable-object :object value)))))
    stream))
 
 (defmacro define-update (name superclasses args)
