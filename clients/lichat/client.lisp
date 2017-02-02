@@ -18,7 +18,7 @@
 (defmethod reply ((channel lichat-channel) message &rest args)
   (lichat-cmd:message (client channel) (name channel) (apply #'format NIL message args)))
 
-(defclass lichat-client (tcp-client reconnecting-client timeout-client simple-user-channel-client)
+(define-consumer lichat-client (tcp-client reconnecting-client timeout-client simple-user-channel-client)
   ((username :initarg :username :accessor username)
    (password :initarg :password :accessor password))
   (:default-initargs
@@ -33,11 +33,11 @@
     (setf (name client) (host client))))
 
 (defmethod initiate-connection :after ((client lichat-client))
-  (lichat:connect client (password client)))
+  (lichat-cmd:connect client (password client)))
 
 (defmethod close-connection :before ((client lichat-client))
   (when (client-connected-p client)
-    (lichat:disconnect client)))
+    (lichat-cmd:disconnect client)))
 
 (defmethod handle-connection :around ((client lichat-client))
   (with-simple-restart (abort "Exit the connection handling.")
@@ -85,25 +85,25 @@
       (setf (find-channel name client)
             (make-instance 'lichat-channel :name name :client client))))
 
-(define-handler (lichat-client handle-init lichat-rpl:connect) (c ev)
+(define-handler (lichat-client handle-init lichat-rpl:connect) (client ev)
+  :match-consumer 'client
   (loop for channel being the hash-keys of (channel-map client)
-        do (lichat:join c channel)))
+        do (lichat-cmd:join client channel)))
 
-(define-handler (lichat-client send (and update active-event)) (c ev)
-  (send ev c))
+(define-handler (lichat-client send (and update active-event)) (client ev)
+  :match-consumer 'client
+  (send ev client))
 
 (define-handler (lichat-client track-join lichat-rpl:join) (client ev channel user)
   :match-consumer 'client
-  :class deeds:locally-blocking-handler
   (cond ((matches user (username client))
          (setf (gethash (name channel) (channel-map client)) channel))
         (T
          (setf (find-channel (name channel) user) channel)
          (setf (find-user (name user) channel) user))))
 
-(define-handler (lichat-client track-leave irc:msg-part) (client ev channel user)
+(define-handler (lichat-client track-leave lichat-rpl:leave) (client ev channel user)
   :match-consumer 'client
-  :class deeds:locally-blocking-handler
   (cond ((matches user (username client))
          (remove-channel channel client))
         (T

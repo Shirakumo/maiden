@@ -90,5 +90,5 @@
 
 (defpackage #:maiden-lichat
   (:nicknames #:org.shirakumo.maiden.clients.lichat)
-  (:use #:cl #:maiden-networking #:maiden-client-entities)
+  (:use #:cl #:maiden #:maiden-networking #:maiden-client-entities)
   (:export))

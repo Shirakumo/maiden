@@ -41,9 +41,11 @@
          (do-issue (first (cores ,client)) ,name-cmd
            :from (username ,client)
            :client ,client
-           ,@(loop for var in (rest pure-args) collect (kw var) collect var))))))
+           ,@(loop for var in (rest pure-args)
+                   collect (intern (string var) :keyword)
+                   collect var))))))
 
-(defclass update (user-event lichat-protocol:wire-object)
+(define-event update (user-event lichat-protocol:wire-object)
   ((id :initarg :id :accessor id)
    (clock :initarg :clock :accessor clock)
    (user :initarg :from))
@@ -56,7 +58,7 @@
     (deeds:with-immutable-slots-unlocked ()
       (setf (slot-value event 'user) (ensure-user (or user from) client)))))
 
-(defclass channel-update (update channel-event)
+(define-event channel-update (update channel-event)
   ())
 
 (defmethod initialize-instance :after ((event channel-update) &key client channel)
@@ -64,12 +66,12 @@
     (deeds:with-immutable-slots-unlocked ()
       (setf (slot-value event 'channel) (ensure-channel channel client)))))
 
-(defclass target-update (update)
+(define-event target-update (update)
   ((target :initarg :target :accessor target))
   (:default-initargs
    :target (error "TARGET required.")))
 
-(defclass text-update (update message-event)
+(define-event text-update (update message-event)
   ((message :initarg :text)))
 
 (define-update ping (update)
@@ -120,59 +122,59 @@
 (define-update failure (text-update)
   (&optional text))
 
-(define-update malformed-update (lichat-rpl:failure)
+(define-update malformed-update (failure)
   (&optional text))
 
-(define-update connection-unstable (lichat-rpl:failure)
+(define-update connection-unstable (failure)
   (&optional text))
 
-(define-update too-many-connections (lichat-rpl:failure)
+(define-update too-many-connections (failure)
   (&optional text))
 
-(define-update update-failure (lichat-rpl:failure)
+(define-update update-failure (failure)
   (update-id &optional text))
 
-(define-update invalid-update (lichat-rpl:update-failure)
+(define-update invalid-update (update-failure)
   (update-id &optional text))
 
-(define-update username-mismatch (lichat-rpl:update-failure)
+(define-update username-mismatch (update-failure)
   (update-id &optional text))
 
-(define-update incompatible-version (lichat-rpl:update-failure)
+(define-update incompatible-version (update-failure)
   (compatible-versions update-id &optional text))
 
-(define-update invalid-password (lichat-rpl:update-failure)
+(define-update invalid-password (update-failure)
   (update-id &optional text))
 
-(define-update no-such-profile (lichat-rpl:update-failure)
+(define-update no-such-profile (update-failure)
   (update-id &optional text))
 
-(define-update username-taken (lichat-rpl:update-failure)
+(define-update username-taken (update-failure)
   (update-id &optional text))
 
-(define-update no-such-channel (lichat-rpl:update-failure)
+(define-update no-such-channel (update-failure)
   (update-id &optional text))
 
-(define-update already-in-channel (lichat-rpl:update-failure)
+(define-update already-in-channel (update-failure)
   (update-id &optional text))
 
-(define-update not-in-channel (lichat-rpl:update-failure)
+(define-update not-in-channel (update-failure)
   (update-id &optional text))
 
-(define-update channelname-taken (lichat-rpl:update-failure)
+(define-update channelname-taken (update-failure)
   (update-id &optional text))
 
-(define-update bad-name (lichat-rpl:update-failure)
+(define-update bad-name (update-failure)
   (update-id &optional text))
 
-(define-update insufficient-permissions (lichat-rpl:update-failure)
+(define-update insufficient-permissions (update-failure)
   (update-id &optional text))
 
-(define-update invalid-permissions (lichat-rpl:update-failure)
+(define-update invalid-permissions (update-failure)
   (update-id &optional text))
 
-(define-update no-such-user (lichat-rpl:update-failure)
+(define-update no-such-user (update-failure)
   (update-id &optional text))
 
-(define-update too-many-updates (lichat-rpl:update-failure)
+(define-update too-many-updates (update-failure)
   (update-id &optional text))
