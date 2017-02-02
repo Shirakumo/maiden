@@ -33,6 +33,15 @@
   (when (client-connected-p client)
     (close-connection client)))
 
+(defmethod initiate-connection :around ((client remote-client))
+  (let (connection-successful)
+    (unwind-protect
+         (prog1 (call-next-method)
+           (setf connection-successful T))
+      (unless connection-successful
+        (ignore-errors
+         (close-connection client))))))
+
 (defmethod initiate-connection :after ((client remote-client))
   (broadcast (cores client) 'connection-initiated :client client))
 
