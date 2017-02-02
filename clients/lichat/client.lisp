@@ -40,8 +40,9 @@
 (defmethod reply ((channel lichat-channel) message &rest args)
   (lichat-cmd:message (client channel) channel (apply #'format NIL message args)))
 
-(define-consumer lichat-client (tcp-client reconnecting-client timeout-client simple-user-channel-client)
-  ((username :initarg :username :accessor username)
+(define-consumer lichat-client (text-tcp-client reconnecting-client timeout-client simple-user-channel-client)
+  ((servername :initform NIL :accessor servername)
+   (username :initarg :username :accessor username)
    (password :initarg :password :accessor password))
   (:default-initargs
    :username "Maiden"
@@ -56,11 +57,20 @@
     (setf (name client) (host client))))
 
 (defmethod initiate-connection :after ((client lichat-client))
-  (lichat-cmd:connect client (password client)))
+  (with-awaiting (lichat-rpl:update ev)
+      ((first (cores client))
+       :timeout 30)
+      (lichat-cmd:connect client (password client))
+    (cond ((typep ev 'lichat-rpl:connect)
+           (setf (servername client) (name (slot-value ev 'user))))
+          (error "Failed to connect: ~a" ev))))
 
 (defmethod close-connection :before ((client lichat-client))
   (when (client-connected-p client)
-    (lichat-cmd:disconnect client)))
+    ;; Can't use dispatch mechanism here since the connection will be
+    ;; gone once our handler picks the event up for sending.
+    (ignore-errors
+     (send (make-instance 'lichat-cmd:disconnect :from (username client)) client))))
 
 (defmethod handle-connection :around ((client lichat-client))
   (with-simple-restart (abort "Exit the connection handling.")
@@ -70,19 +80,23 @@
                        (invoke-restart 'continue))))
       (call-next-method))))
 
-(defmethod process ((object update) (client lichat-client))
+(defmethod process ((update update) (client lichat-client))
   (dolist (core (cores client))
-    (issue event core)))
+    (issue update core)))
 
 (defmethod send ((list list) (client lichat-client))
   (dolist (item list list)
     (send item client)))
 
-(defmethod send ((object lichat-protocol:update) (client lichat-client))
-  (print-event object (usocket:socket-stream (socket client))))
+(defmethod send ((object update) (client lichat-client))
+  (let ((stream (usocket:socket-stream (socket client))))
+    (print-event object stream)
+    (finish-output stream)))
 
 (defmethod receive ((client lichat-client))
-  (parse-event (usocket:socket-stream (socket client))))
+  (let ((update (parse-event client (usocket:socket-stream (socket client)))))
+    (v:trace :maiden.client.lichat.connection "Received update: ~a" update)
+    update))
 
 (defmethod handle-connection-idle ((client lichat-client)))
 
@@ -98,6 +112,10 @@
         (send message client)
       registered)))
 
+;; FIXME: Currently we are very "trusting" in that we hope the server won't
+;;        deliver any malicious or bogus events from channels or users we
+;;        cannot know about. Such messages would confuse this system and
+;;        potentially lead to a memory exhaustion.
 (defmethod ensure-user ((name string) (client lichat-client))
   (or (find-user name client)
       (setf (find-user name client)
@@ -113,9 +131,12 @@
   (loop for channel being the hash-keys of (channel-map client)
         do (lichat-cmd:join client channel)))
 
-(define-handler (lichat-client send (and update active-event)) (client ev)
+(define-handler (lichat-client send lichat-cmd:update) (client ev)
   :match-consumer 'client
   (send ev client))
+
+(define-handler (lichat-client pong lichat-rpl:ping) (client ev)
+  (lichat-cmd:pong client))
 
 (define-handler (lichat-client track-join lichat-rpl:join) (client ev channel user)
   :match-consumer 'client

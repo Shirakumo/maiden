@@ -10,6 +10,7 @@
   (:nicknames #:org.shirakumo.maiden.clients.lichat.cmd)
   (:use)
   (:export
+   #:update
    #:ping
    #:pong
    #:connect
@@ -51,6 +52,7 @@
   (:nicknames #:org.shirakumo.maiden.clients.lichat.rpl)
   (:use)
   (:export
+   #:update
    #:ping
    #:pong
    #:connect

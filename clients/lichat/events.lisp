@@ -6,28 +6,33 @@
 
 (in-package #:org.shirakumo.maiden.clients.lichat)
 
-(defun parse-event (stream)
+(defun parse-event (client stream)
   (let ((sexpr (lichat-protocol:read-sexpr stream)))
     (when (consp sexpr)
       (unless (typep (first sexpr) 'symbol)
         (error 'lichat-protocol:malformed-wire-object :update sexpr))
-      (setf (car sexpr) (or (find-symbol (string (car sexpr)) #:org.shirakumo.maiden.clients.lichat.rpl)
+      (setf (car sexpr) (or (find-symbol (string (car sexpr)) '#:org.shirakumo.maiden.clients.lichat.rpl)
                             (error 'lichat-protocol:unknown-wire-object :update sexpr)))
       (lichat-protocol:check-update-options sexpr)
-      (apply #'make-instance sexpr))))
+      (apply #'make-instance (first sexpr) :client client (rest sexpr)))))
+
+(defun good-initarg-p (initarg)
+  (member initarg '(:id :clock :from :password :version :channel :target :text
+                    :permissions :users :channels :registered :connections
+                    :update-id :compatible-versions)))
 
 (defun print-event (event stream)
   (lichat-protocol:print-sexpr
-   `(,(find-symbol (string (class-name (class-of event))) #:lichat-protocol)
-     ,@(loop for slot in (c2mop:class-slots (class-of wireable))
-             for initarg = (car (last (c2mop:slot-definition-initargs slot)))
-             for value = (slot-value wireable (c2mop:slot-definition-name slot))
-             when name collect initarg
-             when name collect (typecase value
-                                 (named-entity (name value))
-                                 (lichat-client (username value))
-                                 ((or string list symbol real) value)
-                                 (T (error 'lichat-protocol:unprintable-object :object value)))))
+   `(,(find-symbol (string (class-name (class-of event))) '#:lichat-protocol)
+     ,@(loop for slot in (c2mop:class-slots (class-of event))
+             for initarg = (car (remove-if-not #'good-initarg-p (c2mop:slot-definition-initargs slot)))
+             for value = (slot-value event (c2mop:slot-definition-name slot))
+             when initarg collect initarg
+             when initarg collect (typecase value
+                                    (lichat-client (username value))
+                                    (named-entity (name value))
+                                    ((or string list symbol real) value)
+                                    (T (error 'lichat-protocol:unprintable-object :object value)))))
    stream))
 
 (defmacro define-update (name superclasses args)
@@ -38,23 +43,24 @@
     `(progn
        (define-event ,name (,@superclasses incoming-event passive-event)
          ,(maiden::slot-args->slots args))
-       (define-event ,name-rpl (,name incoming-event passive-event)
+       (define-event ,name-rpl (lichat-rpl:update ,name)
          ())
-       (define-event ,name-cmd (,name instruction-event outgoing-event active-event)
+       (define-event ,name-cmd (lichat-cmd:update ,name)
          ())
        (defun ,name-cmd (,client ,@(maiden::slot-args->args args))
          (do-issue (first (cores ,client)) ,name-cmd
            :from (username ,client)
            :client ,client
-           ,@(loop for var in (rest pure-args)
+           ,@(loop for var in pure-args
                    collect (intern (string var) :keyword)
                    collect var))))))
 
 (define-event update (user-event lichat-protocol:wire-object)
-  ((id :initarg :id :accessor id)
-   (clock :initarg :clock :accessor clock)
+  ((id :initarg :id :reader id)
+   (clock :initarg :clock :reader clock)
    (user :initarg :from))
   (:default-initargs
+   :user NIL
    :id (lichat-protocol:next-id)
    :clock (get-universal-time)))
 
@@ -62,6 +68,17 @@
   (unless (typep (or user from) 'user)
     (deeds:with-immutable-slots-unlocked ()
       (setf (slot-value event 'user) (ensure-user (or user from) client)))))
+
+(defmethod print-object ((update update) stream)
+  (print-unreadable-object (update stream :type T)
+    (format stream "~s ~a ~s ~a" :from (name (slot-value update 'user))
+                                 :id (slot-value update 'id))))
+
+(define-event lichat-rpl:update (update incoming-event passive-event)
+  ())
+
+(define-event lichat-cmd:update (update instruction-event outgoing-event)
+  ())
 
 (define-event channel-update (update channel-event)
   ())
@@ -72,12 +89,20 @@
       (setf (slot-value event 'channel) (ensure-channel channel client)))))
 
 (define-event target-update (update)
-  ((target :initarg :target :accessor target))
+  ((target :initarg :target :reader target))
   (:default-initargs
    :target (error "TARGET required.")))
 
 (define-event text-update (update message-event)
-  ((message :initarg :text)))
+  ((message :initarg :text))
+  (:default-initargs
+   :message NIL))
+
+(defmethod print-object ((update text-update) stream)
+  (print-unreadable-object (update stream :type T)
+    (format stream "~s ~a ~s ~a ~s ~s" :from (name (slot-value update 'user))
+                                       :id (slot-value update 'id)
+                                       :text (slot-value update 'text))))
 
 (define-update ping (update)
   ())
@@ -115,6 +140,12 @@
 (define-update message (channel-update text-update)
   (channel text))
 
+(defmethod print-object ((update message) stream)
+  (print-unreadable-object (update stream :type T)
+    (format stream "~s ~a ~s ~a ~s ~s" :from (name (slot-value update 'user))
+                                       :channel (name (slot-value update 'channel))
+                                       :text (slot-value update 'text))))
+
 (define-update users (channel-update)
   (&optional (users ())))
 
@@ -138,6 +169,12 @@
 
 (define-update update-failure (failure)
   (update-id &optional text))
+
+(defmethod print-object ((update update-failure) stream)
+  (print-unreadable-object (update stream :type T)
+    (format stream "~s ~a ~s ~a ~s ~a" :from (name (slot-value update 'from))
+                                       :id (slot-value update 'id)
+                                       :update-id (slot-value update 'update-id))))
 
 (define-update invalid-update (update-failure)
   (update-id &optional text))
