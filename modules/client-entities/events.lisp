@@ -44,3 +44,6 @@
 
 (define-event user-left (user-event channel-event)
   ())
+
+(defmethod reply ((event channel-event) fmst &rest args)
+  (apply #'reply (channel event) fmst args))
