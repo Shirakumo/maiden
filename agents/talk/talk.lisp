@@ -64,7 +64,7 @@
           (cl-out123:stop output)
           (cl-mpg123:disconnect file)))
       (with-output (out "pulse")
-        (play-file file :out output))))
+        (play-file file :output output))))
 
 (defun talk (text &key (language "en-US") output)
   (with-speech-file (path text :language language)
