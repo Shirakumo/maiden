@@ -53,14 +53,14 @@
   :command "deactivate chatlog"
   :advice (not public)
   (let ((channel (cons (name (client ev)) (name (channel ev)))))
-    (remove-channel channel)
+    (del-channel channel)
     (reply ev "Deactivated logging for ~a." channel)))
 
 (define-command (chatlog deactivate-on) (c ev client channel)
   :command "deactivate chatlog on"
   :advice (not public)
   (let ((channel (cons client channel)))
-    (remove-channel channel)
+    (del-channel channel)
     (reply ev "Deactivated logging for ~a." channel)))
 
 (define-command (chatlog initialize) (c ev &key (host "localhost") (db "chatlog") (user "chatlog") password (port 5432))

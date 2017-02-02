@@ -18,5 +18,5 @@
    #:prepared-statement
    #:initialize-database
    #:add-channel
-   #:remove-channel
+   #:del-channel
    #:record-message))

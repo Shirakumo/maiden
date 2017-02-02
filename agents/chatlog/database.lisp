@@ -103,7 +103,7 @@
                           (car channel) (cdr channel))))
   channel-ish)
 
-(defun remove-channel (channel-ish)
+(defun del-channel (channel-ish)
   (let ((channel (channel-designator channel-ish)))
     (with-db ()
       (unless (channel-exists-p channel)
