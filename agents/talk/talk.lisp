@@ -13,10 +13,12 @@
    :device "pulse"))
 
 (defmethod start :after ((talk talk))
-  (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk)))))
+  (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk) :name "Maiden Talk")))
+  (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16))
 
 (defmethod stop :before ((talk talk))
   (when (output talk)
+    (cl-out123:stop (output talk))
     (cl-out123:disconnect (output talk))
     (setf (output talk) NIL)))
 
@@ -48,35 +50,55 @@
 (defmacro with-output ((out device &rest args) &body body)
   `(let ((,out (cl-out123:connect (cl-out123:make-output ,device ,@args))))
      (unwind-protect
-          (progn ,@body)
+          (progn
+            (cl-out123:start ,out :rate 24000 :channels 1 :encoding :int16)
+            ,@body)
+       (cl-out123:stop ,out)
        (cl-out123:disconnect ,out))))
 
 (defun play-file (file &key output)
   (if output
       (let ((file (cl-mpg123:connect (cl-mpg123:make-file file))))
-        (multiple-value-bind (rate channels encoding) (cl-mpg123:file-format file)
-          (cl-out123:start output :rate rate :channels channels :encoding encoding))
         (unwind-protect
              (loop with buffer = (cl-mpg123:buffer file)
                    for read = (cl-mpg123:process file)
                    do (cl-out123:play output buffer read)
                    while (< 0 read))
-          (cl-out123:stop output)
           (cl-mpg123:disconnect file)))
       (with-output (out "pulse")
-        (play-file file :output output))))
+        (play-file file :output out))))
+
+(defun split-word-boundary (text max)
+  (let ((boundary (loop with space = 0
+                        for i downfrom (1- max) to 0
+                        do (case (char text i)
+                             ((#\. #\: #\? #\! #\！ #\？ #\。)
+                              (return (1+ i)))
+                             ((#\Space #\Tab #\　)
+                              (setf space (max space i))))
+                        finally (return space))))
+    (if (< 0 boundary)
+        (subseq text 0 boundary)
+        (subseq text 0 (min max (length text))))))
 
 (defun talk (text &key (language "en-US") output)
-  (with-speech-file (path text :language language)
-    (play-file path :output output)))
+  (cond ((<= (length text) 200)
+         (with-speech-file (path text :language language)
+           (play-file path :output output)))
+        (T
+         (let ((sub (split-word-boundary text 200)))
+           (talk sub :language language :output output)
+           (talk (subseq text (length sub)) :language language :output output)))))
 
 (define-command (talk talk-en) (c ev &rest text)
   :command "talk"
-  (talk (format NIL "~{~a~^ ~}" text)
-        :output (output c)))
+  (bt:with-lock-held ((lock c))
+    (talk (format NIL "~{~a~^ ~}" text)
+          :output (output c))))
 
 (define-command (talk talk-lang) (c ev language &rest text)
   :command "talk in"
-  (talk (format NIL "~{~a~^ ~}" text)
-        :language language
-        :output (output c)))
+  (bt:with-lock-held ((lock c))
+    (talk (format NIL "~{~a~^ ~}" text)
+          :language language
+          :output (output c))))
