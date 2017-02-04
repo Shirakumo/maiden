@@ -10,7 +10,9 @@
   ((device :initarg :device :accessor device)
    (output :initform NIL :accessor output))
   (:default-initargs
-   :device "pulse"))
+   :device #+linux "pulse"
+           #+windows "win32_wasapi"
+           #-(or linux windows) NIL))
 
 (defmethod start :after ((talk talk))
   (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk) :name "Maiden Talk")))
@@ -65,7 +67,9 @@
                    do (cl-out123:play output buffer read)
                    while (< 0 read))
           (cl-mpg123:disconnect file)))
-      (with-output (out "pulse")
+      (with-output (out #+linux "pulse"
+                        #+windows "win32_wasapi"
+                        #-(or linux windows) NIL)
         (play-file file :output out))))
 
 (defun split-word-boundary (text max)
