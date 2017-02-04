@@ -11,12 +11,12 @@
    (output :initform NIL :accessor output))
   (:default-initargs
    :device #+linux "pulse"
-           #+windows "win32_wasapi"
-           #-(or linux windows) NIL))
+           #-linux NIL))
 
 (defmethod start :after ((talk talk))
   (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk) :name "Maiden Talk")))
-  (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16))
+  #+linux (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16)
+  #-linux (cl-out123:start (output talk)))
 
 (defmethod stop :before ((talk talk))
   (when (output talk)
@@ -53,14 +53,17 @@
   `(let ((,out (cl-out123:connect (cl-out123:make-output ,device ,@args))))
      (unwind-protect
           (progn
-            (cl-out123:start ,out :rate 24000 :channels 1 :encoding :int16)
+            #+linux (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16)
+            #-linux (cl-out123:start (output talk))
             ,@body)
        (cl-out123:stop ,out)
        (cl-out123:disconnect ,out))))
 
 (defun play-file (file &key output)
   (if output
-      (let ((file (cl-mpg123:connect (cl-mpg123:make-file file))))
+      (let ((file (cl-mpg123:connect (cl-mpg123:make-file file :accepted-format (list (cl-out123:rate output)
+                                                                                      (cl-out123:channels output)
+                                                                                      (cl-out123:encoding output))))))
         (unwind-protect
              (loop with buffer = (cl-mpg123:buffer file)
                    for read = (cl-mpg123:process file)
@@ -68,8 +71,7 @@
                    while (< 0 read))
           (cl-mpg123:disconnect file)))
       (with-output (out #+linux "pulse"
-                        #+windows "win32_wasapi"
-                        #-(or linux windows) NIL)
+                        #-linux NIL)
         (play-file file :output out))))
 
 (defun split-word-boundary (text max)
