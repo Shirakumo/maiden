@@ -15,8 +15,7 @@
 
 (defmethod start :after ((talk talk))
   (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk) :name "Maiden Talk")))
-  #+linux (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16)
-  #-linux (cl-out123:start (output talk)))
+  (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16))
 
 (defmethod stop :before ((talk talk))
   (when (output talk)
@@ -53,8 +52,7 @@
   `(let ((,out (cl-out123:connect (cl-out123:make-output ,device ,@args))))
      (unwind-protect
           (progn
-            #+linux (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16)
-            #-linux (cl-out123:start (output talk))
+            (cl-out123:start ,out :rate 24000 :channels 1 :encoding :int16)
             ,@body)
        (cl-out123:stop ,out)
        (cl-out123:disconnect ,out))))
@@ -69,7 +67,8 @@
                    for read = (cl-mpg123:process file)
                    do (cl-out123:play output buffer read)
                    while (< 0 read))
-          (cl-mpg123:disconnect file)))
+          (cl-mpg123:disconnect file))
+        (cl-out123:drain output))
       (with-output (out #+linux "pulse"
                         #-linux NIL)
         (play-file file :output out))))
