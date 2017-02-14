@@ -54,7 +54,7 @@
   (:export
    #:consumer-class
    #:direct-handlers
-   #:handlers
+   #:effective-handlers
    #:instances
    #:consumer
    #:handlers

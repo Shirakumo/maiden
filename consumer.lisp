@@ -11,7 +11,7 @@
 
 (defclass consumer-class (standard-class)
   ((direct-handlers :initform () :accessor direct-handlers)
-   (handlers :initform () :accessor handlers)
+   (effective-handlers :initform () :accessor effective-handlers)
    (instances :initform () :accessor instances)))
 
 (defmethod c2mop:validate-superclass ((class consumer-class) (superclass t))
@@ -30,10 +30,10 @@
   (let ((handlers (copy-list (direct-handlers class))))
     (loop for superclass in (c2mop:class-direct-superclasses class)
           when (c2mop:subclassp superclass 'consumer)
-          do (loop for handler in (handlers superclass)
+          do (loop for handler in (effective-handlers superclass)
                    unless (find (name handler) handlers :key #'name)
                    do (push handler handlers)))
-    (setf (handlers class) handlers))
+    (setf (effective-handlers class) handlers))
   (loop for sub-class in (c2mop:class-direct-subclasses class)
         when (and (c2mop:subclassp sub-class 'consumer-class)
                   (c2mop:class-finalized-p sub-class))
@@ -45,13 +45,13 @@
       (c2mop:finalize-inheritance super)))
   (cascade-handler-changes class))
 
-(defmethod (setf handlers) :after (handlers (class consumer-class))
+(defmethod (setf effective-handlers) :after (handlers (class consumer-class))
   (setf (instances class)
         (loop for pointer in (instances class)
               for consumer = (tg:weak-pointer-value pointer)
               when consumer
               collect (prog1 pointer 
-                        (reinitialize-handlers consumer (handlers class))))))
+                        (reinitialize-handlers consumer handlers)))))
 
 (defmethod (setf direct-handlers) :after (handlers (class consumer-class))
   (c2mop:finalize-inheritance class))
@@ -80,23 +80,23 @@
 
 (defmethod initialize-instance :after ((consumer consumer) &key)
   (push (tg:make-weak-pointer consumer) (instances (class-of consumer)))
-  (dolist (handler (handlers (class-of consumer)))
-    (push (instantiate-handler handler consumer) (handlers consumer))))
+  (dolist (abstract-handler (effective-handlers (class-of consumer)))
+    (push (instantiate-handler abstract-handler consumer) (handlers consumer))))
 
 (defmethod reinitialize-handlers :around ((consumer consumer) handlers)
   (bt:with-recursive-lock-held ((lock consumer))
     (call-next-method)))
 
 ;; FIXME: Keeping book on what's started or not and retaining that.
-(defmethod reinitialize-handlers ((consumer consumer) handlers)
+(defmethod reinitialize-handlers ((consumer consumer) abstract-handlers)
   (v:info :maiden.core.consumer "~a updating handlers." consumer)
   (let ((cores (cores consumer)))
     ;; Deregister
     (remove-consumer consumer cores)
     ;; Rebuild
     (setf (handlers consumer) ())
-    (dolist (handler handlers)
-      (push (start (instantiate-handler handler consumer)) (handlers consumer)))
+    (dolist (abstract-handler abstract-handlers)
+      (push (start (instantiate-handler abstract-handler consumer)) (handlers consumer)))
     ;; Reregister
     (add-consumer consumer cores)))
 
