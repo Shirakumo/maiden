@@ -28,7 +28,7 @@
   ((agent :initarg :agent :reader agent))
   (:default-initargs :agent (error "AGENT required.")))
 
-(define-condition agent-already-exists-error (agent-condition)
+(define-condition agent-already-exists-error (core-condition agent-condition)
   ((existing-agent :initarg :existing-agent :reader existing-agent))
   (:default-initargs :existing-agent (error "EXISTING-AGENT required."))
   (:report (lambda (c s) (format s "An agent of the same class ~s (~a) already exists."
