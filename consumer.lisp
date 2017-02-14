@@ -56,21 +56,21 @@
 (defmethod (setf direct-handlers) :after (handlers (class consumer-class))
   (c2mop:finalize-inheritance class))
 
-(defun update-handler (handler class-ish)
-  (check-type handler abstract-handler)
+(defun update-handler (abstract-handler class-ish)
+  (check-type abstract-handler abstract-handler)
   (etypecase class-ish
-    (consumer-class (update-list handler (direct-handlers class-ish) :key #'name))
-    (consumer (update-handler handler (class-of class-ish)))
-    (symbol (update-handler handler (find-class class-ish)))))
+    (consumer-class (update-list abstract-handler (direct-handlers class-ish) :key #'name))
+    (consumer (update-handler abstract-handler (class-of class-ish)))
+    (symbol (update-handler abstract-handler (find-class class-ish)))))
 
-(defun remove-handler (handler class-ish)
+(defun remove-handler (abstract-handler class-ish)
   (etypecase class-ish
     (consumer-class (setf (direct-handlers class-ish)
-                          (etypecase handler
-                            (abstract-handler (delete handler (direct-handlers class-ish)))
-                            (symbol (delete handler (direct-handlers class-ish) :key #'name)))))
-    (consumer (remove-handler handler (class-of class-ish)))
-    (symbol (remove-handler handler (find-class class-ish)))))
+                          (etypecase abstract-handler
+                            (abstract-handler (delete abstract-handler (direct-handlers class-ish)))
+                            (symbol (delete abstract-handler (direct-handlers class-ish) :key #'name)))))
+    (consumer (remove-handler abstract-handler (class-of class-ish)))
+    (symbol (remove-handler abstract-handler (find-class class-ish)))))
 
 (defclass consumer (named-entity)
   ((handlers :initform () :accessor handlers)

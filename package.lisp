@@ -81,13 +81,12 @@
    #:remove-consumer
    #:core
    #:abort-handling
-   #:event-loop
+   #:primary-loop
    #:block-loop
    #:consumers
    #:with-awaiting
-   #:with-response
-   #:make-simple-core
-   #:core-simple-add)
+   #:make-core
+   #:add-to-core)
   ;; entity.lisp
   (:export
    #:matches
