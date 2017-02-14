@@ -59,9 +59,10 @@
 
 (defun play-file (file &key output)
   (if output
-      (let ((file (cl-mpg123:connect (cl-mpg123:make-file file :accepted-format (list (cl-out123:rate output)
-                                                                                      (cl-out123:channels output)
-                                                                                      (cl-out123:encoding output))))))
+      (let ((file (cl-mpg123:connect (cl-mpg123:make-file file :accepted-format #+linux T
+                                                                                #-linux (list (cl-out123:rate output)
+                                                                                              (cl-out123:channels output)
+                                                                                              (cl-out123:encoding output))))))
         (unwind-protect
              (loop with buffer = (cl-mpg123:buffer file)
                    for read = (cl-mpg123:process file)
