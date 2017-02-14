@@ -115,17 +115,7 @@
    #:client
    #:core-event
    #:consumer-added
-   #:consumer-removed
-   #:instruction-event
-   #:executed-instruction
-   #:core-instruction-event
-   #:add-consumer
-   #:consumer-type
-   #:name
-   #:initargs
-   #:remove-consumer
-   #:name
-   #:stop)
+   #:consumer-removed)
   ;; toolkit.lisp
   (:export
    #:*root*
