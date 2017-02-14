@@ -31,44 +31,44 @@
 (defmacro define-simple-silly (name (sender regex &rest args) &body body)
   (let ((message (gensym "MESSAGE")))
     `(define-silly ,name (,sender ,message)
-       (cl-ppcre:register-groups-bind ,args (,regex ,message)
+       (cl-ppcre:register-groups-bind ,args (,(format NIL "(?i)~a" regex) ,message)
          (format NIL ,(first body) ,@(rest body))))))
 
 (defun cut-to-first-vowel (word)
   (flet ((p (c) (position c word :test #'char-equal)))
     (subseq word (or (p #\a) (p #\e) (p #\i) (p #\o) (p #\u) (p #\y) (p #\w) 0))))
 
-(define-simple-silly thants (sender "(?i)thanks,? ([^！？．。!¡?¿.,:;\\s]+)" thank)
+(define-simple-silly thants (sender "thanks,? ([^！？．。!¡?¿.,:;\\s]+)" thank)
   "... Th~(~a~)." (cut-to-first-vowel thank))
 
-(define-simple-silly blants (sender "(?i)bless you,? ([^！？．。!¡?¿.,:;\\s]+)" bless)
+(define-simple-silly blants (sender "bless you,? ([^！？．。!¡?¿.,:;\\s]+)" bless)
   "... Bl~(~a~)." (cut-to-first-vowel bless))
 
-(define-simple-silly now-we-know (sender "(?i)((i|you|he|she|it|we|they)( all)? know(s?) now|now (i|you|he|she|it|we|they)( all)? know(s?))")
+(define-simple-silly now-we-know (sender "((i|you|he|she|it|we|they)( all)? know(s?) now|now (i|you|he|she|it|we|they)( all)? know(s?))")
   (alexandria:random-elt '("...now we know." "... oh yeah we know now." "NOW WE KNOW!" "NOW WE KNOOOW!!" "...yeah that's good. Now we know.")))
 
-(define-simple-silly the-plan (sender "(?i)that('s| was| is) the plan")
+(define-simple-silly the-plan (sender "that('s| was| is) the plan")
   "... to give you a boner. AND YOU GOT ONE!")
 
-(define-simple-silly nano-machines (sender "(?i)(how is (this|that) (even )?possible)|(how the hell)|(how in the world)|how('d| would) that even work")
+(define-simple-silly nano-machines (sender "(how is (this|that) (even )?possible)|(how the hell)|(how in the world)|how('d| would) that even work")
   "NANO MACHINES, SON!")
 
-(define-simple-silly nespresso (sender "(?i)what else")
+(define-simple-silly nespresso (sender "what else")
   "Nespresso.")
 
-(define-simple-silly clooney (sender "(?i)who else")
+(define-simple-silly clooney (sender "who else")
   "George Clooney.")
 
-(define-simple-silly tomorrow (sender "(?i)when('s| is)( the next| the new) (.*?)( going to| gonna)?( be| come)?")
+(define-simple-silly tomorrow (sender "when('s| is)( the next| the new) (.*?)( going to| gonna)?( be| come)?")
   "Tomorrow.")
 
-(define-simple-silly the-answer (sender "(?i)I('ll| will) let (you|him|her|them|us) decide")
+(define-simple-silly the-answer (sender "I('ll| will) let (you|him|her|them|us) decide")
   "... but the answer is yes.")
 
-(define-simple-silly great (sender "(?i)it(('s| is) (gonna be|going to be)|('ll| will) be) great")
+(define-simple-silly great (sender "it(('s| is) (gonna be|going to be)|('ll| will) be) great")
   "It's gonna be great.")
 
-(define-simple-silly galo-sengen (sender "(?i)go\\s*go\\s*go")
+(define-simple-silly galo-sengen (sender "go\\s*go\\s*go")
   "GALO SENGEN")
 
 (define-simple-silly take-it-easy (sender "yukkuri|take it easy|ゆっくり")
