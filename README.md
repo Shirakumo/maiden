@@ -1,55 +1,79 @@
 ## About Maiden
-Maiden is a modular, extensible, dynamic, <insert-buzzword-here> framework for building all sorts of stuff. I'm saying all sorts of stuff because primarily Maiden is only concerned with providing a usable event delivery system. From there on out it can be used for pretty much anything that fits this pattern. Historically however, Maiden was intended as an IRC bot framework, and can still act as such now, but may also very well be used to be integrated with other chat systems, or completely different tasks altogether.
+Maiden is a collection of systems to help you build applications and libraries that interact with chat servers. It can help you build a chat bot, or a general chat client. It also offers a variety of parts that should make it much easier to write a client for a new chat protocol.
 
-## Concepts
-Before you continue here, make sure that you have read the documentation for [Deeds](https://shinmera.github.io/deeds) as it is central to the workings of Maiden.
+## How To
+TBD
 
-### Base Components
-The primary difference to Deeds' model is that Maiden introduces the concept of a consumer that acts as an intermediary to handlers and event loops. Additionally, an event loop is encapsulated in a core. Consumers hold a list of handlers, which are added to the core's loop when the consumer is added to the core. In effect this means that you can bundle handlers together to encapsulate some form of functionality and add or remove this piece in one go.
+## Core Documentation
+Before understanding Maiden, it is worth it to understand [Deeds](https://shinmera.github.io/deeds), if only at a surface level. Maiden builds on it rather heavily.
 
-Consumers are implemented through a metaclass and a base superclass. The metaclass ensures that you can 'define' handlers on a consumer class and that inheritance of handlers throughout the consumer hierarchy is preserved properly. It also takes care to make redefinition of handlers flush through gracefully even if active consumer instances already exist.
+### Core
+A `core` is the central part of a Maiden configuration. It is responsible for managing and orchestrating the other components of the system. You can have multiple cores running simultaneously within the same lisp image, and can even share components between them.
 
-On top of the consumer, two classes are defined: agent and client. Agent should be used as a superclass for any kind of thing that can only exist once per core. This is usually something that represents a module that provides internal mechanisms like updating events or performing some kind of response to an event. A concrete example would be something that looks up the weather on the web and generates a response with the weather data. Clients on the other hand can be instantiated many times over for each core, the typical example for which is some sort of connection to a remote server like IRC.
+More specifically, a Core is made up of an event-loop and a set of consumers. The event-loop is responsible for delivering events to handlers. Consumers are responsible for attaching handlers to the event-loop. The operations you will most likely want to perform on a core are thus: issuing events to it by `issue`, adding consumers to it by `add-consumer`, or removing a consumer from it by `remove-consumer`.
 
-### Protocols
-Maiden provides various standard parts to make implementing easier on you. You may of course choose to ignore all of this and do everything yourself, but if actually do want to use this framework for something, you'll need to understand the protocol in question.
+In order to make it easier on your to create a useful core with consumers added to it, you can make use of the `make-core` and `add-to-core` functions.
 
-#### Entity
-Most things in Maiden are a subclass of `entity`. This provides only a single method, `matches`, which compares two things with each other and performs some kind of smart comparison. While this function does not necessarily always do what you want --equality is hard after all-- it is used to generically perform tests in various contexts.
+### Event
+An `event` is an object that represents a change in the system. Events can be used to either represent a change that has occurred, or to represents a request for a change to happen. These are called `passive-event`s and `active-event`s respectively.
 
-Underneath the `entity` we have `named-entity` which provides a single slot, `name`, and an additional method, `find-entity`, which should discover a matching entity within some form of container.
+Generally you will use events in the following ways:
 
-#### Core
-A `core` is a container for two event loops and a list of consumers. You can search for a consumer with `consumer` and add or remove them with `add/remove-consumer`. Cores, just like event-loops, can be `start`ed and `stop`ped and you can `issue` events onto them, which they will `handle`. The two event loops are distinguished for the following reason:
+1. Consuming them by writing a handler that takes events of a particular type and does something in response to them.
+2. Define new event classes that describe certain behaviour.
+3. Emitting them by writing components that inform the system about changes.
 
-The primary event loop is optimised for fast delivery, which makes adding and removing handlers from it expensive. For things like one-time-handlers that exist for possibly only a very short period of time and may be added very quickly, this would become a bad bottleneck. For this reason, the core has a secondary event loop that does not optimise delivery, but instead has very low-cost adding and removal.
+### Consumer
+A `consumer` is a class that represents a component in the system. Each consumer can have a multitude of handlers tied to it, which will react to events in the system. Consumers come in two basic supertypes, `agent`s and `client`s. Agents are consumers that should only exist on a core once, as they implement functionality that would not make sense to be multiplexed in some way. Clients on the other hand represent some kind of bridge to an outside system, and naturally should be allowed to have multiple instances on the same core.
 
-`de/register-handler` act on the primary event loop, whereas `with-awaiting` and `with-response` act on the secondary event loop. `handler` also only works on the primary event loop, so you cannot search the secondary one unless you do so manually.
+Thus developing a set of commands or an interface of some kind would probably lead to an agent, whereas interfacing with a service like XMPP would lead to a client.
 
-#### Consumers
-We start with the `consumer-class` which is a `standard-class` for consumers. It contains a list of abstract handler definitions that is computed according to proper class inheritance. In order to be able to update the instances of the class when a handler is redefined, it also keeps a weak pointer list to all its instances. This is intentionally in contradiction to the standard MOP/CLOS method of deferring an update until the respective slot is needed, because deferring the update would cause the event-loop to become unstable and potentially miss handlers on delivery.
+Defining a consumer should happen with `define-consumer`, which is similar to the standard `defclass`, but ensures that the superclasses and metaclasses are properly set up.
 
-When the `consumer-class`' `handlers` accessor is updated, `reinitialize-instance` is called on all its instances. Additionally, if the `direct-handlers` accessor is updated, the change is immediately propagated throughout the class hierarchy, causing classes (and thus instances) further down the line to be readjusted.
+### Handler
+`handler`s are objects that hold a function that performs certain actions when a particular event is issued onto the core. Each handler is tied to a particular consumer and is removed or added to the core's event-loop when the consumer is removed or added to the core.
 
-However, the `consumer-class` by itself is not enough to complete the protocol. We also need `consumer` itself, which takes care of establishing the link-back from the `consumer-class` to the instance upon initialisation, and takes care of updating its local handler instances upon redefinition, starting, and stopping. `define-consumer` is a wrapper around defclass that takes care of establishing the proper super- and metaclasses.
+Handler definition happens through one of `define-handler`, `define-function-handler`, `define-instruction`, or `define-query`. Which each successively build on the last to provide a broader shorthand for common requirements. Note that the way in which a handler actually receives its events can differ. Have a look at the Deeds' documentation to see what handler classes are available.
 
-In order for the handler definition to work smoothly, when `define-handler` is invoked, not an actual handler object is constructed, but instead an `abstract-handler` instance. This instance keeps all initialisation options around and is attached to the class it is being defined on. When a `consumer` is actually instantiated, it then creates actual handler instances by invoking `instantiate-handler` on the abstract instances on its class. These instances are then de/registered whenever the consumer is added/removed from a core.
+## Subsystems
+Included in the Maiden project are a couple of subsystems that extend the core functionality.
 
-There is an additional complication to be aware of. If we have an event that is supposed to be directed to a specific instance of a consumer, how can we avoid the handler to be triggered for every instance? Maiden solves this problem by implicitly adding a filter test clause to the handler when it is instantiated from its abstract definition. If the definition contains the `:match-consumer` argument, the specified field of the event is tested against the consumer instance, thus avoiding the handler being triggered if it is not of the required instance.
+* [API Access](modules/api-access/)
+* [Client Entities](modules/client-entities/)
+* [Networking](modules/networking/)
+* [Serialize](modules/serialize/)
+* [Storage](modules/storage/)
 
-Additionally, the delivery function is extended through a closure that captures the consumer instance, so that it is possible to refer to it within the handler body.
+## Existing Clients
+The Maiden project also includes a few standard clients that can be used right away.
 
-Finally, Maiden provides some convenience macros to make common operations easier. `define-instruction` is a shorthand for defining an event, a handler to execute whatever the event should do, and a matching function to broadcast the event while making it appear like a regular function call. `define-query` is like `define-instruction` except that its handler automatically responds with a response event that contains the multiple-values-list of the body, and the corresponding function waits for the response, thus completing the illusion of a regular function call, including return values.
+* [IRC](clients/irc/)
+* [Lichat](clients/lichat/)
+* [Relay](clients/relay/)
 
-#### Agents
-The `agent` class only does three things: automatically set the name to its class if it is not explicitly given, change `matches` on agents to test against the class, and signal a `agent-already-exists-error` on `add-consumer` of an agent if an agent with the same name already exists on the core.
+## Existing Agents
+Finally, the project has a bunch of agent modules that provide functionality that is useful for creating chat bots and such. They, too, can be used straight away.
 
-#### Clients
-At the top of is `client` which does nothing useful by itself, aside from distinguishing the consumer as a client.
-
-Then we have a `user-client`, which adds a way to retrieve known `user` objects and `authenticate` them. There's also the `channel-client` which does much the same, just for `channel` objects.
-
-For client mixins that handle networking components, see maiden-networking.
-
-#### Additional Protocols
-Further protocols may be added by agents or clients. Refer to their documentation for information on how they work and how to interact with them.
+* [accounts](agents/accounts/)
+* [activatable](agents/activatable/)
+* [blocker](agents/blocker/)
+* [chatlog](agents/chatlog/)
+* [commands](agents/commands/)
+* [core-manager](agents/core-manager/)
+* [counter](agents/counter/)
+* [crimes](agents/crimes/)
+* [emoticon](agents/emoticon/)
+* [help](agents/help/)
+* [location](agents/location/)
+* [markov](agents/markov/)
+* [medals](agents/medals/)
+* [notify](agents/notify/)
+* [permissions](agents/permissions/)
+* [quicklisp](agents/quicklisp/)
+* [silly](agents/silly/)
+* [talk](agents/talk/)
+* [throttle](agents/throttle/)
+* [time](agents/time/)
+* [trivia](agents/trivia/)
+* [urlinfo](agents/urlinfo/)
+* [weather](agents/weather/)
