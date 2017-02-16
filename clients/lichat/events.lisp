@@ -172,7 +172,7 @@
 
 (defmethod print-object ((update update-failure) stream)
   (print-unreadable-object (update stream :type T)
-    (format stream "~s ~a ~s ~a ~s ~a" :from (name (slot-value update 'from))
+    (format stream "~s ~a ~s ~a ~s ~a" :from (name (slot-value update 'user))
                                        :id (slot-value update 'id)
                                        :update-id (slot-value update 'update-id))))
 
