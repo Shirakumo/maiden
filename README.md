@@ -1,8 +1,100 @@
 ## About Maiden
 Maiden is a collection of systems to help you build applications and libraries that interact with chat servers. It can help you build a chat bot, or a general chat client. It also offers a variety of parts that should make it much easier to write a client for a new chat protocol.
 
-## How To
-TBD
+## How To Use Maiden as a Bot
+If you only care about using Maiden to set up a bot of some kind, the steps to do so are rather straightforward. First we'll want to load in Maiden and all of the modules and components that you'd like to use in your bot.
+
+```
+(ql:quickload '(maiden maiden-irc maiden-command maiden-silly))
+```
+
+And then we'll create a core with instances of the consumers added to it as we'd like them to be.
+
+```
+(defvar *core* (maiden:make-core
+                 '(:maiden-irc :nickname "MaidenTest" :host "irc.freenode.net" :channels ("##testing"))
+                 :maiden-command
+                 :maiden-silly))
+```
+
+The make-core command takes either package names (as strings or symbols) of consumers to add, or the direct class name of a consumer. In the former case it'll try to find the appropriate consumer class name on its own.
+
+And that's it. `make-core` will create a core, instantiate all the consumers, add them to it, and start everything up. A loot of the modules provided for Maiden will make use of some kind of configuration or persistent storage. For the management thereof, see the [storage](modules/storage/) subsystem.
+
+## How To Use Maiden as a Framework to Develop With
+In order to use Maiden as a framework, you'll first want to define your own system and package as usual for a project. For now we'll just use the `maiden-user` package to play around in. Next we'll want to define a consumer. This can be done with `define-consumer`.
+
+```
+(in-package #:maiden-user)
+(define-consumer ping-notifier (agent)
+  ())
+```
+
+Usually you'll want to define an agent. Agents can only exist once on a core. We'll go through an example for a client later. Now, from here on out we can define our own methods and functions that specialise or act on the consumer class as you'd be used to from general CLOS programming. Next, we'll define our own event that we'll use to send "ping requests" to the system.
+
+```
+(define-event ping (passive-event)
+  ())
+```
+
+The event is defined as a `passive-event` as it is not directly requesting an action to be taken, but rather informs the system of a ping that's happening. Now, in order to actually make the consumer interact with the event system however, we'll also want to define handlers. This can be done with `define-handler`.
+
+```
+(define-handler (ping-notifier ping-receiver ping) (c ev)
+  (v:info :ping "Received a ping: ~a" ev))
+```
+
+This defines a handler called `ping-receiver` on our `ping-notifier` consumer. It also specifies that it will listen for events of type `ping`. The arglist afterwards says that the consumer instance is bound to `c` and the event instance to `ev`. The body then simply logs an informational message using [Verbose](https://shinmera.github.io/verbose).
+
+Let's test this out real quick.
+
+```
+(defvar *core* (make-core 'ping-notifier))
+
+(do-issue *core* ping)
+```
+
+That should print the status message to the REPL as expected. And that's most of everything there is to using this system. Note that in order to do actually useful things, you'll probably want to make use of some of the preexisting subsystems that the Maiden project delivers aside from the core. Those will help you with users, channels, accounts, commands, networking, storage, and so forth. Also keep in mind that you can make use of the features that [Deeds](https://shinmera.github.io/deeds) offers on its own as well, such as filtering expressions for handlers.
+
+Now let's take a look at a primitive kind of client. The client will simply be able to write to a file through events.
+
+```
+(define-consumer file-client (client)
+  ((file :initarg :file :accessor file))
+  (:default-initargs :file (error "FILE required.")))
+  
+(define-event write-event (client-event active-event)
+  ((sequence :initarg :sequence))
+  (:default-initargs :sequence (error "SEQUENCE required.")))
+```
+
+We've made the `write-event` a `client-event` since it needs to be specific to a client we want to write to, and we've made it an `active-event` since it requests something to happen. Now let's define our handler that will take care of actually writing the sequence to file.
+
+```
+(define-handler (file-client writer write-event) (c ev sequence)
+  :match-consumer 'client
+  (with-open-file (stream (file c) :direction :output :if-exists :append :if-does-not-exist :create)
+    (write-sequence sequence stream)))
+```
+
+The `:match-consumer` option modifies the handler's filter in such a way that the filter will only pass events whose `client` slot contains the same `file-client` instance as the current handler instance belongs to. This is important, as each instance of `file-client` will receive its own instances of its handlers on a core. Without this option, the `write-event` would be handled by every instance of the `file-client` regardless of which instance the event was intended for.
+
+Time to test it out. We'll just reuse the core from above.
+
+```
+(add-to-core *core* '(file-client :file "~/foo" :name :foo)
+                    '(file-client :file "~/bar" :name :bar))
+
+(do-issue *core* write-event :sequence "foo" :client (consumer :foo *core*))
+(do-issue *core* write-event :sequence "bar" :client (consumer :bar *core*))
+
+(alexandria:read-file-into-string "~/foo") ; => "foo"
+(alexandria:read-file-into-string "~/bar") ; => "bar"
+```
+
+As you can see, the events were directed to the appropriate handler instances according to the client we wanted, and the files thus contain what we expect them to.
+
+And that's pretty much all of the basics. As mentioned above, take a look at the subsystems this project includes, as they will help you with all sorts of common tasks and problems revolving around chat systems and so on.
 
 ## Core Documentation
 Before understanding Maiden, it is worth it to understand [Deeds](https://shinmera.github.io/deeds), if only at a surface level. Maiden builds on it rather heavily.
