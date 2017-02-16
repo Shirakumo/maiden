@@ -23,7 +23,7 @@
    :old-name (error "OLD-NAME required.")))
 
 (define-event message-event (user-event)
-  ((message :initarg :message :reader message :mutable T))
+  ((message :initarg :message :accessor message :mutable T))
   (:default-initargs
    :message (error "MESSAGE required.")))
 
