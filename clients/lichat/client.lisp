@@ -56,8 +56,9 @@
     (setf (name client) (host client))))
 
 (defmethod initiate-connection :after ((client lichat-client))
-  (with-awaiting (client lichat-rpl:update :timeout 30) (ev)
+  (with-awaiting (client lichat-rpl:update) (ev)
       (lichat-cmd:connect client (password client))
+    :timeout 30
     (cond ((typep ev 'lichat-rpl:connect)
            (setf (servername client) (name (slot-value ev 'user))))
           (error "Failed to connect: ~a" ev))))
@@ -102,11 +103,10 @@
                                 :client client
                                 :from (username client)
                                 :target (name user))))
-    (with-awaiting (client lichat-rpl:user-info ev registered)
-        (
-         :filter `(equal id ,(id message))
-         :timeout 2)
+    (with-awaiting (client lichat-rpl:user-info) (ev registered)
         (send message client)
+      :filter `(equal id ,(id message))
+      :timeout 2
       registered)))
 
 ;; FIXME: Currently we are very "trusting" in that we hope the server won't
