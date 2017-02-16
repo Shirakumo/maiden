@@ -103,7 +103,7 @@ Finally, it is worth mentioning that it is also possible to dynamically add and 
   some-field)
 ```
 
-`with-awaiting` is very similar to `define-handler`, with the exception that it doesn't take a name, and instead of a consumer name at the beginning it needs a core or consumer instance. It also takes one extra option that is otherwise unused, the `:timeout`.
+`with-awaiting` is very similar to `define-handler`, with the exception that it doesn't take a name, and instead of a consumer name at the beginning it needs a core or consumer instance. It also takes one extra option that is otherwise unused, the `:timeout`. Another required extra is the "setup form" after the arglist. In order to properly manage everything and ensure no race conditions may occur in the system, you must initiate the process that will prompt the eventual response event in this setup form. If you initiate it before then, the response event might be sent out before the temporary handler is set up in the system and it'll appear as if it never arrived at all.
 
 And that's pretty much all of the basics. As mentioned above, take a look at the subsystems this project includes, as they will help you with all sorts of common tasks and problems revolving around chat systems and so on.
 
@@ -141,42 +141,42 @@ Handler definition happens through one of `define-handler`, `define-function-han
 ## Subsystems
 Included in the Maiden project are a couple of subsystems that extend the core functionality.
 
-* [API Access](modules/api-access/)
-* [Client Entities](modules/client-entities/)
-* [Networking](modules/networking/)
-* [Serialize](modules/serialize/)
-* [Storage](modules/storage/)
+* [API Access](modules/api-access/) -- Helper functions to access remote APIs over HTTP.
+* [Client Entities](modules/client-entities/) -- Common entities for clients and remote systems.
+* [Networking](modules/networking/) -- Client mixins to handle network connections.
+* [Serialize](modules/serialize/) -- Data to wire serialization.
+* [Storage](modules/storage/) -- Configuration and data storage.
 
 ## Existing Clients
 The Maiden project also includes a few standard clients that can be used right away.
 
-* [IRC](clients/irc/)
-* [Lichat](clients/lichat/)
-* [Relay](clients/relay/)
+* [IRC](clients/irc/) -- [Internet Relay Chat](https://en.wikipedia.org/wiki/Internet_Relay_Chat) client.
+* [Lichat](clients/lichat/) -- [Lichat](https://shirakumo.github.io/lichat) client.
+* [Relay](clients/relay/) -- Maiden relay. Allows connecting remote Maiden cores.
 
 ## Existing Agents
 Finally, the project has a bunch of agent modules that provide functionality that is useful for creating chat bots and such. They, too, can be used straight away.
 
-* [accounts](agents/accounts/)
-* [activatable](agents/activatable/)
-* [blocker](agents/blocker/)
-* [chatlog](agents/chatlog/)
-* [commands](agents/commands/)
-* [core-manager](agents/core-manager/)
-* [counter](agents/counter/)
-* [crimes](agents/crimes/)
-* [emoticon](agents/emoticon/)
-* [help](agents/help/)
-* [location](agents/location/)
-* [markov](agents/markov/)
-* [medals](agents/medals/)
-* [notify](agents/notify/)
-* [permissions](agents/permissions/)
-* [quicklisp](agents/quicklisp/)
-* [silly](agents/silly/)
-* [talk](agents/talk/)
-* [throttle](agents/throttle/)
-* [time](agents/time/)
-* [trivia](agents/trivia/)
-* [urlinfo](agents/urlinfo/)
-* [weather](agents/weather/)
+* [accounts](agents/accounts/) -- User accounts.
+* [activatable](agents/activatable/) -- Allow activating or deactivating consumer's handlers.
+* [blocker](agents/blocker/) -- Block commands by rules.
+* [chatlog](agents/chatlog/) -- Log channels to a database.
+* [commands](agents/commands/) -- Provide a common command infrastructure.
+* [core-manager](agents/core-manager/) -- Manage the core's consumers and parts.
+* [counter](agents/counter/) -- Count occurrences in message events.
+* [crimes](agents/crimes/) -- Lets the user play "Crimes", a Cards Against Humanity clone.
+* [emoticon](agents/emoticon/) -- Provides :emote:s in messages.
+* [help](agents/help/) -- A generic command help system.
+* [location](agents/location/) -- Allows retrieving location information.
+* [markov](agents/markov/) -- Provides efficient markov chains.
+* [medals](agents/medals/) -- Gives commands to hand out "medals" to users.
+* [notify](agents/notify/) -- Allow sending users notification messages.
+* [permissions](agents/permissions/) -- Manage command permissions.
+* [quicklisp](agents/quicklisp/) -- Operate Quicklisp and system updates through commands.
+* [silly](agents/silly/) -- Adds some silly commands and automatic message responses.
+* [talk](agents/talk/) -- Allows playing Text To Speech messages on the machine Maiden runs on.
+* [throttle](agents/throttle/) -- Throttle users to prevent them from issuing too many commands.
+* [time](agents/time/) -- Provides time information.
+* [trivia](agents/trivia/) -- Implements a simple trivia game.
+* [urlinfo](agents/urlinfo/) -- Retrieves information about URLs.
+* [weather](agents/weather/) -- Provides weather and forecast information for a location.
