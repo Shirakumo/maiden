@@ -243,7 +243,8 @@
 (defmacro define-query ((consumer instruction &optional (event-type instruction) event-response-type) args &body body)
   (form-fiddle:with-body-options (body options superclasses documentation) body
     (let ((thunk (gensym "THUNK"))
-          (event (gensym "EVENT")))
+          (event (gensym "EVENT"))
+          (core (gensym "CORE")))
       `(progn
          (define-function-handler (,consumer ,instruction ,event-type) ,args
            :documentation ,documentation
@@ -259,8 +260,9 @@
          (defun ,instruction (core ,@(slot-args->args (cddr args)))
            ,documentation
            (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@(args->initargs (cddr args)))))
-             (with-awaiting (,(or event-response-type 'response-event) response payload)
-                 (core :filter `(matches identifier ,(identifier ,event)))
+             (with-awaiting (,core ,(or event-response-type 'response-event)
+                                   :filter `(matches identifier ,(identifier ,event)))
+                 (,(gensym "EVENT") payload)
                  (issue ,event core)
                (values-list payload))))))))
 

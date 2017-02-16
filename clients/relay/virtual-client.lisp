@@ -30,8 +30,9 @@
     `(let* ((,client-g ,client)
             (,event-g ,event)
             (,core-g (first (cores ,client-g))))
-       (with-awaiting (response-event ,response-g ,response)
-           (,core-g :filter `(uuid:uuid= deeds:identifier ,(deeds:identifier ,event-g)) :timeout ,timeout)
+       (with-awaiting (,core-g response-event
+                               :filter `(uuid:uuid= deeds:identifier ,(deeds:identifier ,event-g))
+                               :timeout ,timeout) (,response-g ,response)
            (relay ,event-g ,client (consumer 'relay ,core-g))
          ,@body))))
 

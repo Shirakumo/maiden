@@ -20,10 +20,9 @@
 
 (defun make-anonymous-channel (client &rest users)
   (let ((message (make-instance 'lichat-cmd:create :channel NIL :from (username client))))
-    (with-awaiting (lichat-rpl:join ev channel)
-        ((first (cores client))
-         :filter `(= id ,(slot-value message 'id))
-         :timeout 5)
+    (with-awaiting (client lichat-rpl:join
+                    :filter `(= id ,(slot-value message 'id))
+                    :timeout 5) (ev channel)
         (send message client)
       (dolist (user users)
         (lichat-cmd:pull client user channel))
@@ -57,9 +56,7 @@
     (setf (name client) (host client))))
 
 (defmethod initiate-connection :after ((client lichat-client))
-  (with-awaiting (lichat-rpl:update ev)
-      ((first (cores client))
-       :timeout 30)
+  (with-awaiting (client lichat-rpl:update :timeout 30) (ev)
       (lichat-cmd:connect client (password client))
     (cond ((typep ev 'lichat-rpl:connect)
            (setf (servername client) (name (slot-value ev 'user))))
@@ -105,8 +102,8 @@
                                 :client client
                                 :from (username client)
                                 :target (name user))))
-    (with-awaiting (lichat-rpl:user-info ev registered)
-        ((first (cores client))
+    (with-awaiting (client lichat-rpl:user-info ev registered)
+        (
          :filter `(equal id ,(id message))
          :timeout 2)
         (send message client)

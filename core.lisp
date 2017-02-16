@@ -122,11 +122,17 @@
 (defclass block-loop (event-loop)
   ())
 
-(defmacro with-awaiting (response (core &rest args &key filter timeout) setup-form &body body)
-  (declare (ignore filter timeout))
-  `(deeds:with-awaiting ,response (:loop (block-loop ,core) ,@args)
-                        ,setup-form
-     ,@body))
+(defmacro with-awaiting ((core event-type &key filter timeout) args setup-form &body body)
+  (let ((coreg (gensym "CORE")) (loopg (gensym "LOOP")))
+    `(let* ((,coreg ,core)
+            (,loopg (etypecase ,coreg
+                      (core (block-loop ,coreg))
+                      (consumer (block-loop (first (cores ,coreg))))
+                      (deeds:event-loop ,coreg))))
+       (deeds:with-awaiting (,event-type ,@args)
+           (:loop ,loopg :filter ,filter :timeout ,timeout)
+           ,setup-form
+         ,@body))))
 
 (defun make-core (&rest consumers)
   (apply #'add-to-core (start (make-instance 'core)) consumers))
