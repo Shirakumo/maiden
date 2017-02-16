@@ -77,7 +77,7 @@ We've made the `write-event` a `client-event` since it needs to be specific to a
     (write-sequence sequence stream)))
 ```
 
-The `:match-consumer` option modifies the handler's filter in such a way that the filter will only pass events whose `client` slot contains the same `file-client` instance as the current handler instance belongs to. This is important, as each instance of `file-client` will receive its own instances of its handlers on a core. Without this option, the `write-event` would be handled by every instance of the `file-client` regardless of which instance the event was intended for.
+The `:match-consumer` option modifies the handler's filter in such a way that the filter will only pass events whose `client` slot contains the same `file-client` instance as the current handler instance belongs to. This is important, as each instance of `file-client` will receive its own instances of its handlers on a core. Without this option, the `write-event` would be handled by every instance of the `file-client` regardless of which instance the event was intended for. Also note that we added a `sequence` argument to the handler's arglist. This argument will be filled with the appropriate slot from the event. If no such slot could be found, an error is signalled.
 
 Time to test it out. We'll just reuse the core from above.
 
@@ -93,6 +93,17 @@ Time to test it out. We'll just reuse the core from above.
 ```
 
 As you can see, the events were directed to the appropriate handler instances according to the client we wanted, and the files thus contain what we expect them to.
+
+Finally, it is worth mentioning that it is also possible to dynamically add and remove handlers at runtime, and even do so for handlers that are not associated with a particular consumer. This is often useful when you need to wait for a response event from somewhere. To handle the logic of doing this asynchronously and retain the impression of an imperative flow, Maiden offers --just as Deeds does-- a `with-awaiting` macro. It can be used as follows:
+
+```
+(with-awaiting (core event-type) (ev some-field)
+    (do-issue core initiating-event)
+  :timeout 20
+  some-field)
+```
+
+`with-awaiting` is very similar to `define-handler`, with the exception that it doesn't take a name, and instead of a consumer name at the beginning it needs a core or consumer instance. It also takes one extra option that is otherwise unused, the `:timeout`.
 
 And that's pretty much all of the basics. As mentioned above, take a look at the subsystems this project includes, as they will help you with all sorts of common tasks and problems revolving around chat systems and so on.
 
