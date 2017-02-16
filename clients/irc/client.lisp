@@ -133,29 +133,29 @@
 (defun authenticate-with (method nick client &key (timeout 2))
   (case method
     ((:acc :freenode)
-     (with-awaiting (client irc:msg-notice
-                     :filter `(and (search "ACC" message)
-                                   (search ,nick message :test ,#'char-equal))
-                     :timeout timeout) (ev message)
+     (with-awaiting (client irc:msg-notice) (ev message)
          (irc:privmsg client "NickServ" (format NIL "ACC ~a" nick))
+       :filter `(and (search "ACC" message)
+                     (search ,nick message :test ,#'char-equal))
+       :timeout timeout
        (cl-ppcre:register-groups-bind (status-nick code) ("^([^ ]+) ACC (\\d)" message)
          (and (string= nick status-nick)
               (string= code "3")))))
     ((:status :anope :tynet :rizon)
-     (with-awaiting (client irc:msg-notice
-                     :filter `(and (search "STATUS" message)
-                                   (search ,nick message :test #'char-equal))
-                     :timeout timeout) (ev message)
+     (with-awaiting (client irc:msg-notice) (ev message)
          (irc:privmsg client "NickServ" (format NIL "STATUS ~a" nick))
+       :filter `(and (search "STATUS" message)
+                     (search ,nick message :test #'char-equal))
+       :timeout timeout
        (cl-ppcre:register-groups-bind (status-nick code) ("^STATUS ([^ ]+) (\\d)" message)
          (and (string= nick status-nick)
               (string= code "3")))))
     ((:r-mode)
      ;; Not sure if this is actually correct.
-     (with-awaiting (client irc:mode
-                     :filter `(string-equal ,nick target)
-                     :timeout timeout) (ev target mode)
+     (with-awaiting (client irc:mode) (ev target mode)
          (irc:mode client nick)
+       :filter `(string-equal ,nick target)
+       :timeout timeout
        (and (string= nick target)
             (find #\r mode))))
     (:generic

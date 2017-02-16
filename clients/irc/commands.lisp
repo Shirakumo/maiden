@@ -227,8 +227,9 @@
   (let ((attempts 0))
     (tagbody
      try-nick
-       (with-awaiting (client irc:err-nicknameinuse :timeout timeout) (ev)
+       (with-awaiting (client irc:err-nicknameinuse) (ev)
            (irc:nick client nickname)
+         :timeout timeout
          (v:warn :maiden.client.irc "Failed to change nick to ~a, retrying with ~:*~a_." nickname)
          (setf nickname (format NIL "~a_" nickname))
          (incf attempts)

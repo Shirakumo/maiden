@@ -30,10 +30,10 @@
     `(let* ((,client-g ,client)
             (,event-g ,event)
             (,core-g (first (cores ,client-g))))
-       (with-awaiting (,core-g response-event
-                               :filter `(uuid:uuid= deeds:identifier ,(deeds:identifier ,event-g))
-                               :timeout ,timeout) (,response-g ,response)
+       (with-awaiting (,core-g response-event) (,response-g ,response)
            (relay ,event-g ,client (consumer 'relay ,core-g))
+         :filter `(uuid:uuid= deeds:identifier ,(deeds:identifier ,event-g))
+         :timeout ,timeout
          ,@body))))
 
 (defmethod slot-missing (class (client virtual-client) slot operation &optional value)

@@ -20,10 +20,10 @@
 
 (defun make-anonymous-channel (client &rest users)
   (let ((message (make-instance 'lichat-cmd:create :channel NIL :from (username client))))
-    (with-awaiting (client lichat-rpl:join
-                    :filter `(= id ,(slot-value message 'id))
-                    :timeout 5) (ev channel)
+    (with-awaiting (client lichat-rpl:join) (ev channel)
         (send message client)
+      :filter `(= id ,(slot-value message 'id))
+      :timeout 5
       (dolist (user users)
         (lichat-cmd:pull client user channel))
       channel)))

@@ -614,6 +614,11 @@ Note that CORE can be one of
 - DEEDS:EVENT-LOOP  The temporary handler is directly
                     attached to it.
 
+You can also specify a maximum waiting timeout with the
+:TIMEOUT body options. The timeout is in seconds. Similar
+to DEFINE-HANDLER, you can also specify a :FILTER test
+body option.
+
 See DEEDS:WITH-AWAITING")
 
   (function make-core

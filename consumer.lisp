@@ -260,10 +260,9 @@
          (defun ,instruction (core ,@(slot-args->args (cddr args)))
            ,documentation
            (let ((,event (make-instance ',event-type :identifier (uuid:make-v4-uuid) ,@(args->initargs (cddr args)))))
-             (with-awaiting (,core ,(or event-response-type 'response-event)
-                                   :filter `(matches identifier ,(identifier ,event)))
-                 (,(gensym "EVENT") payload)
+             (with-awaiting (,core ,(or event-response-type 'response-event)) (,(gensym "EVENT") payload)
                  (issue ,event core)
+               :filter `(matches identifier ,(identifier ,event))
                (values-list payload))))))))
 
 (defun remove-query (consumer instruction &optional (event-type instruction) event-response-type)

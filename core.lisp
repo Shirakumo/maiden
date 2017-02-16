@@ -122,17 +122,21 @@
 (defclass block-loop (event-loop)
   ())
 
-(defmacro with-awaiting ((core event-type &key filter timeout) args setup-form &body body)
-  (let ((coreg (gensym "CORE")) (loopg (gensym "LOOP")))
-    `(let* ((,coreg ,core)
-            (,loopg (etypecase ,coreg
-                      (core (block-loop ,coreg))
-                      (consumer (block-loop (first (cores ,coreg))))
-                      (deeds:event-loop ,coreg))))
-       (deeds:with-awaiting (,event-type ,@args)
-           (:loop ,loopg :filter ,filter :timeout ,timeout)
-           ,setup-form
-         ,@body))))
+(defmacro with-awaiting ((core event-type) args setup-form &body body)
+  (form-fiddle:with-body-options (body options filter timeout) body
+    (let ((coreg (gensym "CORE")) (loopg (gensym "LOOP")))
+      `(let* ((,coreg ,core)
+              (,loopg (etypecase ,coreg
+                        (core (block-loop ,coreg))
+                        (consumer (block-loop (first (cores ,coreg))))
+                        (deeds:event-loop ,coreg))))
+         (deeds:with-awaiting (,event-type ,@args)
+             (:loop ,loopg :filter ,filter :timeout ,timeout)
+             ,setup-form
+           ,@options
+           ,@body)))))
+
+(trivial-indent:define-indentation with-awaiting (6 6 4 &body))
 
 (defun make-core (&rest consumers)
   (apply #'add-to-core (start (make-instance 'core)) consumers))
