@@ -25,7 +25,8 @@
   (irc:privmsg (client user) (name user) (apply #'format NIL message args)))
 
 (defclass irc-channel (simple-channel)
-  ())
+  ((topic :initarg :topic :accessor topic))
+  (:default-initargs :topic ""))
 
 (defmethod reply ((channel irc-channel) message &rest args)
   (irc:privmsg (client channel) (name channel) (apply #'format NIL message args)))

@@ -34,7 +34,6 @@
    #:authenticated-p
    #:channels
    #:channel
-   #:topic
    #:ensure-channel
    #:users)
   ;; events.lisp
@@ -49,7 +48,6 @@
    #:reply
    #:channel-event
    #:channel
-   #:channel-topic-changed
    #:old-topic
    #:user-entered
    #:user-left))

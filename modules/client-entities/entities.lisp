@@ -34,8 +34,7 @@
           when (find user (users channel)) collect channel)))
 
 (defclass channel (client-entity)
-  ((topic :initarg :topic :accessor topic))
-  (:default-initargs :topic ""))
+  ())
 
 (defmethod ensure-channel ((channel channel) client)
   channel)

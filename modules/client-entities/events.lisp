@@ -34,11 +34,6 @@
   (:default-initargs
    :channel (error "CHANNEL required.")))
 
-(define-event channel-topic-changed (channel-event)
-  ((old-topic :initarg :old-topic :reader old-topic))
-  (:default-initargs
-   :topic (error "TOPIC required.")))
-
 (define-event user-entered (user-event channel-event)
   ())
 

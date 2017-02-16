@@ -108,7 +108,7 @@
 (define-irc-reply MSG-JOIN JOIN (":?([^ ]+)" (CHANNEL #\,)) (user-entered irc-channel-event))
 (define-irc-reply MSG-PART PART ("([^ ]+)" (CHANNEL #\,)) (user-left irc-channel-event))
 (define-irc-reply MSG-MODE MODE ("([^ ]+) ([^ ]+)( ([^ ]+)( ([^ ]+)( ([^ ]+))?)?)?" TARGET MODE NIL LIMIT NIL USERNAME NIL BAN-MASK))
-(define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC) (irc-channel-event channel-topic-changed))
+(define-irc-reply MSG-TOPIC TOPIC ("([^ ]+)( :(.*))?" CHANNEL NIL TOPIC) (irc-channel-event))
 (define-irc-reply MSG-NAMES NAMES ("([^ ]+)" (CHANNEL #\,)) (irc-channel-event))
 (define-irc-reply MSG-LIST LIST ("([^ ]+)( ([^ ]+))?" (CHANNEL #\,) NIL SERVER) (irc-channel-event))
 (define-irc-reply MSG-INVITE INVITE ("([^ ]+) ([^ ]+)" NICKNAME CHANNEL) (irc-channel-event))

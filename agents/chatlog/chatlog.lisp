@@ -31,9 +31,9 @@
   (dolist (channel (channels user))
     (maybe-record-message c :name channel old-name "** NICK ~a" (name user))))
 
-(define-handler (chatlog topic channel-topic-changed) (c ev channel)
-  (let ((user (if (typep ev 'user-event) (user ev) channel)))
-    (maybe-record-message c :name channel user  "** TOPIC ~a" (topic channel))))
+;; (define-handler (chatlog topic channel-topic-changed) (c ev channel)
+;;   (let ((user (if (typep ev 'user-event) (user ev) channel)))
+;;     (maybe-record-message c :name channel user  "** TOPIC ~a" (topic channel))))
 
 (define-command (chatlog activate) (c ev)
   :command "activate chatlog"
