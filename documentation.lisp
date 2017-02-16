@@ -44,7 +44,7 @@ See MAIDEN-CONDITION")
 
 See CORE-CONDITION")
 
-  (function consumer-name-duplicated-warning
+  (type consumer-name-duplicated-warning
     "A condition signalled when a consumer is added to a core and has the same name as an already existing consumer.
 
 See EXISTING-CONSUMER
@@ -72,7 +72,7 @@ See MAIDEN-CONDITION")
 
 See AGENT-CONDITION")
 
-  (function agent-already-exists-error
+  (type agent-already-exists-error
     "A condition signalled when an agent of the same name already exists on the core.
 
 See EXISTING-AGENT
@@ -197,7 +197,7 @@ See DIRECT-HANDLERS
 See ABSTRACT-HANDLER
 See CONSUMER-CLASS")
 
-  (function consumer
+  (type consumer
     "Superclass for all consumers on a core.
 
 Consumers are responsible for issuing and responding to
@@ -391,7 +391,7 @@ if it is given as a list.
 Each returned slot will also automatically receive an initarg of the
 same name as the slot, but from the keyword package.")
 
-  (function slot-args->slots
+  (function slot-args->args
     "Converts a list of slot arguments into a lambda list.
 
 See SLOT-ARGS->SLOTS")
@@ -554,6 +554,7 @@ is analogous.
 
 See PRIMARY-LOOP
 See BLOCK-LOOP
+See CONSUMERS
 See CONSUMER
 See ADD-CONSUMER
 See REMOVE-CONSUMER
@@ -580,6 +581,12 @@ This should govern one-time handlers and response events.
 
 See CORE")
 
+  (function consumers
+    "Accessor to the list of consumers associated with the core.
+
+See CONSUMER
+See CORE")
+
   (type primary-loop
     "Base class for the primary loop on a Maiden core.
 
@@ -598,6 +605,14 @@ See DEEDS:EVENT-LOOP")
 This is useful to write event-driven, reactionary code.
 The temporary handler to catch the code is added to the
 core's back loop.
+
+Note that CORE can be one of
+- CORE              The temporary handler is attached to
+                    the core's block-loop.
+- CONSUMER          The first core on the client's list of
+                    cores is used as above.
+- DEEDS:EVENT-LOOP  The temporary handler is directly
+                    attached to it.
 
 See DEEDS:WITH-AWAITING")
 
@@ -645,7 +660,7 @@ By default this is initialised to a fresh UUIDv4 string.
 
 See ENTITY")
 
-  (function named-entity
+  (type named-entity
     "An entity with a human-readable name attached to it.
 
 See ENTITY
@@ -782,6 +797,15 @@ the system. They often represent a \"virtual\" function call.
 
 See DEFINE-INSTRUCTION
 See ACTIVE-EVENT")
+
+  (function respond
+    "Respond to the event in an appropriate way.
+
+The response event will be issued on to the same core that
+the event being responded to was issued to. If the event
+does not have a specific response event already (through a
+specialised method on RESPOND), then you may specify the
+class to use with the :CLASS initarg.")
 
   (type query-event
     "Superclass for all query events in the system.
