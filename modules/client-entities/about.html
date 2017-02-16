@@ -1,0 +1,261 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Client-Entities</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Support for the concepts of users and channels."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-client-entities</h1> <span class="version">0.0.0</span> <p class="description">Support for the concepts of users and channels.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This is a Maiden subsystem to provide commonly used objects and methods that deal with entities usually found on clients that interact with remote systems-- particularly chat systems. If you are implementing a client, you will want to subclass the various classes provided by this system and flesh them out with the required functionality. If you are implementing an agent that should stay agnostic to the client it interacts with, you should handle the events and objects presented by this system.</p> <h2>How To</h2> <p>There's no particular &quot;how to&quot; for this. Read through the symbol index to see what's contained in here. What you should use and how should be fairly self-explanatory after that.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-client-entities</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-CLIENT-ENTITIES" href="#MAIDEN-CLIENT-ENTITIES">MAIDEN-CLIENT-ENTITIES</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.MODULES.CLIENT-ENTITIES)</span> </h3> <ul><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL">CHANNEL</a></code></h4>  </header> <pre class="docstring">Object representing a channel on a remote system somewhere.
+
+Channels are virtual &quot;rooms&quot; over which one or more users may
+communicate with each other.
+
+Channels have a name and a number of users that inhabit it.
+Additional properties are not guaranteed, but may be provided by a
+client.
+
+See CLIENT-ENTITY
+See USERS</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-CLIENT">CHANNEL-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for clients that provide the concept of a channel over which users can communicate with each other in a group.
+
+See FIND-CHANNEL
+See CHANNELS
+See ENSURE-CHANNEL
+See CHANNEL</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-CONTAINER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-CONTAINER">CHANNEL-CONTAINER</a></code></h4>  </header> <pre class="docstring">Mixin for objects that contain channels in some way.
+
+The standard implementation this offers uses an equalp hash-table
+for the channel storage, mapping channel names to channel objects.
+
+See CHANNEL
+See CHANNEL-MAP
+See CHANNELS
+See FIND-CHANNEL
+See REMOVE-CHANNEL
+See ENSURE-CHANNEL</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-EVENT">CHANNEL-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events relating to a channel.
+
+See CHANNEL
+See CLIENT-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CLIENT">CLIENT</a></code></h4>  </header> <pre class="docstring">A type of consumer of which multiple instances can exist on a core.
+
+See CONSUMER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CLIENT-ENTITY"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CLIENT-ENTITY">CLIENT-ENTITY</a></code></h4>  </header> <pre class="docstring">Superclass for all entities that are tied to a client instance somehow.
+
+See NAMED-ENTITY
+See CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:MESSAGE-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:MESSAGE-EVENT">MESSAGE-EVENT</a></code></h4>  </header> <pre class="docstring">Event issued when a textual message of some kind is sent.
+
+Note that not all message-events are channel-events.
+
+See MESSAGE
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:SIMPLE-CHANNEL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:SIMPLE-CHANNEL">SIMPLE-CHANNEL</a></code></h4>  </header> <pre class="docstring">Superclass for simple channels.
+
+Channels can contain a number of users.
+
+See CHANNEL
+See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:SIMPLE-USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:SIMPLE-USER">SIMPLE-USER</a></code></h4>  </header> <pre class="docstring">Superclass for simple users.
+
+Users can be in a number of channels.
+
+See USER
+See CHANNEL-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:SIMPLE-USER-CHANNEL-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:SIMPLE-USER-CHANNEL-CLIENT">SIMPLE-USER-CHANNEL-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for a client that has both users and channels.
+
+This class already handles the association/storage of user and
+channel objects. User ENSURE-USER/CHANNEL to register users and
+channels.
+
+If you need to subclass USER or CHANNEL --which you probably
+should anyway-- you should subclass SIMPLE-USER and SIMPLE-CHANNEL
+instead, and override ENSURE-USER and ENSURE-CHANNEL to create
+instances of the appropriate classes instead.
+
+You will have to make sure that, when a user enters a channel, the
+channel is registered to the user via FIND-CHANNEL on the user,
+and the user is registered to the channel via FIND-USER on the
+channel. The same goes when a user leaves a channel. However, you
+do not need to do anything should a channel or a user be removed
+from the client altogether, as in that case this generic system
+can figure out what to do on its own and ensure consistency.
+
+See USER-CLIENT
+See CHANNEL-CLIENT
+See USER-CONTAINER
+See CHANNEL-CONTAINER
+See SIMPLE-USER
+See SIMPLE-CHANNEL</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER">USER</a></code></h4>  </header> <pre class="docstring">Object representing a user on a remote system somewhere.
+
+Users have a name and may be authenticated. Additional properties
+are not guaranteed, but may be provided by a client.
+
+See CLIENT-ENTITY
+See AUTHENTICATE
+See AUTHENTICATED-P</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-ADDED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-ADDED">USER-ADDED</a></code></h4>  </header> <pre class="docstring">Event issued when a user is now tracked by the client.
+
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-CLIENT">USER-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for clients that communicate with users of some form.
+
+See FIND-USER
+See USERS
+See ENSURE-USER
+See AUTHENTICATE
+See USER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-CONTAINER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-CONTAINER">USER-CONTAINER</a></code></h4>  </header> <pre class="docstring">Mixin for objects that can contain users in some way.
+
+The standard implementation this offers uses an equalp hash-table
+for the user storage, mapping user names to user objects.
+
+See USER
+See USER-MAP
+See USERS
+See FIND-USER
+See REMOVE-USER
+See ENSURE-USER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-ENTERED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-ENTERED">USER-ENTERED</a></code></h4>  </header> <pre class="docstring">Event issued when a user entered a channel.
+
+See USER-EVENT
+See CHANNEL-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-EVENT">USER-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events relating to a user.
+
+See CLIENT-EVENT
+See USER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-LEFT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-LEFT">USER-LEFT</a></code></h4>  </header> <pre class="docstring">Event issued when a user left a channel.
+
+See USER-EVENT
+See CHANNEL-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-NAME-CHANGED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-NAME-CHANGED">USER-NAME-CHANGED</a></code></h4>  </header> <pre class="docstring">Event issued when the name of a user has changed for some reason.
+
+If you track users by name rather than by their object, you should
+use this to update your records. The old name is kept in the OLD-
+NAME slot.
+
+See USER-EVENT
+See OLD-NAME</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-REMOVED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-REMOVED">USER-REMOVED</a></code></h4>  </header> <pre class="docstring">Event issued when a user can no longer be tracked by the client.
+
+This does not necessarily mean that the user has left the remote
+server.
+
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP">CHANNEL-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps channel names to channel objects on the channel-container
+
+See CHANNEL-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CLIENT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CLIENT">CLIENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Accessor to the client that this object holds.
+
+See CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:FIND-CHANNEL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:FIND-CHANNEL">FIND-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME CLIENT</code><code>)</code>  </header> <pre class="docstring">Attempt to find the channel object of the given name on the client.
+
+Note that if the channel cannot be found, it does not necessarily
+mean that the channel does not exist at all, or does not exist on
+the server at this time. You can only find channels that the
+system has already learned about in some way.
+
+For some clients this may also be an accessor that allows you to
+register channel objects with the client.
+
+See CHANNEL
+See CHANNEL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:FIND-USER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:FIND-USER">FIND-USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME CLIENT</code><code>)</code>  </header> <pre class="docstring">Attempt to find the user object of the given name on the client.
+
+Note that if the user cannot be found, it does not necessarily
+mean that the user does not exist at all, or does not exist on
+the server at this time. You can only find users that the system
+has already learned about in some way.
+
+For some clients this may also be an accessor that allows you to
+register user objects with the client.
+
+See USER
+See USER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:MESSAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:MESSAGE">MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the message string carried by the event.
+
+See MESSAGE-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-MAP">USER-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps user names to user objects on the user-container.
+
+See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:AUTHENTICATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:AUTHENTICATE">AUTHENTICATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER CLIENT</code><code>)</code>  </header> <pre class="docstring">Return whether it is known that the given user object is really that particular user, or might also be someone else.
+
+In other words, this returns whether the identity of the user can
+be trusted or not. Note that the check is not cached, and may thus
+take some time or be costly in some fashion, as outside
+communication might be necessary to confirm the identity.
+
+See AUTHENTICATED-P</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:AUTHENTICATED-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:AUTHENTICATED-P">AUTHENTICATED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns whether the user is authenticated or not.
+
+This value is cached. The first time this is called on a user, it
+may take a while.
+
+See USER
+See AUTHENTICATE</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL">CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the channel object the event relates to
+
+See CHANNEL-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNELS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNELS">CHANNELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Return a list of all known channel objects on the client.
+
+See CHANNEL
+See CHANNEL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:ENSURE-CHANNEL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:ENSURE-CHANNEL">ENSURE-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL CLIENT</code><code>)</code>  </header> <pre class="docstring">Either return the existing channel of that name, or create it new. Either way, ensure it exists.
+
+See CHANNEL
+See FIND-CHANNEL
+See CHANNEL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:ENSURE-USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:ENSURE-USER">ENSURE-USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER CLIENT</code><code>)</code>  </header> <pre class="docstring">Either return the existing user of that name, or create it new. Either way, ensure it exists.
+
+See USER
+See FIND-USER
+See USER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REMOVE-CHANNEL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REMOVE-CHANNEL">REMOVE-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME CONTAINER</code><code>)</code>  </header> <pre class="docstring">Remove the given channel from the channel-container.
+
+See CHANNEL
+See CHANNEL-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REMOVE-USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REMOVE-USER">REMOVE-USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME CONTAINER</code><code>)</code>  </header> <pre class="docstring">Remove the given user from the user-container.
+
+See USER
+See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REPLY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REPLY">REPLY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT FORMAT-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
+
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USERS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USERS">USERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL</code><code>)</code>  </header> <pre class="docstring">Return a list of all known user objects on the client.
+
+See USER
+See USER-CLIENT</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
