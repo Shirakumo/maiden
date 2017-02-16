@@ -1,0 +1,372 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Networking</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Mixin components to help with common networking tasks in Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-networking</h1> <span class="version">0.0.0</span> <p class="description">Mixin components to help with common networking tasks in Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About Maiden-Networking</h2> <p>This module adds support for common networking problems to make implementing a client that has to rely on a remote connection easier.</p> <h2>Classes</h2> <p>We start with <code><a href="#MAIDEN-NETWORKING:REMOTE-CLIENT">remote-client</a></code>, which adds <code><a href="#MAIDEN-NETWORKING:INITIATE-CONNECTION">initiate-connection</a></code>, <code><a href="#MAIDEN-NETWORKING:CLOSE-CONNECTION">close-connection</a></code>, and <code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTED-P">client-connected-p</a></code> that should be implemented to perform the obvious corresponding actions on the client.</p> <p>Moving on to <code><a href="#MAIDEN-NETWORKING:IP-CLIENT">ip-client</a></code>, which adds a <code><a href="#MAIDEN-NETWORKING:HOST">host</a></code> and <code><a href="#MAIDEN-NETWORKING:PORT">port</a></code> slot.</p> <p>Next up there is <code><a href="#MAIDEN-NETWORKING:SOCKET-CLIENT">socket-client</a></code>, which adds <code><a href="#MAIDEN-NETWORKING:SOCKET">socket</a></code> and <code><a href="#MAIDEN-NETWORKING:READ-THREAD">read-thread</a></code> slots and <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code>, <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-ERROR">handle-connection-error</a></code>, <code><a href="#MAIDEN-NETWORKING:PROCESS">process</a></code>, <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code>, and <code><a href="#MAIDEN-NETWORKING:SEND">send</a></code>. It implements <code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTED-P">client-connected-p</a></code>, and <code><a href="#MAIDEN-NETWORKING:CLOSE-CONNECTION">close-connection</a></code>. It automatically launches a thread on <code><a href="#MAIDEN-NETWORKING:INITIATE-CONNECTION">initiate-connection</a></code>, which calls <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code>. This function should loop and call <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code> to get new information for as long as appropriate and pass it on to <code><a href="#MAIDEN-NETWORKING:PROCESS">process</a></code>. <code><a href="http://l1sp.org/cl/continue">continue</a></code> and <code><a href="http://l1sp.org/cl/abort">abort</a></code> restarts are automatically established around it. It also makes sure that <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code> and <code><a href="#MAIDEN-NETWORKING:SEND">send</a></code> are locked to avoid threading collisions while sending or receiving. <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-ERROR">handle-connection-error</a></code> is invoked if an error within <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code> is detected. Finally, if <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code> exits, <code><a href="#MAIDEN-NETWORKING:CLOSE-CONNECTION">close-connection</a></code> is called which takes care of properly cleaning up the thread and calling <code>usocket:socket-close</code>.</p> <p>After that big stinker, we get <code><a href="#MAIDEN-NETWORKING:RECONNECTING-CLIENT">reconnecting-client</a></code>, which adds the <code><a href="#MAIDEN-NETWORKING:FAILURES">failures</a></code>, <code><a href="#MAIDEN-NETWORKING:MAX-FAILURES">max-failures</a></code>, <code><a href="#MAIDEN-NETWORKING:BACKOFF">backoff</a></code>, and <code><a href="#MAIDEN-NETWORKING:INTERVAL">interval</a></code> slots. It also implements <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-ERROR">handle-connection-error</a></code> which should smartly handle problems in the connection by automatically reestablishing it. It does this <code><a href="#MAIDEN-NETWORKING:MAX-FAILURES">max-failures</a></code> times before giving up with a <code><a href="#MAIDEN-NETWORKING:CLIENT-RECONNECTION-EXCEEDED-ERROR">client-reconnection-exceeded-error</a></code>. Each time <code><a href="#MAIDEN-NETWORKING:INTERVAL">interval</a></code> amount of time is waited, which is increased by <code><a href="#MAIDEN-NETWORKING:BACKOFF">backoff</a></code>. <code><a href="#MAIDEN-NETWORKING:BACKOFF">backoff</a></code> can be one of <code>:constant</code>, <code>:linear</code>, or <code>:exponential</code>.</p> <p>Next we have a smaller class called <code><a href="#MAIDEN-NETWORKING:TIMEOUT-CLIENT">timeout-client</a></code>, adding a <code><a href="#MAIDEN-NETWORKING:TIMEOUT">timeout</a></code> and <code><a href="#MAIDEN-NETWORKING:LAST-RECEIVED-TIME">last-received-time</a></code> slot. Upon <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code> it updates the <code><a href="#MAIDEN-NETWORKING:LAST-RECEIVED-TIME">last-received-time</a></code> with the current time, and when <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-IDLE">handle-connection-idle</a></code> is invoked, it will test if the timeout is exceeded. If so, a <code><a href="#MAIDEN-NETWORKING:CLIENT-TIMEOUT-ERROR">client-timeout-error</a></code> is signalled.</p> <p>Moving on there is the <code><a href="#MAIDEN-NETWORKING:TEXT-CLIENT">text-client</a></code>, adding an <code><a href="#MAIDEN-NETWORKING:ENCODING">encoding</a></code>, and <code><a href="#MAIDEN-NETWORKING:BUFFER">buffer</a></code> field. Since it is a subclass of <code><a href="#MAIDEN-NETWORKING:SOCKET-CLIENT">socket-client</a></code> it can implement the <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code> and <code><a href="#MAIDEN-NETWORKING:SEND">send</a></code> functions to handle strings. <code><a href="#MAIDEN-NETWORKING:BUFFER">buffer</a></code> can be either <code>:line</code> in which case <code><a href="http://l1sp.org/cl/read-line">read-line</a></code> is used, or a string of a fixed length, in which case <code><a href="http://l1sp.org/cl/read-sequence">read-sequence</a></code> is used.</p> <p>Now we get to the <code><a href="#MAIDEN-NETWORKING:TCP-CLIENT">tcp-client</a></code> with which come the <code><a href="#MAIDEN-NETWORKING:ELEMENT-TYPE">element-type</a></code> and <code><a href="#MAIDEN-NETWORKING:IDLE-INTERVAL">idle-interval</a></code> slots. It implements <code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTED-P">client-connected-p</a></code>, <code><a href="#MAIDEN-NETWORKING:INITIATE-CONNECTION">initiate-connection</a></code>, <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code>, and <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-IDLE">handle-connection-idle</a></code>. The <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">handle-connection</a></code> method will repeatedly wait for input with the <code><a href="#MAIDEN-NETWORKING:IDLE-INTERVAL">idle-interval</a></code> timeout, after which <code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-IDLE">handle-connection-idle</a></code> is called until there actually is some input available. If input is available, <code><a href="#MAIDEN-NETWORKING:PROCESS">process</a></code> is called with the result of <code><a href="#MAIDEN-NETWORKING:RECEIVE">receive</a></code>. </p> <p>The <code><a href="#MAIDEN-NETWORKING:TEXT-TCP-CLIENT">text-tcp-client</a></code> is merely a combination of <code><a href="#MAIDEN-NETWORKING:TEXT-CLIENT">text-client</a></code> and <code><a href="#MAIDEN-NETWORKING:TCP-CLIENT">tcp-client</a></code>.</p> <p>Next up we have the <code><a href="#MAIDEN-NETWORKING:TCP-SERVER">tcp-server</a></code>, which adds a <code><a href="#MAIDEN-NETWORKING:CLIENTS">clients</a></code> slot that keeps a list of known client connections of this server. It also adds the <code><a href="#MAIDEN-NETWORKING:ACCEPT">accept</a></code> and <code><a href="#MAIDEN-NETWORKING:MAKE-TCP-SERVER-CLIENT">make-tcp-server-client</a></code> methods, which have standard implementations. By default <code><a href="#MAIDEN-NETWORKING:ACCEPT">accept</a></code> just calls <code><a href="#MAIDEN-NETWORKING:INITIATE-CONNECTION">initiate-connection</a></code> with the result of <code><a href="#MAIDEN-NETWORKING:MAKE-TCP-SERVER-CLIENT">make-tcp-server-client</a></code>, which simply constructs an instance of <code><a href="#MAIDEN-NETWORKING:TCP-SERVER-CLIENT">tcp-server-client</a></code>.</p> <p>The <code><a href="#MAIDEN-NETWORKING:TCP-SERVER-CLIENT">tcp-server-client</a></code> is a <code><a href="#MAIDEN-NETWORKING:TCP-CLIENT">tcp-client</a></code> with a <code><a href="#MAIDEN-NETWORKING:SERVER">server</a></code> slot, to which it pushes itself upon initialisation. Upon connection closing, it removes itself from the server's clients list again. If you actually do implement a server, you will definitely want to subclass this to implement actually receiving behaviour and override <code><a href="#MAIDEN-NETWORKING:MAKE-TCP-SERVER-CLIENT">make-tcp-server-client</a></code> to construct an instance of your subclass instead.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-networking</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-NETWORKING" href="#MAIDEN-NETWORKING">MAIDEN-NETWORKING</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.MODULES.NETWORKING)</span> </h3> <ul><li> <a name="MAIDEN-NETWORKING:CONNECTION-CLOSED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CONNECTION-CLOSED">CONNECTION-CLOSED</a></code></h4>  </header> <pre class="docstring">Event issued when a connection has been closed fully.
+
+See CONNECTION-EVENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CONNECTION-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CONNECTION-EVENT">CONNECTION-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events relating to connection updates.
+
+See CLIENT-EVENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CONNECTION-INITIATED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CONNECTION-INITIATED">CONNECTION-INITIATED</a></code></h4>  </header> <pre class="docstring">Event issued when a connection has been initiated successfully.
+
+See CONNECTION-EVENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:INCOMING-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:INCOMING-EVENT">INCOMING-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events that represent data that has been received from the remote.</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:IP-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:IP-CLIENT">IP-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all clients that are connected over the IP protocol.
+
+See HOST
+See PORT
+See REMOTE-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:OUTGOING-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:OUTGOING-EVENT">OUTGOING-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events that represent requests for data to be sent to the remote.</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:RECONNECTING-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:RECONNECTING-CLIENT">RECONNECTING-CLIENT</a></code></h4>  </header> <pre class="docstring">Mixin for a client that attempts to reconnect automatically after a failure.
+
+The reconnection will be attempted a couple of times, should it
+fail the first time around. The current number of failures is
+stored in FAILURES. The maximum number of possible failures in
+MAX-FAILURES. The amount of time that is waited between each
+successive reconnection attempt is handled by BACKOFF and INTERVAL
+where BACKOFF is one of :CONSTANT :LINEAR :EXPONENTIAL, and the
+INTERVAL is the step for each respective function combined by
+the number of failed attempts so far. If the number of failed
+attempts is exceeded, a condition of type CLIENT-RECONNECTION-
+EXCEEDED-ERROR is signalled.
+
+This implements a primary method for HANDLE-CONNECTION-ERROR.
+
+See FAILURES
+See MAX-FAILURES
+See BACKOFF
+See INTERVAL
+See CLIENT-RECONNECTION-EXCEEDED-ERROR
+See HANDLE-CONNECTION-ERROR
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:REMOTE-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:REMOTE-CLIENT">REMOTE-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all clients that are somehow connected to one or more remotes.
+
+A remote-client may be a server, or a client in the networking
+sense of the words.
+
+The client's connection can be established by INITIATE-CONNECTION,
+which is automatically called for you when the client is STARTed.
+The client's connection can be shut down by CLOSE-CONNECTION,
+which is automatically called for you when the client is STOPped.
+
+Usually, once the connection has been initiated, a new thread is
+spawned that calls HANDLE-CONNECTION to process the updates
+coming from the remote. HANDLE-CONNECTION will then call RECEIVE
+to receive an update, and then call PROCESS to perform the
+necessary actions to handle the update in a useful manner. HANDLE-
+CONNECTION must also take care of detecting errors in the
+connection's stability. If the client must send something to the
+remote, it must do so via the SEND function.
+
+See INITIATE-CONNECTION
+See CLOSE-CONNECTION
+See HANDLE-CONNECTION
+See RECEIVE
+See PROCESS
+See SEND</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:SOCKET-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:SOCKET-CLIENT">SOCKET-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all clients that are connected over a socket.
+
+Updates over a socket-client are processed in the background by a
+separate READ-THREAD. The READ-THREAD will simply call HANDLE-
+CONNECTION. Sending to/from should happen over the SOCKET.
+
+The thread is attempted to be shut down cleanly when the
+connection is closed.
+
+See SOCKET
+See READ-THREAD
+See IP-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TCP-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TCP-CLIENT">TCP-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all clients communicating over a TCP socket.
+
+The default stream element-type is (UNSIGNED-BYTE 8).
+
+See USOCKET:SOCKET-CONNECT
+See IDLE-INTERVAL
+see ELEMENT-TYPE
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TCP-SERVER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TCP-SERVER">TCP-SERVER</a></code></h4>  </header> <pre class="docstring">Superclass for all clients serving as a TCP server.
+
+The HANDLE-CONNECTION method simply waits for new connections and
+then calls ACCEPT with the new socket instance. The list of
+connected clients is kept in CLIENTS.
+
+See CLIENTS
+See ACCEPT
+See MAKE-TCP-SERVER-CLIENT
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TCP-SERVER-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TCP-SERVER-CLIENT">TCP-SERVER-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all TCP server client instances.
+
+Each client represents a connection to a remote client this serves
+to. In case you subclass this, you must also subclass TCP-SERVER
+and specialise on MAKE-TCP-SERVER-CLIENT to construct an instance
+of your subclass.
+
+See TCP-SERVER</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TEXT-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TEXT-CLIENT">TEXT-CLIENT</a></code></h4>  </header> <pre class="docstring">Mixin for a client whose connection deals with cleartext updates.
+
+The updates are read into a buffer. If you need more control over
+how the updates are read, you should implement your own version of
+RECEIVE, or simply not use this mixin.
+
+See ENCODING
+See BUFFER
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TEXT-TCP-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TEXT-TCP-CLIENT">TEXT-TCP-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for all clients that have a text-based connection over TCP.
+
+See TCP-CLIENT
+See TEXT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TIMEOUT-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:TIMEOUT-CLIENT">TIMEOUT-CLIENT</a></code></h4>  </header> <pre class="docstring">Mixin for a client that generates a timeout error if there isn't enough feedback from the remote.
+
+A timeout is detected by keeping track when the last update was
+received from the remote. If the time distance is too great, then
+the connection is closed and re-initiated.
+
+See TIMEOUT
+See LAST-RECEIVED-TIME
+See REMOTE-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-CONNECTION-CLOSED-UNCLEANLY-WARNING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTION-CLOSED-UNCLEANLY-WARNING">CLIENT-CONNECTION-CLOSED-UNCLEANLY-WARNING</a></code></h4>  </header> <pre class="docstring">Condition signalled when the connection could not be closed cleanly.
+
+See CLOSE-CONNECTION
+See CLIENT-CONDITION
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-CONNECTION-FAILED-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTION-FAILED-ERROR">CLIENT-CONNECTION-FAILED-ERROR</a></code></h4>  </header> <pre class="docstring">Condition signalled when the connection initiation failed.
+
+See INITIATE-CONNECTION
+See CLIENT-CONDITION
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-RECONNECTION-EXCEEDED-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-RECONNECTION-EXCEEDED-ERROR">CLIENT-RECONNECTION-EXCEEDED-ERROR</a></code></h4>  </header> <pre class="docstring">Condition signalled when the maximum number of reconnection attempts has been exceeded.
+
+See HANDLE-CONNECTION-ERROR
+See RECONNECTING-CLIENT
+See CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-STILL-CONNECTED-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-STILL-CONNECTED-ERROR">CLIENT-STILL-CONNECTED-ERROR</a></code></h4>  </header> <pre class="docstring">Condition signalled when another connection initiation is attempted while it is still connected.
+
+See INITIATE-CONNECTION
+See CLIENT-CONDITION
+See SOCKET-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-TIMEOUT-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-TIMEOUT-ERROR">CLIENT-TIMEOUT-ERROR</a></code></h4>  </header> <pre class="docstring">Condition signalled when the connection has timed out.
+
+See HANDLE-CONNECTION
+See TIMEOUT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:DATA-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:DATA-CONDITION">DATA-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions relating to errors during interpretation of an update from the remote.
+
+See REMOTE</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:DATA-PARSE-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:DATA-PARSE-ERROR">DATA-PARSE-ERROR</a></code></h4>  </header> <pre class="docstring">Condition signalled when the data received from the remote could not be parsed.
+
+See DATA-CONDITION
+See CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:DATA-TOO-LONG-WARNING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:DATA-TOO-LONG-WARNING">DATA-TOO-LONG-WARNING</a></code></h4>  </header> <pre class="docstring">Condition signalled when the data to be sent is too long and was truncated or dropped as a result.
+
+See DATA-CONDITION
+See CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:UNKNOWN-DATA-WARNING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-NETWORKING:UNKNOWN-DATA-WARNING">UNKNOWN-DATA-WARNING</a></code></h4>  </header> <pre class="docstring">Condition signalled when the data received could be parsed, but is something unknown that the client doesn't know what to do with.
+
+See DATA-CONDITION
+See CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:BACKOFF"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:BACKOFF">BACKOFF</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The type of backoff used to determine the amount of time between each reconnection attempt.
+
+Must be one of the following.
+:CONSTANT     The sleep time is INTERVAL
+:LINEAR       The sleep time is INTERVAL*FAILURES
+:EXPONENTIAL  The sleep time is INTERVAL^FAILURES
+
+See INTERVAL
+See RECONNECTING-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:BUFFER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:BUFFER">BUFFER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The buffer used to read from the connection.
+
+Can be either a vector, or :line if READ-LINE should be used
+instead.
+
+See TEXT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENTS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENTS">CLIENTS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the TCP server's list of client instances.
+
+See TCP-SERVER
+See TCP-SERVER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:DATA"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:DATA">DATA</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the data that could not be interpreted.
+
+See DATA-CONDITION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:ENCODING"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:ENCODING">ENCODING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The character encoding used by the connection.
+
+See TEXT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:FAILURES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:FAILURES">FAILURES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The current number of failures occurred during reconnection attempts.
+
+See RECONNECTING-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:HOST"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:HOST">HOST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the host that the client is connected to.
+
+See IP-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:IDLE-INTERVAL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:IDLE-INTERVAL">IDLE-INTERVAL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The number of seconds to wait for an update from the remote before calling HANDLE-CONNECTION-IDLE.
+
+See TCP-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:INTERVAL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:INTERVAL">INTERVAL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The interval used for the calculation of the backoff time between reconnection attempts.
+
+See BACKOFF
+See RECONNECTING-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:LAST-RECEIVED-TIME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:LAST-RECEIVED-TIME">LAST-RECEIVED-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the universal-time representing the last time an update was received from the remote.
+
+See TIMEOUT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:MAX-FAILURES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:MAX-FAILURES">MAX-FAILURES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The maximum number of failed connection attempts that may occur before it gives up.
+
+See RECONNECTING-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:PORT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:PORT">PORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the port that the client is connected to.
+
+See IP-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:READ-THREAD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:READ-THREAD">READ-THREAD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the background reading thread used to process the connection.
+
+See SOCKET-CLIENT
+See BT:THREAD</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:SERVER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:SERVER">SERVER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-NETWORKING:SOCKET"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:SOCKET">SOCKET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the socket object that handles the internals of the connection.
+
+See SOCKET-CLIENT
+See USOCKET:SOCKET</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:TIMEOUT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:TIMEOUT">TIMEOUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Accessor to the number of seconds after which the connection is deemed to have been severed.
+
+See TIMEOUT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:ACCEPT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:ACCEPT">ACCEPT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SOCKET TCP-SERVER</code><code>)</code>  </header> <pre class="docstring">This function is called to establish the connection to a new client.
+
+It should create the appropriate client instance and add it to the
+server's list of clients. It should then initiate the actual
+connection establishment and connection handling protocols.
+
+See TCP-SERVER
+See MAKE-TCP-SERVER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLIENT-CONNECTED-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLIENT-CONNECTED-P">CLIENT-CONNECTED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT</code><code>)</code>  </header> <pre class="docstring">Returns true if the client is currently connected to its remote.
+
+See REMOTE-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLOSE-CONNECTION"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLOSE-CONNECTION">CLOSE-CONNECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT</code><code>)</code>  </header> <pre class="docstring">Closes the connection to the remote if it's still open.
+
+May signal a warning of type CLIENT-CONNECTION-CLOSED-UNCLEANLY-
+WARNING if the connection could not be closed cleanly.
+
+See REMOTE-CLIENT
+See CLIENT-CONNECTION-CLOSED-UNCLEANLY-WARNING</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:CLOSING-ERROR"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:CLOSING-ERROR">CLOSING-ERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Reader for the error that occurred during the connection closing attempt.</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:ELEMENT-TYPE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:ELEMENT-TYPE">ELEMENT-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the element-type the TCP connection's stream should use.
+
+See TCP-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:HANDLE-CONNECTION"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION">HANDLE-CONNECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called to handle the connection after it has been initiated.
+
+This method is likely called in a background thread, and as such
+must not exit unless the connection has been closed. The primary
+method on this function must read content from the connection to
+the remote server by RECEIVE and send it off for processing by
+the client through PROCESS.
+
+If an error occurs while the connection is live, the error must be
+passed on to HANDLE-CONNECTION-ERROR.
+
+If no update is received from the server in a long enough time,
+the method must call HANDLE-CONNECTION-IDLE. The minimal or
+maximal amount of time that may pass between two calls to HANDLE-
+CONNECTION-IDLE is client-specific, however.
+
+HANDLE-CONNECTION provides two restarts around the primary method:
+CONTINUE, which will retry the primary method, and ABORT, which
+will exit the connection handling.
+
+Upon exiting HANDLE-CONNECTION, the connection is closed by CLOSE-
+CONNECTION.
+
+See REMOTE-CLIENT
+See RECEIVE
+See PROCESS
+See HANDLE-CONNECTION-ERROR
+See CLOSE-CONNECTION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:HANDLE-CONNECTION-ERROR"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-ERROR">HANDLE-CONNECTION-ERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ERR CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called to handle errors during connection handling.
+
+The primary method should decide what to do based on the condition
+it received. Depending on this it may either close the connection
+and exit, try to stabilise and mitigate, reconnect, or do whatever
+seems suitable for the client.
+
+See REMOTE-CLIENT
+See HANDLE-CONNECTION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:HANDLE-CONNECTION-IDLE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:HANDLE-CONNECTION-IDLE">HANDLE-CONNECTION-IDLE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TCP-CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called when the connection has not seen or provided new content within a long enough period of time.
+
+The primary method should decide what to do in order to check
+whether the connection is still alive, and what to do to stabilise
+it, if anything.
+
+See REMOTE-CLIENT
+See HANDLE-CONNECTION</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:INITIATE-CONNECTION"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:INITIATE-CONNECTION">INITIATE-CONNECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT</code><code>)</code>  </header> <pre class="docstring">Opens the connection to the remote.
+
+If the connection is already open, an error of type CLIENT-STILL-
+CONNECTED-ERROR is signalled. If the connection has failed, a
+condition of type CLIENT-CONNECTION-FAILED-ERROR is signalled.
+
+After connection initiation, the client will most likely handle
+the connection in the background and may signal a variety of
+conditions while that happens.
+
+See REMOTE-CLIENT
+See CLIENT-STILL-CONNECTED-ERROR
+See CLIENT-CONNECTION-FAILED-ERROR</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:MAKE-TCP-SERVER-CLIENT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:MAKE-TCP-SERVER-CLIENT">MAKE-TCP-SERVER-CLIENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SERVER SOCKET</code><code>)</code>  </header> <pre class="docstring">This function is called to construct a new client instance for the TCP server.
+
+See TCP-SERVER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:PROCESS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:PROCESS">PROCESS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MESSAGE TCP-CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called to handle an update from the remote.
+
+The update may be an object of any type, depending on what the
+client deals with. The client will likely want to convert the
+update object into an event of some kind and issue that event
+onto its cores.
+
+If the data can be parsed, but the client doesn't understand it,
+a condition of type UNKNOWN-DATA-WARNING is signalled.
+
+See HANDLE-CONNECTION
+See UNKNOWN-DATA-WARNING</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:RECEIVE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:RECEIVE">RECEIVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TCP-CLIENT</code><code>)</code>  </header> <pre class="docstring">This function blocks until it has read a complete update from the remote.
+
+Whatever an &quot;update&quot; may be is client dependant. However, an
+update must be an object that can be passed to PROCESS to be
+handled by the client.
+
+This function usually does not need to be called outside of
+HANDLE-CONNECTION.
+
+If the data cannot be parsed, a condition of type DATA-PARSE-ERROR
+is signalled. If the data can be parsed, but the client doesn't
+understand it, a condition of type UNKNOWN-DATA-WARNING is signalled.
+
+This function may be called asynchronously.
+
+See REMOTE-CLIENT
+See HANDLE-CONNECTION
+See UNKNOWN-DATA-WARNING</pre> </article> </li><li> <a name="MAIDEN-NETWORKING:SEND"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-NETWORKING:SEND">SEND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">THING TCP-CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called to send an update to the remote.
+
+The update may be an object of any type, depending on what the
+client deals with. The client will likely want to handle certain
+types of events and convert them into objects to send off with,
+using this function.
+
+A client may only support updates up to a particular length. If
+the length is exceeded, a condition of type DATA-TOO-LONG-WARNING
+is signalled.
+
+This function may be called asynchronously.
+
+See REMOTE-CLIENT
+See DATA-TOO-LONG-WARNING</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
