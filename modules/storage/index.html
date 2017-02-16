@@ -1,0 +1,142 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Storage</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Storage support for Maiden modules."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-storage</h1> <span class="version">0.0.0</span> <p class="description">Storage support for Maiden modules.</p> </header> <main> <article id="documentation">  <div><h2>About Maiden-Storage</h2> <p>This offers convenient persistent and thread-safe storage for Maiden components.</p> <h2>How To</h2> <p>For the most part you will want to refer to <a href="http://shinmera.github.io/ubiquitous/">Ubiquitous</a> for docs, since that is the underlying system used for persistence and storage management.</p> <p>Time for a simple example.</p> <pre><code> (maiden:define-consumer tester () ())
+</code></pre> <p>The <code><a href="#MAIDEN-STORAGE:WITH-STORAGE">with-storage</a></code> macro takes care of establishing the proper context where the storage is accessible through <code><a href="#MAIDEN-STORAGE:VALUE">value</a></code>.</p> <pre><code> (maiden:define-instruction (tester write-storage) (c ev field value)
+   (<a href="#MAIDEN-STORAGE:WITH-STORAGE">maiden-storage:with-storage</a> (c)
+     (<a href="http://l1sp.org/cl/setf">setf</a> (<a href="#MAIDEN-STORAGE:VALUE">maiden-storage:value</a> field) value)))
+
+ (maiden:define-query (tester read-storage) (c ev field)
+   (<a href="#MAIDEN-STORAGE:WITH-STORAGE">maiden-storage:with-storage</a> (c)
+     (<a href="#MAIDEN-STORAGE:VALUE">maiden-storage:value</a> field)))
+</code></pre> <p>Let's construct a test case.</p> <pre><code> (<a href="http://l1sp.org/cl/defvar">defvar</a> *core* (maiden:make-simple-core 'tester))
+
+ (write-storage *core* :test &quot;Hey!&quot;)
+ (read-storage *core* :test)
+</code></pre> <p>As apparent, the access works as intended. Just to make sure things are also persisted to disk, let's check that out.</p> <pre><code> (alexandria:read-file-into-string (ubiquitous:designator-pathname 'tester :lisp))
+</code></pre> <p>And sure enough the file is filled with the info we stored.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-storage</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-STORAGE" href="#MAIDEN-STORAGE">MAIDEN-STORAGE</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.MODULES.STORAGE)</span> </h3> <ul><li> <a name="MAIDEN-STORAGE:*STORAGE*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#MAIDEN-STORAGE:*STORAGE*">*STORAGE*</a></code></h4>  </header> <pre class="docstring">Special variable containing the current root storage object.
+Defaults to an EQUAL hash-table.</pre> </article> </li><li> <a name="MAIDEN-STORAGE:STORAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:STORAGE">STORAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">THING</code><code>)</code>  </header> <pre class="docstring">Accesses the storage object for the given thing. If the storage has not yet been loaded, NIL is returned.
+
+See *STORAGES*</pre> </article> </li><li> <a name="MAIDEN-STORAGE:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PATH</code><code>)</code>  </header> <pre class="docstring">Traverses *STORAGE* by the fields in PATH and returns the value if it can be found.
+The secondary return value is a boolean depicting whether the field could be found.
+
+This is SETF-able. If a PATH is set that is made up of fields that do not exist yet,
+then these fields are automatically created as necessary (if possible) by usage of
+AUGMENT. Setting with no PATH given sets the value of *STORAGE*. After setting a value,
+OFFLOAD is called, unless *COMMIT* is NIL
+
+See FIELD
+See AUGMENT
+See OFFLOAD
+See *COMMIT*</pre> </article> </li><li> <a name="MAIDEN-STORAGE:OFFLOAD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:OFFLOAD">OFFLOAD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DESIGNATOR &amp;OPTIONAL (STORAGE (STORAGE DESIGNATOR))</code><code>)</code>  </header> <pre class="docstring">Saves the storage for the given designator to disk.
+
+The storage is always serialised under the MAIDEN-USER
+package.
+
+See UBIQUITOUS:OFFLOAD
+See CONFIG-PATHNAME
+See STORAGE</pre> </article> </li><li> <a name="MAIDEN-STORAGE:RELOAD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:RELOAD">RELOAD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL DESIGNATOR</code><code>)</code>  </header> <pre class="docstring">Causes the configuration to be reloaded.
+
+If DESIGNATOR is NIL, then the configuration is reloaded
+for everything.
+
+The configuration is not immediately reloaded. The reloading
+is deferred until the storage in question is actually needed.
+
+See STORAGE
+See *STORAGES*</pre> </article> </li><li> <a name="MAIDEN-STORAGE:RESTORE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:RESTORE">RESTORE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DESIGNATOR</code><code>)</code>  </header> <pre class="docstring">Restores the storage for the given designator from disk.
+
+See UBIQUITOUS:RESTORE
+See CONFIG-PATHNAME</pre> </article> </li><li> <a name="MAIDEN-STORAGE:CONFIG-PATHNAME"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:CONFIG-PATHNAME">CONFIG-PATHNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PATHNAME</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-STORAGE:DEFAULTED-VALUE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:DEFAULTED-VALUE">DEFAULTED-VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DEFAULT &amp;REST PATH</code><code>)</code>  </header> <pre class="docstring">Same as VALUE, but automatically returns and sets DEFAULT if the field cannot be found.
+
+See VALUE</pre> </article> </li><li> <a name="MAIDEN-STORAGE:REMVALUE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:REMVALUE">REMVALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST PATH</code><code>)</code>  </header> <pre class="docstring">Removes the value denoted by the PATH.
+The secondary return value is a boolean depicting whether the field could be found.
+
+First traverses *STORAGE* until the last field in PATH by FIELD, then uses REMFIELD
+on the last remaining field. If no PATH is given, the *STORAGE* is reset to an empty
+hash-table.
+
+See FIELD
+See REMFIELD</pre> </article> </li><li> <a name="MAIDEN-STORAGE:DEFINE-STORED-ACCESSOR"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:DEFINE-STORED-ACCESSOR">DEFINE-STORED-ACCESSOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define an accessor that defers to the storage instead of the object's slot.
+
+See WITH-STORAGE</pre> </article> </li><li> <a name="MAIDEN-STORAGE:WITH-STORAGE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-STORAGE:WITH-STORAGE">WITH-STORAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Ensure the storage is available within the body.
+
+The designator determines for &quot;what&quot; the configuration is.
+If ALWAYS-LOAD is non-NIL, then the storage is first loaded
+from disk every time.
+
+See CONFIG-PATHNAME
+See ENSURE-STORAGE
+See UBIQUITOUS:WITH-LOCAL-STORAGE</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
