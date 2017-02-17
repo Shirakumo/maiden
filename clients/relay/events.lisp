@@ -9,28 +9,22 @@
 (define-event relay-instruction-event (instruction-event)
   ())
 
-(define-event query-event (deeds:identified-event relay-instruction-event)
+(define-event data-response-event (deeds:identified-event relay-instruction-event)
   ((source :initarg :source :reader source))
   (:default-initargs
    :source (error "SOURCE required.")
    :identifier (uuid:make-v4-uuid)))
 
-(defmethod execute-instruction :around ((event query-event) &key relay)
+(defmethod execute-instruction :around ((event data-response-event) &key relay)
   (relay (make-transport
           (make-instance 'response-event
-                         :response (call-next-method)
+                         :payload (call-next-method)
                          :identifier (deeds:identifier event))
           (source event))
          (source event)
          relay))
 
-(define-event response-event (deeds:identified-event)
-  ((response :initarg :response :reader response))
-  (:default-initargs
-   :response (error "RESPONSE required.")
-   :identifier (error "IDENTIFIER required.")))
-
-(define-event slot-event (query-event relay-instruction-event)
+(define-event slot-event (data-response-event)
   ((slot :initarg :slot :reader slot)
    (object :initarg :object :reader object))
   (:default-initargs
@@ -63,7 +57,7 @@
 (defmethod execute-instruction ((event slot-boundp-event) &key)
   (slot-boundp (object event) (slot event)))
 
-(define-event generic-call-event (query-event relay-instruction-event)
+(define-event generic-call-event (data-response-event)
   ((form :initarg :form :reader form))
   (:default-initargs
    :form (error "FORM required.")))

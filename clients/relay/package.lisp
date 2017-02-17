@@ -43,7 +43,7 @@
   ;; events.lisp
   (:export
    #:relay-instruction-event
-   #:query-event
+   #:data-response-event
    #:source
    #:response-event
    #:response

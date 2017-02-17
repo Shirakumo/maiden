@@ -43,22 +43,22 @@
                   (slot-makunbound (make-instance 'slot-makunbound-event :source core :object client :slot slot))
                   (slot-value (make-instance 'slot-value-event :source core :object client :slot slot))
                   (slot-boundp (make-instance 'slot-boundp-event :source core :object client :slot slot)))))
-    (with-response-event (response event core)
-      response)))
+    (with-response-event (payload event core)
+      payload)))
 
-(defmacro define-virtual-client-method (name args)
-  (let ((form-g (gensym "FORM"))
-        (event-g (gensym "EVENT"))
-        (response-g (gensym "RESPONSE"))
-        (client (or (loop for arg in args
-                          until (find arg lambda-list-keywords)
-                          thereis (and (listp arg) (eql (second arg) 'virtual-client)
-                                       (first arg)))
-                    (error "No ~s specializer in arguments list." 'virtual-client))))
-    `(defmethod ,name ,args
-       (let* ((,form-g (list ',name ,@(loop for arg in args
-                                            unless (find arg lambda-list-keywords)
-                                            collect (if (listp arg) (first arg) arg))))
-              (,event-g (make-instance 'generic-call-event :source (first (cores ,client)) :form ,form-g)))
-         (with-response-event ((,response-g response) ,event-g ,client)
-           ,response-g)))))
+;; (defmacro define-virtual-client-method (name args)
+;;   (let ((form-g (gensym "FORM"))
+;;         (event-g (gensym "EVENT"))
+;;         (response-g (gensym "RESPONSE"))
+;;         (client (or (loop for arg in args
+;;                           until (find arg lambda-list-keywords)
+;;                           thereis (and (listp arg) (eql (second arg) 'virtual-client)
+;;                                        (first arg)))
+;;                     (error "No ~s specializer in arguments list." 'virtual-client))))
+;;     `(defmethod ,name ,args
+;;        (let* ((,form-g (list ',name ,@(loop for arg in args
+;;                                             unless (find arg lambda-list-keywords)
+;;                                             collect (if (listp arg) (first arg) arg))))
+;;               (,event-g (make-instance 'generic-call-event :source (first (cores ,client)) :form ,form-g)))
+;;          (with-response-event ((,response-g response) ,event-g ,client)
+;;            ,response-g)))))

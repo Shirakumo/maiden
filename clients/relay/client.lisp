@@ -22,7 +22,7 @@
   (v:warn :maiden.relay.client "~a Connection error: ~a" client err))
 
 (defmethod handle-connection ((client relay-client))
-  (handler-bind ((maiden:client-timeout-error
+  (handler-bind ((client-timeout-error
                    (lambda (err)
                      (ignore-errors (send `(:timeout ,(timeout err)) client)))))
     (call-next-method)))
@@ -51,7 +51,7 @@
          (warn 'client-version-mismatch :remote-version version :client client))
        (setf (remote client) id)))
     (:timeout
-     (error 'maiden:client-timeout-error :client client :timeout (second message)))
+     (error 'client-timeout-error :client client :timeout (second message)))
     (:close
      (close-connection client))
     (:ping
