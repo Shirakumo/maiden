@@ -1,0 +1,324 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Relay</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Relay client for Maiden"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-relay</h1> <span class="version">0.0.0</span> <p class="description">Relay client for Maiden</p> </header> <main> <article id="documentation">  <div><h2>About Maiden-Relay</h2> <p>The Maiden relay allows transparent event relaying across a network of cores. Optimally no other module should have to be aware that the relay is in effect. However, there must always be some source of authority that first establishes the connections and issues the proper subscriptions so that events get transmitted at all.</p> <h2>How To</h2> <p>In order to set your core up for accepting relay connections, simply instantiate a <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code> consumer and add it to the core. If you simply want to be able to send and receive events without allowing anyone to actually connect to you, set either <code>:host</code> or <code>:port</code> to <code>NIL</code>. Using <code><a href="#MAIDEN-RELAY:CONNECT">connect</a></code> you can then connect to a remote relay. With <code><a href="#MAIDEN-RELAY:SUBSCRIBE">subscribe</a></code> you can subscribe to events that happen on a remote relay and have them be transmitted over to your currently local core. Note that you can construct a network that bridges over several cores, but your network must never contain cycles. If a cycle is introduced, the system will immediately enter a message passing infinite loop until the cycle is broken.</p> <p>Also note that remote clients get recreated locally through <code><a href="#MAIDEN-RELAY:VIRTUAL-CLIENT">virtual-client</a></code> instances. The purpose of this is such that the <code>client</code> field in events can be properly tagged and such that you can <code>respond</code> to events without having to be aware that the event came from a different core. Additionally you can access slots on the client transparently, but accessor functions will need an additional method. You can even construct relaying methods such that a call of a method with a virtual client will be executed on the core local to the virtualised client. To do this, see <code><a href="#MAIDEN-RELAY:DEFINE-VIRTUAL-CLIENT-METHOD">define-virtual-client-method</a></code>.</p> <h2>Internals</h2> <h3>Connection Establishment</h3> <p>When a relay initiates a connection with a new remote, the <code>client</code>s at both ends follow the following procedure:</p> <ol> <li>Issue a <code>connection-initiated</code> event</li> <li>Send the following message: <code>(:id relay-id maiden-version)</code></li> <li>Send a network update containing the local relay in its <code><a href="#MAIDEN-RELAY:NEW">new</a></code> slot.</li> </ol> <p>Plain lists are treated specially upon receiving. They indicate relay internal communication and are handled as follows:</p> <ul> <li><code>:id</code> Check the version against the local one, signal a <code><a href="#MAIDEN-RELAY:CLIENT-VERSION-MISMATCH">client-version-mismatch</a></code> warning if there's a mismatch. Then set the received id as the <code><a href="#MAIDEN-RELAY:REMOTE">remote</a></code> of the client.</li> <li><code>:timeout</code> Signal a <code>client-timeout-error</code> error.</li> <li><code>:close</code> Call <code>close-connection</code> on the client.</li> <li><code>:ping</code> Send a <code>(:pong)</code> message back.</li> <li><code>:pong</code> Do nothing.</li> </ul> <p>Otherwise the following handling steps are taken depending on the type of message:</p> <ul> <li><code><a href="#MAIDEN-RELAY:NETWORK-UPDATE">network-update</a></code> Call <code><a href="#MAIDEN-RELAY:UPDATE">update</a></code> on the relay with the remote and a reconstructed update to propagate the cĥange. Reconstructing the update through <code><a href="#MAIDEN-RELAY:MAKE-NETWORK-UPDATE">make-network-update</a></code> has the effect that the hop count of the update is increased by one.</li> <li><code><a href="#MAIDEN-RELAY:SUBSCRIPTION-UPDATE">subscription-update</a></code> Call <code><a href="#MAIDEN-RELAY:UPDATE">update</a></code> on the relay with the remote and the update.</li> <li><code>client-event</code> Call <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code> on the relay with the remote and relay.</li> <li><code><a href="#MAIDEN-RELAY:TRANSPORT">transport</a></code> Call <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code> on the relay with the transport <code><a href="#MAIDEN-RELAY:TARGET">target</a></code> and relay.</li> <li>Otherwise signal an <code>unknown-message-warning</code>.</li> </ul> <p>Connection reestablishment in case of disruptions or timeouts are handled by the respective Maiden base client mixins.</p> <h3>Network Persistence</h3> <p>The network state gets persisted through <code><a href="#MAIDEN-RELAY:NETWORK-UPDATE">network-update</a></code>s. An update can contain a list of <code><a href="#MAIDEN-RELAY:BAD">bad</a></code> links that should be removed or <code><a href="#MAIDEN-RELAY:NEW">new</a></code> links that should get recognised. Each entry in the <code><a href="#MAIDEN-RELAY:NEW">new</a></code> list is of the form <code>(hops client-id client-name)</code>, and each entry in the <code><a href="#MAIDEN-RELAY:BAD">bad</a></code> list is of the form <code>destination-id</code>. For each update that gets processed we must know its next stop origin, which we know by looking at which client received it. For bad links we then look at each client it lists. If it's a virtual-client, remove each link in its link table that contains this origin. If there are no more links left, remove the client entirely. For new links if the client does not exist, it is created and added to the cores of the relay. Then each link's corresponding virtual client gets a new entry with the hop count and origin saved.</p> <p>This way each particular virtual client knows which directly connected relay to relay the message to next to reach itself, but it does not know how the full network path. Since each link is annotated with a hopcount it should also be able to choose the path that requires the least hops. This is not necessarily the fastest, but we assume that the latency addition of a hop outweighs the badness of a potentially slow link.</p> <h3>Message Relaying</h3> <p>A relay instance has a global handler that acts on all events. Unless the origin of the event is <code>'relay</code> It checks if the event is a client event and the client is a virtual client. If that is the case, it <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code>s the event. Otherwise, if the event matches a subscription, it wraps it in a <code><a href="#MAIDEN-RELAY:TRANSPORT">transport</a></code> and <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code>s it.</p> <p>When a relay client receives a client-event or a transport, it is too sent to <code><a href="#MAIDEN-RELAY:RELAY">relay</a></code> as described in the Connection Establishment section above.</p> <p><code><a href="#MAIDEN-RELAY:RELAY">relay</a></code> then does the following depending on what the target is:</p> <ul> <li><code>core</code> The event is <code>issue</code>d onto the core, but making sure to change the <code>origin</code> to <code>'relay</code> and fixing the <code>event-loop</code> slot.</li> <li><code>consumer</code> The event is <code>issue</code>d onto whatever core can be found in the relay's list that contains the client.</li> <li><code><a href="#MAIDEN-RELAY:VIRTUAL-CLIENT">virtual-client</a></code> The closest link in the <code><a href="#MAIDEN-RELAY:VIRTUAL-CLIENT">virtual-client</a></code> that still exists is looked up and the message is sent to the corresponding client.</li> <li><code>(<a href="http://l1sp.org/cl/eql">eql</a> T)</code> The message is sent to all clients on the relay.</li> </ul> <h3>Message Serialisation</h3> <p>See <code>maiden-serialize</code>.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-relay</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-RELAY" href="#MAIDEN-RELAY">MAIDEN-RELAY</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.CLIENTS.RELAY)</span> </h3> <ul><li> <a name="MAIDEN-RELAY:CONNECT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:CONNECT">CONNECT</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-RELAY:GENERIC-CALL-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:GENERIC-CALL-EVENT">GENERIC-CALL-EVENT</a></code></h4>  </header> <pre class="docstring">Event to represent a generic call request.
+
+When executed, the requested form is evaluated.
+
+See EXECUTE-INSTRUCTION
+See FORM</pre> </article> </li><li> <a name="MAIDEN-RELAY:NETWORK-UPDATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:NETWORK-UPDATE">NETWORK-UPDATE</a></code></h4>  </header> <pre class="docstring">An update to notify of a change in the network.
+
+The update contains a list of new connections that should
+be added, and a list of bad connections that should be
+removed.
+
+See NEW
+See BAD
+See MAKE-NETWORK-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:QUERY-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:QUERY-EVENT">QUERY-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all query events in the system.
+
+Queries are events that represent both a change request and
+a request for a result to be obtained about the change. They
+often represent a &quot;full&quot; function call.
+
+It is identified so that it and its response event counter-
+piece can be found.
+
+See DEFINE-QUERY
+See DEEDS:IDENTIFIED-EVENT
+See INSTRUCTION-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY">RELAY</a></code></h4>  </header> <pre class="docstring">This agent represents a relay node.
+
+It is a TCP server that accepts remote connections from
+other relay nodes. It manages the updates that need to be
+sent and distributed over the PTP relay network. It also
+takes care of capturing events that are relevant for other
+nodes and sends them out to the interested parties.
+
+There can only be one relay node per core, as otherwise
+the messaging and networking infrastructure could much
+too easily become confused.
+
+Currently there is no support for loops in the PTP network.
+If a cycle appears, it will spawn and endless loop of
+updates that will clog the network.
+
+In order for clients to be visible to other nodes in the
+network the relay must notify all other nodes of additions
+and removals of clients on its core. It must then also
+create &quot;virtual&quot; representations of the clients on the
+other cores on its local core. Without this, it would not
+be possible for the system to completely create a
+transparent layer that allows agnostic communication with
+clients on remote cores.
+
+See SUBSCRIPTIONS
+See MY-SUBSCRIPTIONS
+See VIRTUAL-CLIENT
+See MAIDEN-NETWORKING:TCP-SERVER
+See MAIDEN:AGENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY-CLIENT">RELAY-CLIENT</a></code></h4>  </header> <pre class="docstring">This class represents a remote client that was connected to this system via the relay.
+
+See REMOTE
+See MAIDEN-NETWORKING:TCP-SERVER-CLIENT
+See MAIDEN-NETWORKING:TIMEOUT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY-INSTRUCTION-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY-INSTRUCTION-EVENT">RELAY-INSTRUCTION-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all relay events that represent an instruction to be performed on the remote end.
+
+The event can be &quot;executed&quot; via the EXECUTE-
+INSTRUCTION function.
+
+See EXECUTE-INSTRUCTION
+See MAIDEN:INSTRUCTION-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:RESPONSE-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RESPONSE-EVENT">RESPONSE-EVENT</a></code></h4>  </header> <pre class="docstring">Generic response event class.
+
+This event is used to deliver the response payload of a
+query-event. Its IDentity must be the same as that of the
+query-event that prompted it.
+
+See DEEDS:IDENTIFIED-EVENT
+See DEEDS:PAYLOAD-EVENT
+See PASSIVE-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT-BOUNDP-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT-BOUNDP-EVENT">SLOT-BOUNDP-EVENT</a></code></h4>  </header> <pre class="docstring">Event to represent a slot bound test request.
+
+When executed, it tests whether the slot is bound and sends
+the result back over the network.
+
+See EXECUTE-INSTRUCTION
+See SLOT-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT-EVENT">SLOT-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all events relating to slot operations on CLOS objects.
+
+The idea of these events is that they would carry operations
+that should be performed on an object that exists on a remote
+system and is not &quot;actually there&quot; on the local system.
+
+See SLOT
+See OBJECT
+See DATA-RESPONSE-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT-MAKUNBOUND-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT-MAKUNBOUND-EVENT">SLOT-MAKUNBOUND-EVENT</a></code></h4>  </header> <pre class="docstring">Event to represent a slot unbinding request.
+
+When executed, the object's slot is made unbound.
+
+See EXECUTE-INSTRUCTION
+See SLOT-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT-SETF-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT-SETF-EVENT">SLOT-SETF-EVENT</a></code></h4>  </header> <pre class="docstring">Event to represent a slot value set request.
+
+When executed, the object's slot value is set to the
+requested value.
+
+See EXECUTE-INSTRUCTION
+See SLOT-EVENT
+See VALUE</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT-VALUE-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT-VALUE-EVENT">SLOT-VALUE-EVENT</a></code></h4>  </header> <pre class="docstring">Event to represent a slot value read request.
+
+When executed, the object's slot value is read and sent back
+over the network.
+
+See EXECUTE-INSTRUCTION
+See SLOT-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIBE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIBE">SUBSCRIBE</a></code></h4>  </header> <pre class="docstring">This event starts the subscription process for a certain event-type.
+
+After a subscription has been sent out, events matching
+it on remote cores will be relayed to this core and
+will thus be visible.
+
+See SUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIPTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIPTION">SUBSCRIPTION</a></code></h4>  </header> <pre class="docstring">An update that describes a desire to have certain kinds of events relayed.
+
+See SUBSCRIPTION-UPDATE
+See EVENT-TYPE
+See FILTER</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIPTION-UPDATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIPTION-UPDATE">SUBSCRIPTION-UPDATE</a></code></h4>  </header> <pre class="docstring">Base class for updates relating to the subscription of events.
+
+See TARGET
+See SUBSCRIBER
+See SUBSCRIPTION
+See UNSUBSCRIPTION</pre> </article> </li><li> <a name="MAIDEN-RELAY:TRANSPORT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:TRANSPORT">TRANSPORT</a></code></h4>  </header> <pre class="docstring">An update that carries an event to a destination.
+
+See EVENT
+See TARGET
+See MAKE-TRANSPORT</pre> </article> </li><li> <a name="MAIDEN-RELAY:UNSUBSCRIBE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:UNSUBSCRIBE">UNSUBSCRIBE</a></code></h4>  </header> <pre class="docstring">This event starts the unsubscription process for a certain subscription.
+
+See SUBSCRIPTION
+See MY-SUBSCRIPTIONS
+See UNSUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:UNSUBSCRIPTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:UNSUBSCRIPTION">UNSUBSCRIPTION</a></code></h4>  </header> <pre class="docstring">An update that describes a desire to no longer have certain kinds of events relayed.
+
+See SUBSCRIPTION-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:VIRTUAL-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:VIRTUAL-CLIENT">VIRTUAL-CLIENT</a></code></h4>  </header> <pre class="docstring">This client is a virtual representation of a client instance that exists on a remote core.
+
+Operations on the core will be relayed over the network.
+You will not be able to use accessors on the virtual-
+client, even if it does &quot;stand in&quot; for a certain type
+of client that should allow you to use those. However,
+accessing slot values should work just fine, albeit they
+may be slow to return, since they need to be routed over
+the network.
+
+See LINKS
+See MAIDEN:CLIENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:CARRIER-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:CARRIER-CONDITION">CARRIER-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions related to the carrying of the updates across the relay network.
+
+See RELAY-CONDITION
+See MESSAGE</pre> </article> </li><li> <a name="MAIDEN-RELAY:CLIENT-VERSION-MISMATCH"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:CLIENT-VERSION-MISMATCH">CLIENT-VERSION-MISMATCH</a></code></h4>  </header> <pre class="docstring">Condition signalled when the versions of the two relay endpoints are not compatible and a connection cannot be established.
+
+See RELAY-CONDITION
+See REMOTE-VERSION</pre> </article> </li><li> <a name="MAIDEN-RELAY:NO-RELAY-TARGET-SPECIFIED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:NO-RELAY-TARGET-SPECIFIED">NO-RELAY-TARGET-SPECIFIED</a></code></h4>  </header> <pre class="docstring">Condition signalled when the target of an update to be relayed got lost or was not specified properly.
+
+See CARRIER-CONDITION</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY-CONDITION">RELAY-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions related to the relay system.
+
+See MAIDEN:CLIENT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY-LINK-NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY-LINK-NOT-FOUND">RELAY-LINK-NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when a link between two relays was attempted to be used, but appears to be missing.
+
+See CARRIER-CONDITION
+See TARGET-CONDITION</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY-ROUTE-NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY-ROUTE-NOT-FOUND">RELAY-ROUTE-NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when no possible route to the specified target can be found.
+
+See CARRIER-CONDITION
+See TARGET-CONDITION</pre> </article> </li><li> <a name="MAIDEN-RELAY:TARGET-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-RELAY:TARGET-CONDITION">TARGET-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions that relate to a certain target relay.
+
+See RELAY-CONDITION
+See TARGET</pre> </article> </li><li> <a name="MAIDEN-RELAY:BAD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:BAD">BAD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of bad links to be removed.
+
+This is a list of link names.
+
+See NETWORK-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:EVENT-TYPE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:EVENT-TYPE">EVENT-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the type of events that the subscription update should make a subscription for.
+
+See SUBSCRIPTION</pre> </article> </li><li> <a name="MAIDEN-RELAY:FILTER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:FILTER">FILTER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the filter description that limits the events that the subscription update should make a subscription for.
+
+See SUBSCRIPTION</pre> </article> </li><li> <a name="MAIDEN-RELAY:LINKS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:LINKS">LINKS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of links the actual client can be reached through.
+
+The list should be sorted by proximity of the hops.
+
+See VIRTUAL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:MY-SUBSCRIPTIONS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:MY-SUBSCRIPTIONS">MY-SUBSCRIPTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of SUBSCRIBE objects this node itself generated.
+
+See RELAY
+See SUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:NEW"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:NEW">NEW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of new links to be registered.
+
+This is a list of lists, where each inner list has the
+following elements:
+- HOP-COUNT    The number of hops necessary to reach the
+               destination.
+- DESTINATION  The ID of the core of the destination.
+- NAME         The name of this particular link.
+
+See NETWORK-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:REMOTE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:REMOTE">REMOTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the identifier of the remote core that is connected over this relay-client.
+
+See RELAY-CLIENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:RESPONSE-EVENT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:RESPONSE-EVENT">RESPONSE-EVENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the response event the handler captures.</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIBER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIBER">SUBSCRIBER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the ID describing the remote that has sent the subscription update.
+
+See SUBSCRIPTION-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIPTIONS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIPTIONS">SUBSCRIPTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of SUBSCRIBE objects to keep track of.
+
+See RELAY
+See SUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:TARGET"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:TARGET">TARGET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">The ID of the target core that the object is related to.
+
+See TARGET-CONDITION
+See SUBSCRIPTION-UPDATE
+See TRANSPORT</pre> </article> </li><li> <a name="MAIDEN-RELAY:CONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:CONNECT">CONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CORE772 &amp;KEY (HOST &quot;127.0.0.1&quot;) (PORT 9486)</code><code>)</code>  </header> <pre class="docstring">This function initiates a connection to a remote relay node.
+
+See CONNECT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SUBSCRIBE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:SUBSCRIBE">SUBSCRIBE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CORE821 EVENT-TYPE FILTER &amp;OPTIONAL (TARGET T)</code><code>)</code>  </header> <pre class="docstring">This function starts the subscription process for a certain event-type.
+
+See SUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:UNSUBSCRIBE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:UNSUBSCRIBE">UNSUBSCRIBE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CORE843 SUBSCRIPTION</code><code>)</code>  </header> <pre class="docstring">This event starts the unsubscription process for a certain subscription.
+
+See SUBSCRIPTION
+See MY-SUBSCRIPTIONS
+See UNSUBSCRIBE</pre> </article> </li><li> <a name="MAIDEN-RELAY:FORM"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:FORM">FORM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the form that should be evaluated for the call event
+
+See GENERIC-CALL-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:MAKE-NETWORK-UPDATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:MAKE-NETWORK-UPDATE">MAKE-NETWORK-UPDATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NEW BAD</code><code>)</code>  </header> <pre class="docstring">This function takes care of creating an appropriate network update to send out to the relays directly connected to this core.
+
+It takes a NEW and BAD argument, which can be the
+respective lists directly, COREs, CONSUMERS, or already
+existing NETWORK-UPDATES.
+
+See NETWORK-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:MAKE-TRANSPORT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:MAKE-TRANSPORT">MAKE-TRANSPORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT TARGET</code><code>)</code>  </header> <pre class="docstring">Create a transport object to carry the event to the target.
+
+See TRANSPORT</pre> </article> </li><li> <a name="MAIDEN-RELAY:MAKE-VIRTUAL-CLIENT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:MAKE-VIRTUAL-CLIENT">MAKE-VIRTUAL-CLIENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TARGET &amp;KEY NAME LINKS</code><code>)</code>  </header> <pre class="docstring">Create a virtual-client instance for the given target.
+
+See VIRTUAL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:MESSAGE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:MESSAGE">MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-RELAY:OBJECT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:OBJECT">OBJECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the object that the event relates to.
+
+See SLOT-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:PROCESS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:PROCESS">PROCESS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MESSAGE TCP-CLIENT</code><code>)</code>  </header> <pre class="docstring">This is called to handle an update from the remote.
+
+The update may be an object of any type, depending on what the
+client deals with. The client will likely want to convert the
+update object into an event of some kind and issue that event
+onto its cores.
+
+If the data can be parsed, but the client doesn't understand it,
+a condition of type UNKNOWN-DATA-WARNING is signalled.
+
+See HANDLE-CONNECTION
+See UNKNOWN-DATA-WARNING</pre> </article> </li><li> <a name="MAIDEN-RELAY:RELAY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:RELAY">RELAY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MESSAGE TARGET RELAY</code><code>)</code>  </header> <pre class="docstring">Relay a message object to the target over the relay.
+
+This will take care of, if possible, potentially
+encapsulating the object and sending it off to its
+destination over the PTP network.
+
+See UPDATE
+See RELAY</pre> </article> </li><li> <a name="MAIDEN-RELAY:REMOTE-VERSION"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:REMOTE-VERSION">REMOTE-VERSION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Reader for the version of the remote relay system.</pre> </article> </li><li> <a name="MAIDEN-RELAY:RESPONSE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:RESPONSE">RESPONSE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-RELAY:ROUTABLE-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:ROUTABLE-P">ROUTABLE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TARGET NETWORK</code><code>)</code>  </header> <pre class="docstring">Returns whether the given target seems to be reachable, or the given event seems to be able to reach its destination from the current relay.
+
+See RELAY</pre> </article> </li><li> <a name="MAIDEN-RELAY:SLOT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:SLOT">SLOT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the slot that the event relates to.
+
+See SLOT-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:SOURCE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:SOURCE">SOURCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the source of the event. This should be an identifier for who requested the instruction.
+
+See DATA-RESPONSE-EVENT</pre> </article> </li><li> <a name="MAIDEN-RELAY:UPDATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:UPDATE">UPDATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RELAY UPDATE-SOURCE UPDATE</code><code>)</code>  </header> <pre class="docstring">Process an update from a source on a relay.
+
+Updates should only be processed on the relay that it
+is intended for. This function is also responsible for
+updating the internal representation of the network
+as well as for delivering the update event to the core.
+
+See RELAY
+See NETWORK-UPDATE
+See SUBSCRIPTION-UPDATE</pre> </article> </li><li> <a name="MAIDEN-RELAY:DEFINE-VIRTUAL-CLIENT-METHOD"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-RELAY:DEFINE-VIRTUAL-CLIENT-METHOD">DEFINE-VIRTUAL-CLIENT-METHOD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
