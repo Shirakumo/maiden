@@ -19,4 +19,6 @@
    #:initialize-database
    #:add-channel
    #:del-channel
-   #:record-message))
+   #:record-message
+   #:process-back-queue
+   #:maybe-record-message))
