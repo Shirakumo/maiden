@@ -6,17 +6,6 @@
 
 (in-package #:org.shirakumo.maiden.clients.irc)
 
-;; This leaves 152 characters to encode the preamble and CRLF of a message.
-;; That should be enough while still sending a fairly long message over the net.
-;; Calculating the limit precisely would involve querying the hostname as seen
-;; by others as well as the precise manner in which things are encoded on the wire.
-;; Since that is somewhat too complicated and 360 is still plenty long we settle
-;; for this compromise. The protocols don't actually say anything about the length
-;; restrictions of the username, so we cannot make a worst-case estimate limit.
-;; However, we do know that the hostname is limited to 63 characters, we need 2 for
-;; the line ending, ~10 for the command, and ~36 for the nickname. The nick length
-;; here being overly long especially considering the initial RFCs limit it to 9,
-;; which is way too short to be relied upon. Either way, 152 should be a good limit.
 (defvar *message-length-limit* 360)
 
 (define-event send-event (irc-event outgoing-event active-event)
