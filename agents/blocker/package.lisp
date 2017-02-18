@@ -10,4 +10,13 @@
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; blocker.lisp
   (:export
+   #:clause
+   #:remove-clause
+   #:define-clause
+   #:match-rule
+   #:ensure-rule
+   #:rule
+   #:add-rule
+   #:remove-rule
+   #:blocked-p
    #:blocker))
