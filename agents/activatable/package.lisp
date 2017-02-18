@@ -10,5 +10,9 @@
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; activatable.lisp
   (:export
+   #:activate
+   #:deactivate
+   #:active-p
+   #:list-active
    #:activatable-handler
    #:activatable))
