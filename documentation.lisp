@@ -6,6 +6,8 @@
 
 (in-package #:org.shirakumo.maiden)
 
+;; FIXME: allow documenting handlers
+
 ;; agent.lisp
 (docs:define-docs
   (type agent
