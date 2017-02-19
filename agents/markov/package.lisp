@@ -29,4 +29,9 @@
    #:write-generator)
   ;; interface.lisp
   (:export
-   #:markov))
+   #:markov
+   #:ramble
+   #:ramble-about
+   #:ramble-chance
+   #:set-ramble-chance
+   #:stats))
