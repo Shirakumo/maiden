@@ -10,6 +10,9 @@
   (type help
     "This agent provides generic help commands that should provide information for the user and help in discovering the system interactively.")
 
+  (function find-consumer
+    "Attempt to find a consumer on the core that matches the name somehow.")
+
   (command about
     "This is the generic interface for the help system. Depending on what it finds for the term, it dispatches to other help commands.")
 

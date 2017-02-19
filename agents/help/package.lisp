@@ -10,4 +10,11 @@
   (:use #:cl #:maiden #:maiden-commands #:maiden-client-entities)
   ;; help.lisp
   (:export
-   #:help))
+   #:help
+   #:about
+   #:about-self
+   #:about-uptime
+   #:about-command
+   #:list-consumers
+   #:about-consumer
+   #:about-term))
