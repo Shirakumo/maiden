@@ -1,0 +1,2 @@
+## About
+This agent provides a Text To Speech functionality and allows you to play back random text on your computer. It also provides some commands for people to do that. Naturally, the TTS won't happen on their end, but nevertheless this can be useful for situations like a stream, where the other users will see and hear your screen. The available functions and commands should be self-explanatory, so see the symbol index.

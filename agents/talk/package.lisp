@@ -10,4 +10,11 @@
   (:use #:cl #:maiden #:maiden-commands)
   ;; talk.lisp
   (:export
-   #:talk))
+   #:talk
+   #:get-speech-stream
+   #:with-speech-file
+   #:with-output
+   #:play-file
+   #:talk
+   #:talk-en
+   #:talk-lang))
