@@ -14,4 +14,8 @@
    #:counter
    #:remove-counter
    #:set-counter
-   #:list-counters))
+   #:list-counters
+   #:add
+   #:change
+   #:remove
+   #:list))

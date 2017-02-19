@@ -1,0 +1,94 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Counter</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Module to add counters to user messages in Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-counter</h1> <span class="version">0.0.0</span> <p class="description">Module to add counters to user messages in Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides simple, silly counter functionality. It detects messages by a regex and then increases a counter and replies with a message.</p> <h2>How To</h2> <p>There's several commands to manage the counters.</p> <pre><code>::add counter foo \\bfoo|bar|baz|ban\\b &quot;~a examples have been posted.&quot;</code></pre> <p>When a message is encountered that contains <code>foo</code>, <code>bar</code>, <code>baz</code>, or <code>ban</code>, the counter is increased and a response is given as specified above. Simple stuff. See the symbol index for the other commands.</p> <p>The command handler is an activatable handler, so it must be activated explicitly first. See <a href="../activatable/">maiden-activatable</a>.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-counter</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-COUNTER" href="#MAIDEN-COUNTER">MAIDEN-COUNTER</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.COUNTER)</span> </h3> <ul><li> <a name="MAIDEN-COUNTER:ADD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:ADD">ADD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-COUNTER:CHANGE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:CHANGE">CHANGE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-COUNTER:COUNTER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:COUNTER">COUNTER</a></code></h4>  </header> <pre class="docstring">This agent provides a simple regex based matcher that increases a counter every time it sees a matching message.</pre> </article> </li><li> <a name="MAIDEN-COUNTER:LIST"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:LIST">LIST</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-COUNTER:REMOVE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:REMOVE">REMOVE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-COUNTER:COUNTER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:COUNTER">COUNTER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Direct accessor to the counter storage.
+
+A counter is a plist of the following keys:
+- :NAME      The name of the counter
+- :MATCH     The regex that matches an applicable message.
+- :RESPONSE  The response string to use when a message matches. Should be a format string that contains a single placeholder that is filled with the current counter value.
+- :COUNT     The actual counter value of how many times the counter was invoked.
+
+See REMOVE-COUNTER
+See LIST-COUNTERS
+See SET-COUNTER</pre> </article> </li><li> <a name="MAIDEN-COUNTER:LIST-COUNTERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:LIST-COUNTERS">LIST-COUNTERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return a list of all the counters in the storage.
+
+See COUNTER
+See REMOVE-COUNTER</pre> </article> </li><li> <a name="MAIDEN-COUNTER:REMOVE-COUNTER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:REMOVE-COUNTER">REMOVE-COUNTER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove a counter from the storage.
+
+See COUNTER
+See LIST-COUNTERS</pre> </article> </li><li> <a name="MAIDEN-COUNTER:SET-COUNTER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:SET-COUNTER">SET-COUNTER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME MATCH &amp;KEY RESPONSE COUNT</code><code>)</code>  </header> <pre class="docstring">More conveniently update or create a counter in the storage.
+
+See COUNTER</pre> </article> </li><li> <a name="MAIDEN-COUNTER:ADD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:ADD">ADD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME MATCH &amp;OPTIONAL RESPONSE</code><code>)</code>  </header> <pre class="docstring">Add a new counter. MATCH should be a regular expression. RESPONSE, if specified, is the message displayed when the counter matches.</pre> </article> </li><li> <a name="MAIDEN-COUNTER:CHANGE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:CHANGE">CHANGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;KEY MATCH RESPONSE</code><code>)</code>  </header> <pre class="docstring">Update an existing counter definition.</pre> </article> </li><li> <a name="MAIDEN-COUNTER:LIST"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-COUNTER:LIST">LIST</a></code></h4>  </header> <pre class="docstring">List the names of all existing counter definitions.</pre> </article> </li><li> <a name="MAIDEN-COUNTER:REMOVE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COUNTER:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove an existing counter definition.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

@@ -10,4 +10,11 @@
   (:use #:cl #:maiden #:maiden-commands #:maiden-client-entities)
   ;; core-manager.lisp
   (:export
-   #:core-manager))
+   #:core-manager
+   #:start-consumer
+   #:stop-consuemr
+   #:remove-consumer
+   #:add-consumer
+   #:list-consumers
+   #:stop-core
+   #:reload))

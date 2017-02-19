@@ -7,6 +7,36 @@
 (in-package #:org.shirakumo.maiden.agents.counter)
 
 (docs:define-docs
+  (function counter
+    "Direct accessor to the counter storage.
+
+A counter is a plist of the following keys:
+- :NAME      The name of the counter
+- :MATCH     The regex that matches an applicable message.
+- :RESPONSE  The response string to use when a message matches. Should be a format string that contains a single placeholder that is filled with the current counter value.
+- :COUNT     The actual counter value of how many times the counter was invoked.
+
+See REMOVE-COUNTER
+See LIST-COUNTERS
+See SET-COUNTER")
+
+  (function remove-counter
+    "Remove a counter from the storage.
+
+See COUNTER
+See LIST-COUNTERS")
+
+  (function list-counters
+    "Return a list of all the counters in the storage.
+
+See COUNTER
+See REMOVE-COUNTER")
+
+  (function set-counter
+    "More conveniently update or create a counter in the storage.
+
+See COUNTER")
+  
   (type counter
     "This agent provides a simple regex based matcher that increases a counter every time it sees a matching message.")
   
