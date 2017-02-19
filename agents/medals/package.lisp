@@ -13,4 +13,7 @@
    #:medals
    #:add-medals
    #:remove-medals
-   #:medals))
+   #:medals
+   #:show
+   #:award
+   #:take))
