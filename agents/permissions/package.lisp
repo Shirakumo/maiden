@@ -27,4 +27,6 @@
    #:deny
    #:check-allowed
    #:with-permission
-   #:permissions))
+   #:permissions
+   #:check-access
+   #:administrate-self))
