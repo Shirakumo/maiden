@@ -15,4 +15,10 @@
    #:timezone
    #:local-time
    #:user-time
-   #:time))
+   #:time
+   #:timezone-location
+   #:time-dwim
+   #:time-location
+   #:time-user
+   #:time-between
+   #:time-between-users))
