@@ -1,0 +1,89 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Emoticon</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Module to add &quot;emoticons&quot; to user messages in Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-emoticon</h1> <span class="version">0.0.0</span> <p class="description">Module to add &quot;emoticons&quot; to user messages in Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides &quot;emoticons&quot; for text chats. Emotes are basically special sequences that are recognised by the bot and upon which the bot replies with a specific string. Very simple stuff.</p> <h2>How To</h2> <p>Add an emote</p> <pre><code>::add emoticon foo bar
+</code></pre> <p>And invoke it.</p> <pre><code>And so, :foo: became something else.
+</code></pre> <p>That should prompt the bot to reply with &quot;bar&quot;. That's it.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-emoticon</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-EMOTICON" href="#MAIDEN-EMOTICON">MAIDEN-EMOTICON</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.EMOTICON)</span> </h3> <ul><li> <a name="MAIDEN-EMOTICON:ADD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:ADD">ADD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-EMOTICON:CHANGE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:CHANGE">CHANGE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-EMOTICON:EMOTICON"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:EMOTICON">EMOTICON</a></code></h4>  </header> <pre class="docstring">This agent provides 'emoticons' as seen on forums. Emoticons are tokens like :this: that the bot replies to with a saved response. This can also serve as a convenient shortcut mechanism.</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:LIST"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:LIST">LIST</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-EMOTICON:REMOVE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:REMOVE">REMOVE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-EMOTICON:EMOTICON"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:EMOTICON">EMOTICON</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to the emoticon of the given name.
+
+The value should be the response string for the emote.
+
+See REMOVE-EMOTICON
+See LIST-EMOTICONS</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:LIST-EMOTICONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:LIST-EMOTICONS">LIST-EMOTICONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return a fresh list of all emoticons that are saved on the system.
+
+See EMOTICON
+See REMOVE-EMOTICON</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:REMOVE-EMOTICON"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:REMOVE-EMOTICON">REMOVE-EMOTICON</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove the emoticon of the given name from the system.
+
+See EMOTICON
+See LIST-EMOTICONS</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:ADD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:ADD">ADD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME EMOTICON</code><code>)</code>  </header> <pre class="docstring">Add a new emoticon mapping. If you want your name or emoticon text to contain spaces or such, supply it as a string encased in double-quotes.</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:CHANGE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:CHANGE">CHANGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME EMOTICON</code><code>)</code>  </header> <pre class="docstring">Change the reply for an emoticon mapping.</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:LIST"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-EMOTICON:LIST">LIST</a></code></h4>  </header> <pre class="docstring">List the names of all available emoticon mappings.</pre> </article> </li><li> <a name="MAIDEN-EMOTICON:REMOVE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-EMOTICON:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove an existing emoticon mapping.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

@@ -13,4 +13,8 @@
   (:export
    #:emoticon
    #:remove-emoticon
-   #:list-emoticons))
+   #:list-emoticons
+   #:add
+   #:change
+   #:remove
+   #:list))
