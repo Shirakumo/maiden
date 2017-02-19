@@ -10,4 +10,12 @@
   (:use #:cl #:maiden #:maiden-activatable #:maiden-commands #:maiden-api-access #:maiden-client-entities)
   ;; silly.lisp
   (:export
-   #:silly))
+   #:silly
+   #:silly-function
+   #:remove-silly-function
+   #:define-silly
+   #:define-simple-silly
+   #:eight
+   #:jerkcity
+   #:roll
+   #:fortune))
