@@ -21,4 +21,10 @@
 (defmethod staple:symb-type-order ((symb (eql 'symb-command)))
   (1+ (staple:symb-type-order 'symb-function)))
 
-(staple:define-simple-converter symb-command maiden-commands:command-invoker)
+(defun command-invoker-p (symbol)
+  )
+
+(staple:define-converter symb-command (symbol package)
+  (when (and (eql :external (nth-value 1 (find-symbol (string symbol) package)))
+             (maiden-commands:command-invoker symbol))
+    (list (make-instance 'symb-command :symbol symbol :package package))))
