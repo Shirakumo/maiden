@@ -17,20 +17,20 @@
 
 (defun find-game (c ev &optional (error T))
   (or (find (channel ev) (games c) :key #'channel)
-      (and error (error "No crimes game going on here."))))
+      (when error (error "No crimes game going on here."))))
 
 (defun find-player (c ev &optional (error T))
   (let ((game (user-game c ev error)))
-    (and game
-         (or (find (user ev) (players game) :key #'user)
-             (and error (error "You are not part of this game."))))))
+    (when game
+      (or (find (user ev) (players game) :key #'user)
+          (when error (error "You are not part of this game."))))))
 
 (defun user-game (c ev &optional (error T))
   (or (loop for game in (games c)
             do (when (loop for player in (players game)
                            thereis (eql (user ev) (user player)))
                  (return game)))
-      (and error (error "You are not part of this game."))))
+      (when error (error "You are not part of this game."))))
 
 (defun handle-next (game)
   (cond ((in-session game)

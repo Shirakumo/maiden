@@ -58,6 +58,7 @@
 
 (defun save-deck (deck)
   (maiden-storage:with-storage ((name deck))
+    (setf (maiden-storage:value :title) (title deck))
     (setf (maiden-storage:value :calls) (calls deck))
     (setf (maiden-storage:value :responses) (responses deck)))
   deck)
@@ -68,6 +69,7 @@
       (error "No such deck ~s found." name))
     (maiden-storage:with-storage (name)
       (make-instance 'deck :name name
+                           :title (maiden-storage:value :title)
                            :calls (maiden-storage:value :calls)
                            :responses (maiden-storage:value :responses)))))
 
