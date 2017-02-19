@@ -7,6 +7,39 @@
 (in-package #:org.shirakumo.maiden.agents.quicklisp)
 
 (docs:define-docs
+  (function dists-and-versions
+    "Return a list of lists of dist names and their current versions.")
+
+  (function dist-for-system
+    "Return the first dist that contains the system specified.")
+
+  (function check-dists-available
+    "Check whether all of the dists in the list are ones Quicklisp knows about.
+
+If one is not, an error is signalled.")
+
+  (function check-systems-available
+    "Check whether all of the systems in the list are ones Quicklisp knows about.
+
+If one is not, an error is signalled.")
+
+  (function check-systems-upgradable
+    "Check whether all of the systems are upgradable.
+
+System that are not managed by Git or Quicklisp
+generate an error.")
+
+  (function update
+    "Update the Quicklisp dists definitions to the latest versions.
+
+This will not update any actual systems until they are next loaded.")
+
+  (function upgrade
+    "Upgrade the given systems to the latest versions.
+
+This will handle systems that are managed by Git
+or by Quicklisp.")
+  
   (type quicklisp
     "This agent provides access to the Quicklisp package manager.")
 
