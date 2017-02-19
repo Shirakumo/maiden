@@ -10,4 +10,19 @@
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   ;; throttle.lisp
   (:export
-   #:throttle))
+   #:throttle
+   #:attempts
+   #:time-frame
+   #:cooldown-function
+   #:cooldown-step
+   #:cooldown-max
+   #:records
+   #:record
+   #:attempts
+   #:timestamp
+   #:timeout
+   #:clear-tax
+   #:tax
+   #:view-config
+   #:set-config
+   #:clear-tax))
