@@ -95,6 +95,6 @@
         (T
          (error "I need to know at least one module that should be deactivated."))))
 
-(define-command (activatable list-activated) (c ev)
-  :command "list activated"
+(define-command (activatable list-active) (c ev)
+  :command "list active"
   (reply ev "Active modules: ~{~a~^, ~}" (list-active ev)))

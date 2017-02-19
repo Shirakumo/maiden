@@ -19,4 +19,12 @@
    #:add-rule
    #:remove-rule
    #:blocked-p
-   #:blocker))
+   #:blocker
+   #:block-channel
+   #:block-user
+   #:block-regex
+   #:block-prefix
+   #:update-rule
+   #:remove-rule
+   #:view-rule
+   #:view-rules))

@@ -39,4 +39,14 @@
    #:field)
   ;; interface.lisp
   (:export
-   #:accounts))
+   #:accounts
+   #:login
+   #:logout
+   #:create
+   #:destroy
+   #:update-password
+   #:associate
+   #:deassociate
+   #:field
+   #:set-field
+   #:test-authentication))
