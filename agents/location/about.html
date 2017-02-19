@@ -1,0 +1,91 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Location</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Handle location data with Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-location</h1> <span class="version">0.0.0</span> <p class="description">Handle location data with Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This provides an agent and some functions to perform geolocation. It allows retrieving the address of an ambiguous location, as well as getting the exact geological latitude and longitude coordinates of a place. This is done through the Google Maps geocoding API.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-location</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-LOCATION" href="#MAIDEN-LOCATION">MAIDEN-LOCATION</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.LOCATION)</span> </h3> <ul><li> <a name="MAIDEN-LOCATION:LOCATION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-LOCATION:LOCATION">LOCATION</a></code></h4>  </header> <pre class="docstring">This agent helps with location information such as geocoding using the Google Maps API.</pre> </article> </li><li> <a name="MAIDEN-LOCATION:ADDRESS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:ADDRESS">ADDRESS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LOCATION</code><code>)</code>  </header> <pre class="docstring">Attempt to find the closes address for the location.
+
+See GEO-INFORMATION</pre> </article> </li><li> <a name="MAIDEN-LOCATION:COORDINATES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:COORDINATES">COORDINATES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LOCATION</code><code>)</code>  </header> <pre class="docstring">Return the coordinates of a location.
+
+Returns two values:
+- A list of the latitude and longitude of the location
+- The long name of the resolved address of the location
+
+See GEO-INFORMATION</pre> </article> </li><li> <a name="MAIDEN-LOCATION:GEO-INFORMATION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:GEO-INFORMATION">GEO-INFORMATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LOCATION</code><code>)</code>  </header> <pre class="docstring">Retrieve geolocation information about the given location.
+
+Errors are signalled in the following cases:
+- No results could be found for the location
+- You exceeded the maximum number of queries allowed
+- Some other failure on behalf of the Google API.
+
+See *GEOCODE-API*</pre> </article> </li><li> <a name="MAIDEN-LOCATION:ADD-CONSUMER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:ADD-CONSUMER">add consumer</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PACKAGE &amp;KEY SYMBOL NAME</code><code>)</code>  </header> <pre class="docstring">Create and add a new consumer to the current core.</pre> </article> </li><li> <a name="MAIDEN-LOCATION:QUERY-ADDRESS"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:QUERY-ADDRESS">address of</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LOCATION</code><code>)</code>  </header> <pre class="docstring">Try to discover the actual address of an approximate location.</pre> </article> </li><li> <a name="MAIDEN-LOCATION:QUERY-COORDINATES"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:QUERY-COORDINATES">coordinates of</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LOCATION</code><code>)</code>  </header> <pre class="docstring">Attempt to find the latitude and longitude coordinates of the location.</pre> </article> </li><li> <a name="MAIDEN-LOCATION:REMOVE-CONSUMER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LOCATION:REMOVE-CONSUMER">remove consumer</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER</code><code>)</code>  </header> <pre class="docstring">Completely remove an existing consumer of the given name from the current core.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
