@@ -40,18 +40,23 @@
   ((name :initarg :name :accessor name)
    (prefix :initarg :prefix :accessor prefix)
    (lambda-list :initarg :lambda-list :accessor lambda-list)
-   (invoker :initarg :invoker :accessor invoker)
-   (docstring :initarg :docstring :accessor docstring)))
+   (invoker :initarg :invoker :accessor invoker)))
 
 (defmethod print-object ((command-invoker command-invoker) stream)
   (print-unreadable-object (command-invoker stream :type T)
     (format stream "~a" (name command-invoker))))
 
 (defmethod documentation ((command-invoker command-invoker) type)
-  (docstring command-invoker))
+  (documentation (invoker command-invoker) T))
 
 (defmethod (setf documentation) (value (command-invoker command-invoker) type)
-  (setf (docstring command-invoker) value))
+  (setf (documentation (invoker command-invoker) T) value))
+
+(defmethod documentation (slot (type (eql 'command)))
+  (documentation (command-invoker slot) T))
+
+(defmethod (setf documentation) (docstring slot (type (eql 'command)))
+  (setf (documentation (command-invoker slot) T) docstring))
 
 (defun command-invoker (name)
   (find name *invokers* :key #'name))
@@ -82,15 +87,9 @@
                             :prefix ,(string-downcase prefix)
                             :lambda-list ',lambda-list
                             :invoker (lambda (,event ,message)
+                                       ,(form-fiddle:lambda-docstring `(lambda () ,@body))
                                        (with-command-destructuring-bind ,lambda-list ,message
-                                         ,@body))
-                            :docstring ,(form-fiddle:lambda-docstring `(lambda () ,@body)))))))
-
-(defmethod documentation (slot (type (eql 'command)))
-  (documentation (command-invoker slot) T))
-
-(defmethod (setf documentation) (docstring slot (type (eql 'command)))
-  (setf (documentation (command-invoker slot) T) docstring))
+                                         ,@body)))))))
 
 (defmacro define-simple-command-invoker (name args event-type &key message-event-initarg documentation)
   (let ((event (gensym "EVENT"))
@@ -157,3 +156,20 @@
                (when (< distance *alternative-distance-threshold*)
                  (push (cons distance command) alternatives))))
     (values match alternatives)))
+
+(defun levenshtein-distance (a b)
+  (cond ((= 0 (length a)) (length b))
+        ((= 0 (length b)) (length a))
+        (T
+         (let ((v0 (make-array (1+ (length b))))
+               (v1 (make-array (1+ (length b)))))
+           (dotimes (i (length v0)) (setf (aref v0 i) i))
+           (dotimes (i (length a) (aref v1 (length b)))
+             (incf (aref v1 0))
+             (dotimes (j (length b))
+               (let ((cost (if (char= (char a i) (char b j)) 0 1)))
+                 (setf (aref v1 (1+ j)) (min (1+ (aref v1 j))
+                                             (1+ (aref v0 (1+ j)))
+                                             (+ cost (aref v0 j))))))
+             (dotimes (j (length v0))
+               (setf (aref v0 j) (aref v1 j))))))))
