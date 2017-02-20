@@ -7,9 +7,7 @@
 (in-package #:org.shirakumo.maiden.modules.client-entities)
 
 (define-event user-event (client-event)
-  ((user :initarg :user :reader user))
-  (:default-initargs
-   :user (error "USER required.")))
+  ((user :initarg :user :initform (error "USER required.") :reader user)))
 
 (define-event user-removed (user-event)
   ())
@@ -18,21 +16,15 @@
   ())
 
 (define-event user-name-changed (user-event)
-  ((old-name :initarg :old-name :reader old-name))
-  (:default-initargs
-   :old-name (error "OLD-NAME required.")))
+  ((old-name :initarg :old-name :initform (error "OLD-NAME required.") :reader old-name)))
 
 (define-event message-event (user-event)
-  ((message :initarg :message :accessor message :mutable T))
-  (:default-initargs
-   :message (error "MESSAGE required.")))
+  ((message :initarg :message :initform (error "MESSAGE required.") :accessor message :mutable T)))
 
 (defgeneric reply (event format-string &rest format-args))
 
 (define-event channel-event (client-event)
-  ((channel :initarg :channel :reader channel))
-  (:default-initargs
-   :channel (error "CHANNEL required.")))
+  ((channel :initarg :channel :initform (error "CHANNEL required.") :reader channel)))
 
 (define-event user-entered (user-event channel-event)
   ())
