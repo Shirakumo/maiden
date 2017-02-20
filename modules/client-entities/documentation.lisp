@@ -15,7 +15,8 @@ See FIND-USER
 See USERS
 See ENSURE-USER
 See AUTHENTICATE
-See USER")
+See USER
+See USERNAME")
 
   (function find-user
     "Attempt to find the user object of the given name on the client.
@@ -196,7 +197,20 @@ are not guaranteed, but may be provided by a client.
 
 See CLIENT-ENTITY
 See AUTHENTICATE
-See AUTHENTICATED-P")
+See AUTHENTICATED-P
+See USERNAME")
+
+  (function username
+     "Accessor to the entity's name on the client network.
+
+This may or may not be distinct from the entity's NAME.
+Especially clients may often want to keep a separate NAME
+and USERNAME, as the name should stay the same on the local
+core, but the username may possibly change or be different
+depending on the network.
+
+See USER
+See USER-CLIENT")
 
   (function authenticated-p
     "Returns whether the user is authenticated or not.

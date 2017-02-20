@@ -11,6 +11,7 @@
   ;; clients.lisp
   (:export
    #:user-client
+   #:username
    #:find-user
    #:authenticate
    #:channel-client
@@ -29,6 +30,7 @@
    #:client-entity
    #:client
    #:user
+   #:username
    #:authenticated
    #:ensure-user
    #:authenticated-p

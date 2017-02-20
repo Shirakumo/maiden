@@ -18,6 +18,12 @@
 (defclass user (client-entity data-entity)
   ((authenticated :initarg :authenticated)))
 
+(defmethod username ((user user))
+  (name user))
+
+(defmethod (setf username) (name (user user))
+  (setf (name user) name))
+
 (defmethod ensure-user ((user user) client)
   user)
 
