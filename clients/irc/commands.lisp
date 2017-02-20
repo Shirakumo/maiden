@@ -40,6 +40,10 @@
   ()
   (:default-initargs :user NIL))
 
+(defmethod print-object ((event send-message-event) stream)
+  (print-unreadable-object (event stream :type T :identity T)
+    (format stream "~s ~a" :user (name (user event)))))
+
 (defmethod initialize-instance :around ((ev send-message-event) &rest args &key client)
   (apply #'call-next-method ev :user (ensure-user (nickname client) client) args))
 
