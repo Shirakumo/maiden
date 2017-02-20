@@ -21,8 +21,8 @@ We can now call the command as a function.
     
 Or through a message that is recognised as a command.
     
-    (maiden-commands:issue-message *core* "!greet you")
+    (maiden-commands:issue-message *core* "::greet you")
 
 In order for the latter to work, the `commands` agent must be present on the core.
 
-You can manipulate what is recognised as a command message through the extractors. Calling `remove-command-extractor` on `prefix` will stop the bang from being recognised as a command prefix. You can add arbitrary functions that do what you want through `define-command-extractor`. The function should return the substring of the event's message that contains the actual command, or `NIL` if it is not a command message.
+You can manipulate what is recognised as a command message through the extractors. Calling `remove-command-extractor` on `prefix` will stop the double-colons from being recognised as a command prefix. You can add arbitrary functions that do what you want through `define-command-extractor`. The function should return the substring of the event's message that contains the actual command, or `NIL` if it is not a command message.

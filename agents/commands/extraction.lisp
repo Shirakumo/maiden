@@ -32,3 +32,8 @@
 (define-command-extractor prefix (event)
   (when (starts-with "::" (message event))
     (subseq (message event) 2)))
+
+(define-command-extractor username (event)
+  (when (starts-with (username (client event))
+                     (message event))
+    (subseq (message event) (length (username (client event))))))
