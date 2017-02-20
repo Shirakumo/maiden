@@ -9,7 +9,7 @@
 (defvar *send-length-limit* 512)
 
 (define-consumer irc-client (text-tcp-client reconnecting-client timeout-client simple-user-channel-client)
-  ((nickname :initarg :nickname :accessor nickname)
+  ((nickname :initarg :nickname :accessor nickname :accessor maiden-client-entities:username)
    (username :initarg :username :accessor username)
    (password :initarg :password :accessor password)
    (realname :initarg :realname :accessor realname)

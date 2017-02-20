@@ -44,16 +44,11 @@ See MAIDEN-NETWORKING:RECONNECTING-CLIENT
 See MAIDEN-NETWORKING:TIMEOUT-CLIENT
 See MAIDEN-CLIENT-ENTITIES:SIMPLE-USER-CHANNEL-CLIENT
 See SERVERNAME
-See USERNAME
+See MAIDEN-CLIENT-ENTITIES:USERNAME
 See PASSWORD")
 
   (function servername
     "Accessor to the name of the server that this client is connected to.
-
-See LICHAT-CLIENT")
-
-  (function username
-    "Accessor to the name the client has on the server.
 
 See LICHAT-CLIENT")
 

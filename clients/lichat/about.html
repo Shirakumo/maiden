@@ -87,11 +87,18 @@ See MAIDEN-NETWORKING:RECONNECTING-CLIENT
 See MAIDEN-NETWORKING:TIMEOUT-CLIENT
 See MAIDEN-CLIENT-ENTITIES:SIMPLE-USER-CHANNEL-CLIENT
 See SERVERNAME
-See USERNAME
+See MAIDEN-CLIENT-ENTITIES:USERNAME
 See PASSWORD</pre> </article> </li><li> <a name="MAIDEN-LICHAT:LICHAT-USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-LICHAT:LICHAT-USER">LICHAT-USER</a></code></h4>  </header> <pre class="docstring">Class to represent a user on the Lichat server.
 
 See MAIDEN-CLIENT-ENTITIES:SIMPLE-USER</pre> </article> </li><li> <a name="MAIDEN-LICHAT:PASSWORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LICHAT:PASSWORD">PASSWORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the password used to connect to the server with.
 
-See LICHAT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-LICHAT:USERNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LICHAT:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the name the client has on the server.
+See LICHAT-CLIENT</pre> </article> </li><li> <a name="MAIDEN-LICHAT:USERNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-LICHAT:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Accessor to the entity's name on the client network.
 
-See LICHAT-CLIENT</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
+This may or may not be distinct from the entity's NAME.
+Especially clients may often want to keep a separate NAME
+and USERNAME, as the name should stay the same on the local
+core, but the username may possibly change or be different
+depending on the network.
+
+See USER
+See USER-CLIENT</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

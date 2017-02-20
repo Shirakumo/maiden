@@ -41,10 +41,17 @@ user, in order to keep the name of a client instance
 consistent and unchanging, the client's nickname is
 kept separate.
 
-See IRC-CLIENT")
+This is another accessor to the same field as MAIDEN-
+CLIENT-ENTITIES:USERNAME
+
+See IRC-CLIENT
+See MAIDEN-CLIENT-ENTITIES:USERNAME")
 
   (function username
     "The username that is passed to the server upon connection.
+
+Note that this is /not/ the same as MAIDEN-CLIENT-ENTITIES:
+USERNAME, which instead corresponds to NICKNAME.
 
 See IRC-CLIENT")
 
