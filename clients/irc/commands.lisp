@@ -166,7 +166,11 @@
   "INFO~@[ ~a~]" server)
 
 (define-message-irc-command privmsg (receivers message)
+  :superclasses (channel-event)
   "PRIVMSG ~{~a~^,~} :~a" (enlist receivers) message)
+
+(defmethod initialize-instance :around ((ev irc:privmsg) &rest args &key receivers client)
+  (apply #'call-next-method ev :channel (coerce-irc-object (first (enlist receivers)) NIL NIL client) args))
 
 (define-message-irc-command notice (nickname text)
   "NOTICE ~a ~a" nickname text)
