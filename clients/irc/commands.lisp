@@ -41,7 +41,7 @@
   (:default-initargs :user NIL))
 
 (defmethod initialize-instance :around ((ev send-message-event) &rest args &key client)
-  (apply #'call-next-method ev :user (find-user (nickname client) client) args))
+  (apply #'call-next-method ev :user (ensure-user (nickname client) client) args))
 
 (defun splittable-char-p (char)
   (or (not (graphic-char-p char))
