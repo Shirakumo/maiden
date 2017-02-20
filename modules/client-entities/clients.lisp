@@ -83,13 +83,13 @@
 (defmethod remove-channel ((channel channel) (container channel-container))
   (remove-channel (name channel) container))
 
-(define-consumer simple-user-channel-client (user-client channel-client user-container channel-container)
+(define-consumer simple-user-channel-client (user-container channel-container user-client channel-client)
   ())
 
-(defclass simple-user (user channel-container)
+(defclass simple-user (channel-container user)
   ())
 
-(defclass simple-channel (channel user-container)
+(defclass simple-channel (user-container channel)
   ())
 
 (defmethod remove-channel :after ((channel simple-channel) (client simple-user-channel-client))
