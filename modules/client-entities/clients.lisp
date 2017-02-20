@@ -9,6 +9,12 @@
 (define-consumer user-client (client)
   ())
 
+(defmethod username ((client user-client))
+  (name client))
+
+(defmethod (setf username) (name (client user-client))
+  (setf (name client) name))
+
 (defmethod find-user (name (client user-client))
   NIL)
 
