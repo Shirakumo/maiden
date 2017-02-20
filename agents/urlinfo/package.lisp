@@ -10,4 +10,6 @@
   (:use #:cl #:maiden #:maiden-commands #:maiden-client-entities #:maiden-activatable)
   ;; urlinfo.lisp
   (:export
-   #:urlinfo))
+   #:fetch
+   #:urlinfo
+   #:test))
