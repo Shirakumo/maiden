@@ -16,21 +16,20 @@
                      (string-equal name (class-name (class-of consumer))))
              (return consumer))))
 
-(define-command (help about) (c ev &rest about)
+(define-command (help about) (c ev &string command)
   :command "help"
-  (let ((command (format NIL "~{~(~a~)~^ ~}" about)))
-    (cond ((string= command "")
-           (reply ev "See 'help about' for general information. Try 'help X' to search for or retrieve information about a command."))
-          ((string= command "uptime")
-           (relay ev 'about-uptime))
-          ((string= command "about")
-           (relay ev 'about-self))
-          ((find-command-invoker command)
-           (relay ev 'about-command :command about))
-          ((find-consumer (core ev) command)
-           (relay ev 'about-consumer :consumer command))
-          (T
-           (relay ev 'about-term :term command)))))
+  (cond ((string= command "")
+         (reply ev "See 'help about' for general information. Try 'help X' to search for or retrieve information about a command."))
+        ((string= command "uptime")
+         (relay ev 'about-uptime))
+        ((string= command "about")
+         (relay ev 'about-self))
+        ((find-command-invoker command)
+         (relay ev 'about-command :command command))
+        ((find-consumer (core ev) command)
+         (relay ev 'about-consumer :consumer command))
+        (T
+         (relay ev 'about-term :term command))))
 
 (define-command (help about-self) (c ev)
   :command "about self"
@@ -46,15 +45,15 @@
          (format-relative-time (- (get-universal-time) (start-time c)))
          (format-absolute-time (start-time c))))
 
-(define-command (help about-command) (c ev &rest command)
+(define-command (help about-command) (c ev &string command)
   :command "about command"
-  (let ((invoker (find-command-invoker (format NIL "~{~a~^ ~}" command)))
+  (let ((invoker (find-command-invoker command))
         (*print-case* :downcase))
     (unless invoker
       (reply ev "No such command found."))
     (reply ev "Command Syntax: ~a ~{~a~^ ~}~%~
                Documentation:  ~:[None.~;~:*~a~]"
-           (prefix invoker) (lambda-list invoker) (docstring invoker))))
+           (prefix invoker) (lambda-list invoker) (documentation invoker T))))
 
 (define-command (help list-consumers) (c ev)
   :command "list consumers"
@@ -76,7 +75,7 @@
                ~:*This consumer provides the following commands: ~{~a~^, ~}~]"
            (sort (mapcar #'prefix (consumer-commands consumer)) #'string<))))
 
-(define-command (help about-term) (c ev term)
+(define-command (help about-term) (c ev &string term)
   :command "search"
   (let ((ranks (sort (loop for command in (list-command-invokers)
                            for prefix = (prefix command)

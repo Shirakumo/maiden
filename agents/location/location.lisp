@@ -36,11 +36,11 @@
 (define-consumer location (agent)
   ())
 
-(define-command (location query-address) (c ev location)
+(define-command (location query-address) (c ev &string location)
   :command "address of"
   (reply ev "I think the address for ~s is ~a." location (address location)))
 
-(define-command (location query-coordinates) (c ev location)
+(define-command (location query-coordinates) (c ev &string location)
   :command "coordinates of"
   (multiple-value-bind (coordinates location) (coordinates location)
     (reply ev "~s is located at ~flat ~flng."

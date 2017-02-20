@@ -24,7 +24,7 @@
         (T
          (make-note (name (user ev))
                     (normalize-user-name target)
-                    (format NIL "~{~a~^ ~}" message)
+                    message
                     :trigger trigger)
          (reply ev "~a: Got it. I'll let ~a know as soon as possible."
                 (name (user ev)) target))))
@@ -45,10 +45,10 @@
           (remove-note note))))
   (reply ev "Ok, I forgot all about the notes."))
 
-(define-command (notify send-join-note) (c ev target &rest message)
+(define-command (notify send-join-note) (c ev target &string message)
   :command "notify on join"
   (handle-note-creation ev target message :join))
 
-(define-command (notify send-note) (c ev target &rest message)
+(define-command (notify send-note) (c ev target &string message)
   :command "notify"
   (handle-note-creation ev target message :message))

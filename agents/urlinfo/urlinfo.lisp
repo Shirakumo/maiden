@@ -78,7 +78,7 @@
 (define-consumer urlinfo (agent)
   ())
 
-(define-command (urlinfo test) (c ev url)
+(define-command (urlinfo test) (c ev &string url)
   :command "test url"
   (reply ev "~a" (urlinfo url)))
 

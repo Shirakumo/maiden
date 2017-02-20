@@ -96,13 +96,13 @@
            (talk sub :language language :output output)
            (talk (subseq text (length sub)) :language language :output output)))))
 
-(define-command (talk talk-en) (c ev &rest text)
+(define-command (talk talk-en) (c ev &string text)
   :command "talk"
   (bt:with-lock-held ((lock c))
     (talk (format NIL "~{~a~^ ~}" text)
           :output (output c))))
 
-(define-command (talk talk-lang) (c ev language &rest text)
+(define-command (talk talk-lang) (c ev language &string text)
   :command "talk in"
   (bt:with-lock-held ((lock c))
     (talk (format NIL "~{~a~^ ~}" text)

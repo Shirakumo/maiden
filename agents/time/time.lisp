@@ -63,7 +63,7 @@
         (T
          (relay ev 'time-location :location signifier))))
 
-(define-command (time time-location) (c ev location)
+(define-command (time time-location) (c ev &string location)
   :command "time in"
   (reply ev "The time in ~a is ~a." location (format-absolute-time (time location))))
 

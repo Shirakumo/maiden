@@ -184,17 +184,17 @@
     (setf (deck name) deck)
     (reply ev "Cardcast deck downloaded to name ~a." (name deck))))
 
-(define-command (crimes add-call) (c ev deck &rest text)
+(define-command (crimes add-call) (c ev deck &string text)
   :command "add crime call"
   (let* ((deck (deck deck))
-         (card (add-call (format NIL "~{~a~^ ~}" text) deck)))
+         (card (add-call text deck)))
     (save-deck deck)
     (reply ev "Card ~a added to ~a." (id card) (name deck))))
 
-(define-command (crimes add-response) (c ev deck &rest text)
+(define-command (crimes add-response) (c ev deck &string text)
   :command "add crime response"
   (let* ((deck (deck deck))
-         (card (add-call (format NIL "~{~a~^ ~}" text) deck)))
+         (card (add-call text deck)))
     (save-deck deck)
     (reply ev "Card ~a added to ~a." (id card) (name deck))))
 

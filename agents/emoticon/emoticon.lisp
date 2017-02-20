@@ -26,7 +26,7 @@
 (define-consumer emoticon (agent)
   ((maximum :initarg :maximum :initform 5 :accessor maximum)))
 
-(define-command (emoticon add) (c ev name emoticon)
+(define-command (emoticon add) (c ev name &string emoticon)
   :command "add emoticon"
   (when (emoticon name)
     (error "An emoticon named :~a: already exists. Use 'change emoticon' or remove it first." name))
@@ -35,7 +35,7 @@
   (setf (emoticon name) emoticon)
   (reply ev "Emoticon :~a: added." name))
 
-(define-command (emoticon change) (c ev name emoticon)
+(define-command (emoticon change) (c ev name &string emoticon)
   :command "change emoticon"
   (setf (emoticon name) emoticon)
   (reply ev "Emoticon :~a: changed." name))

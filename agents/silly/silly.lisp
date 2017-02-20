@@ -143,7 +143,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
   (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist")
         :test (lambda (a b) (search b a))))
 
-(define-command (silly present) (c ev &rest thing)
+(define-command (silly present) (c ev &string thing)
   :command "have a"
   (let ((thing (format NIL "~{~a~^ ~}" thing)))
     (cond ((profane-p thing)
@@ -151,7 +151,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
           (T
            (reply ev "Thanks for the ~a!" thing)))))
 
-(define-command (silly make) (c ev &rest thing)
+(define-command (silly make) (c ev &string thing)
   :command "make me a"
   (let ((thing (format NIL "~{~a~^ ~}" thing)))
     (cond ((search "sandwich" thing)
@@ -162,7 +162,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
            (reply ev "Enjoy your ~a! It will approximately be ready in ~a"
                   thing (format-relative-time (+ (get-universal-time) (random (* 60 60 24 365 1000)))))))))
 
-(define-command (silly say) (c ev &rest thing)
+(define-command (silly say) (c ev &string thing)
   (reply ev "~{~a~^ ~}" thing))
 
 (defparameter *fortunes*

@@ -77,12 +77,12 @@
         (T
          (relay ev 'weather-location :location signifier))))
 
-(define-command (weather weather-location) (c ev location)
+(define-command (weather weather-location) (c ev &string location)
   :command "weather in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location)
     (reply ev "Weather in ~a: ~a" resolved-location (format-weather-data data))))
 
-(define-command (weather forecast-location) (c ev location)
+(define-command (weather forecast-location) (c ev &string location)
   :command "forecast in"
   (multiple-value-bind (data resolved-location) (location-weather-data (get-api-key c) location :time-frame :daily)
     (reply ev "Forecast in ~a: ~a" resolved-location (format-daily-forecast data))))

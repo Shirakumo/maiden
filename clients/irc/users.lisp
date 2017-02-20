@@ -114,7 +114,7 @@
   (cond ((matches nickname (nickname client))
          (remove-channel channel client))
         (T
-         (remove-channel channel user)
+         (remove-channel channel (ensure-user nickname channel))
          (remove-user nickname channel)))
   (prune-users client))
 
