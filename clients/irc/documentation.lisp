@@ -147,9 +147,16 @@ limit.")
   (type send-event
     "Superclass for all IRC events that are outgoing.
 
+See UPDATE-MESSAGE
 See IRC-EVENT
 See MAIDEN-NETWORKING:OUTGOING-EVENT
-See MAIDEN:ACTIVE-EVENT")
+See MAIDEN:ACTIVE-EVENT
+See UPDATE-MESSAGE")
+
+  (function update-message
+    "The list of direct update messages to send to the server to execute the event.
+
+See SEND-EVENT")
 
   (function define-irc-command
     "Define an IRC server command.

@@ -93,7 +93,7 @@
 
 (define-handler (irc-client sender send-event) (client ev)
   :match-consumer 'client
-  (send (message ev) client))
+  (send (update-message ev) client))
 
 (define-handler (irc-client ping irc:msg-ping) (client ev server other-server)
   :match-consumer 'client

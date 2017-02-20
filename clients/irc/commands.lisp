@@ -23,7 +23,7 @@
          (defun ,name (,client ,@(maiden::slot-args->args (rest args)))
            (do-issue (first (cores ,client)) ,name
              :client ,client ,@(loop for var in (rest pure-args) collect (kw var) collect var)))
-         (defmethod message ((,(first args) ,name))
+         (defmethod update-message ((,(first args) ,name))
            ,@body)))))
 
 (defmacro define-simple-irc-command (name args &body options-and-body)
