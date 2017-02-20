@@ -79,6 +79,8 @@
   (dolist (user (cl-ppcre:split " +" info))
     (let ((object (coerce-irc-object user NIL NIL client)))
       (setf (find-user (name object) channel) object)
+      (when (typep object 'irc-user)
+        (setf (find-channel (name channel) object) channel))
       ;; We somehow missed a JOIN, but we trust NAMREPLY more.
       (unless (find-user object client)
         (setf (find-user (name object) client) object)))))
