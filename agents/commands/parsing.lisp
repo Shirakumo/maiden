@@ -62,36 +62,6 @@
   (or (read-string in)
       (read-token in)))
 
-(defun read-keyword (in)
-  (read-delimited-token in #\Space :key #'char-downcase))
-
-(defun read-keyval (in)
-  (when (eql (peek in) #\:)
-    (consume in)
-    (clear-whitespace in)
-    (cons (read-keyword in)
-          (read-value in))))
-
-(defgeneric lex (in)
-  (:method ((in string))
-    (with-input-from-string (stream in)
-      (lex stream)))
-  (:method ((in stream))
-    (let ((in-kargs NIL)
-          (kargs ())
-          (args ()))
-      (loop while (peek in)
-            for karg = (read-keyval in)
-            do (cond ((and in-kargs (not karg))
-                      (error 'expected-key-error :value (read-value in)))
-                     (karg
-                      (setf in-kargs T)
-                      (push karg kargs))
-                     (T
-                      (push (read-value in) args))))
-      (values (nreverse args)
-              (nreverse kargs)))))
-
 (defun normalize-opt-arg (o)
   (let ((norm (if (listp o)
                   (list (first o) (second o) (third o))
@@ -102,34 +72,78 @@
       (error "Provided-p argument ~s is not a symbol." (third norm)))
     norm))
 
-(defun generate-lambda-list-bindings (lambda-list args kargs)
-  (lambda-fiddle:with-destructured-lambda-list
-      (:required req :optional opt :key key :rest rest) lambda-list
-    (append (loop for symb in req
-                  do (unless (symbolp symb) (error "Required argument ~s is not a symbol." symb))
-                  collect `(,symb (or (pop ,args)
-                                      (error 'not-enough-arguments-error :lambda-list ',lambda-list))))
-            (loop for o in opt
-                  for (symb val provided) = (normalize-opt-arg o)
-                  when provided collect `(,provided T)
-                  collect `(,symb (or (pop ,args)
-                                      ,@(when provided `((setf ,provided NIL)))
-                                      ,val)))
-            (when rest
-              (unless (symbolp rest) (error "Rest argument ~s is not a symbol." rest))
-              `((,rest ,args)))
-            (loop for k in key
-                  for (symb val provided) = (normalize-opt-arg k)
-                  when provided collect `(,provided T)
-                  collect `(,symb (or (and ,args (pop ,args))
-                                      (cdr (assoc ,(string symb) ,kargs :test #'string-equal))
-                                      ,@(when provided `((setf ,provided NIL)))
-                                      ,val))))))
+(defun stream-end-p (stream)
+  (not (peek-char T stream NIL NIL)))
+
+(defun read-rest-arg (stream)
+  (loop until (stream-end-p stream)
+        collect (read-value stream)))
+
+(defun read-string-arg (stream)
+  (with-output-to-string (output)
+    (loop for char = (read-char stream NIL)
+          while char
+          do (write-char char output))))
+
+(defun getf* (plist item &key (test #'eql))
+  (loop for (key val) on plist by #'cddr
+        do (when (funcall test item key)
+             (return val))))
+
+(defun generate-lambda-list-body (lambda-list input)
+  (when (and (find '&string lambda-list)
+             (or (find '&rest lambda-list)
+                 (find '&key lambda-list)))
+    (error "Cannot use &string with &key or &rest in a lambda-list."))
+  (let ((kargs)
+        (karg (gensym "KARG"))
+        (vars ()))
+    (values (loop with mode = '&required
+                  for item in lambda-list
+                  for form = (cond ((find item '(&optional &key &rest &string))
+                                    (setf mode item)
+                                    (when (and (eql item '&key) (not kargs))
+                                      (setf kargs (gensym "KARGS"))
+                                      `(setf ,kargs (read-rest-arg ,input))))
+                                   (T
+                                    (case mode
+                                      (&required
+                                       (unless (symbolp item)
+                                         (error "Required argument ~s is not a symbol." item))
+                                       (push item vars)
+                                       `(setf ,item (read-value ,input)))
+                                      (&optional
+                                       (destructuring-bind (symb val provided) (normalize-opt-arg item)
+                                         (push symb vars)
+                                         (when provided (push provided vars))
+                                         `(unless (stream-end-p ,input)
+                                            ,@(when provided `((setf ,provided T)))
+                                            (setf ,symb (or (read-value ,input) ,val)))))
+                                      (&rest
+                                       (setf kargs item)
+                                       (push item vars)
+                                       `(setf ,item (read-rest-arg ,input)))
+                                      (&string
+                                       (push item vars)
+                                       `(setf ,item (read-string-arg ,input)))
+                                      (&key
+                                       (destructuring-bind (symb val provided) (normalize-opt-arg item)
+                                         (push symb vars)
+                                         (when provided (push provided vars))
+                                         `(let ((,karg (getf* ,kargs ,(format NIL ":~a" symb) :test #'string-equal)))
+                                            (cond (,karg
+                                                   ,@(when provided `((setf ,provided T)))
+                                                   (setf ,symb ,karg))
+                                                  (T
+                                                   (setf ,symb ,val)))))))))
+                  when form collect form)
+            (append (unless (symbol-package kargs) (list kargs))
+                    (nreverse vars)))))
 
 (defmacro with-command-destructuring-bind (lambda-list input &body body)
-  (let ((args (gensym "ARGS"))
-        (kargs (gensym "KARGS")))
-    `(multiple-value-bind (,args ,kargs) (lex ,input)
-       (declare (ignorable ,args ,kargs))
-       (let* ,(generate-lambda-list-bindings lambda-list args kargs)
-         ,@body))))
+  (let ((stream (gensym "STREAM")))
+    (multiple-value-bind (forms vars) (generate-lambda-list-body lambda-list stream)
+      `(let (,@vars)
+         (with-input-from-string (,stream ,input)
+           ,@forms)
+         (locally ,@body)))))

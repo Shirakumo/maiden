@@ -44,6 +44,7 @@
    #:find-matching-command)
   ;; parsing.lisp
   (:export
+   #:&string
    #:command-condition
    #:lexing-error
    #:expected-key-error

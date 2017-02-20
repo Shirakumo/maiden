@@ -354,72 +354,56 @@ See CLEAR-WHITESPACE
 See READ-STRING
 See READ-TOKEN")
 
-  (function read-keyword
-    "Read the key part of a key-value pair.
-
-This consumes a token but makes sure to downcase every
-character in the token. It is expected that the leading
-colon of the keyword has already been consumed.
-
-See READ-DELIMITED-TOKEN")
-
-  (fucntion read-keyval
-    "Read a key-value pair.
-
-This only reads something if the current character at the
-stream position is a colon : character. It then consumes
-two tokens. The key and value pair is returned as a CONS.
-It is allowed for whitespace to follow the colon character.
-
-See READ-KEYWORD
-See READ-VALUE")
-
-  (function lex
-    "Lex the string or stream into a list of arguments and keyword arguments.
-
-Returns two values, the regular arguments list, and the
-keyword arguments list. Keyword arguments are cons cells
-of the key and the corresponding value.
-
-Once a key-value pair is encountered, the rest of the
-arguments must also be key-value pairs. If this is not
-the case, an error of type EXPECTED-KEY-ERROR is signalled.
-
-See READ-KEYVAL
-See READ-VALUE
-See EXPECTED-KEY-ERROR")
-
   (function normalize-opt-arg
     "Normalizes the optional argument spec into a list of three values.
 
 It also checks the spec for validity, so an error is
 signalled if the first or third items are not symbols.")
 
-  (function generate-lambda-list-bindings
-    "Generate a series of LET bindings for the given lambda-list.
+  (function stream-end-p
+    "Returns true if the stream has reached its end.")
 
-ARGS must be the symbol for a variable that will contain
-a list of values for required and optional arguments.
-KARGS must be the symbol for a variable that will contain
-a list of CONS cells for keys and their values of the
-keyword arguments.
+  (function read-rest-arg
+    "Read a list of tokens to form the &rest argument.
 
-An error is signalled should the lambda-list be malformed
-or invalid in some way.
+See READ-VALUE")
 
-The let bindings will also take care of signalling an
-error if the arglists do not match the spec.
+  (function read-string-arg
+    "Read the rest of the stream into a string to form the &string argument.")
 
-See NOT-ENOUGH-ARGUMENTS-ERROR
-See NORMALIZE-OPT-ARG")
+  (function getf*
+    "Like GETF, but allows for a test to be specified.
+
+See CL:GETF")
+
+  (function generate-lambda-list-body
+    "Generate a list of forms and variable bindings necessary to establish the lambda-list bindings from the input stream.
+
+This reads and processes the lambda-list in parallel. As such
+it is harder to impossible to recover from errors and you
+probably will just have to give up on a parser failure.
+
+Returns two values-- the forms to put into the let body, and
+the variables to create bindings for.
+
+The supported lambda-lists are almost like ordinary lambda-
+lists, with the exception that there is a new &string keyword
+that gathers the rest of the input into a single string
+verbatim, without any processing. However, it is not possible
+to combine &string with &rest or &key.
+
+See READ-VALUE
+See READ-REST-ARG
+See READ-STRING-ARG
+See WITH-COMMAND-DESTRUCTURING-BIND")
 
   (function with-command-destructuring-bind
     "Destructure the INPUT string according to the lambda-list.
 
-Required, optional, key, and rest arguments are supported.
+The lambda-list keywords &optional &rest &key &string are
+supported.
 
 If the arguments cannot be parsed or if they do not match
 the lambda-list, an error is signalled.
 
-See GENERATE-LAMBDA-LIST-BINDINGS
-See LEX"))
+See GENERATE-LAMBDA-LIST-BODY"))
