@@ -162,6 +162,9 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
            (reply ev "Enjoy your ~a! It will approximately be ready in ~a"
                   thing (format-relative-time (+ (get-universal-time) (random (* 60 60 24 365 1000)))))))))
 
+(define-command (silly say) (c ev &rest thing)
+  (reply ev "~{~a~^ ~}" thing))
+
 (defparameter *fortunes*
   (with-open-file (s (asdf:system-relative-pathname :maiden-silly "fortunes.txt"))
     (loop for line = (read-line s NIL NIL)
