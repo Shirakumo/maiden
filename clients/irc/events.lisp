@@ -45,7 +45,7 @@
 (defgeneric make-reply-events (type &key client code args user))
 
 (defmethod make-reply-events ((type (eql 'unknown-event)) &key client code args user)
-  (make-instance 'unknown-event :args args :code code :user user :client client))
+  (list (make-instance 'unknown-event :args args :code code :user user :client client)))
 
 (defun permute (args)
   (flet ((modf (func list)
