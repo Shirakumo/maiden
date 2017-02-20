@@ -100,7 +100,7 @@
        (issue (make-instance ',event-type
                              ,@(when message-event-initarg `(,message-event-initarg ,event))
                              ,@fun-kargs)
-              (event-loop ,event)))))
+              (core ,event)))))
 
 (defmacro define-command ((consumer name &optional (event-type name)) (instance event &rest args) &body body)
   (form-fiddle:with-body-options (body options superclasses command command-event-variable) body

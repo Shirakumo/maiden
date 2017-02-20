@@ -265,8 +265,8 @@
     (relay event (client event) relay))
   (loop for subscription in (subscriptions relay)
         do (when (and (or (eql T (target subscription))
-                          (matches (event-loop event) (target subscription)))
-                      (not (matches (event-loop event) (subscriber subscription)))
+                          (matches (core event) (target subscription)))
+                      (not (matches (core event) (subscriber subscription)))
                       ;; Perform actual event test.
                       (typep event (event-type subscription))
                       (deeds:test-filter (filter subscription) event))
@@ -281,7 +281,7 @@
 (define-instruction (relay subscribe) (relay ev event-type filter &optional (target T))
   (let ((subscription (make-instance 'subscription :event-type event-type
                                                    :filter filter
-                                                   :subscriber (event-loop ev)
+                                                   :subscriber (core ev)
                                                    :target target)))
     (push subscription (my-subscriptions relay))
     (update relay relay subscription)))
