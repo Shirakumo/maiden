@@ -139,6 +139,29 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
            (reply ev "~dd~d: ~d" times size (loop for i from 0 below times summing (1+ (random size))))
            (reply ev "I don't know how to roll that."))))))
 
+(defun profane-p (thing)
+  (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist")
+        :test (lambda (a b) (search b a))))
+
+(define-command (silly present) (c ev &rest thing)
+  :command "have a"
+  (let ((thing (format NIL "~{~a~^ ~}" thing)))
+    (cond ((profane-p thing)
+           (reply ev "... Hey!"))
+          (T
+           (reply ev "Thanks for the ~a!" thing)))))
+
+(define-command (silly make) (c ev &rest thing)
+  :command "make me a"
+  (let ((thing (format NIL "~{~a~^ ~}" thing)))
+    (cond ((search "sandwich" thing)
+           (reply ev "Not even in your dreams, buddy."))
+          ((profane-p thing)
+           (reply ev "... Hey!"))
+          (T
+           (reply ev "Enjoy your ~a! It will approximately be ready in ~a"
+                  thing (format-relative-time (+ (get-universal-time) (random (* 60 60 24 365 1000)))))))))
+
 (defparameter *fortunes*
   (with-open-file (s (asdf:system-relative-pathname :maiden-silly "fortunes.txt"))
     (loop for line = (read-line s NIL NIL)
