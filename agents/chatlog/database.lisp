@@ -139,8 +139,9 @@
 (defun process-back-queue (c)
   (with-db ()
     (loop for (type channel user time message format-args) in (back-queue c)
-          do (when (channel-exists-p channel)
-               (apply #'record-message type channel user time message format-args))
+          do (with-simple-restart (forget-message "Forget this message and don't record it.")
+               (when (channel-exists-p channel)
+                 (apply #'record-message type channel user time message format-args)))
              (pop (back-queue c)))))
 
 (defun maybe-record-message (c type channel user message &rest format-args)
