@@ -50,4 +50,5 @@
    #:expected-key-error
    #:destructuring-error
    #:not-enough-arguments-error
+   #:too-many-arguments-error
    #:with-command-destructuring-bind))

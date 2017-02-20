@@ -25,6 +25,11 @@
   (:report (lambda (c s) (format s "Not enough arguments to match ~a"
                                  (slot-value c 'lambda-list)))))
 
+(define-condition too-many-arguments-error (destructuring-error)
+  ((lambda-list :initarg :lambda-list))
+  (:report (lambda (c s) (format s "There were too many arguments to match ~a"
+                                 (slot-value c 'lambda-list)))))
+
 (defun peek (in)
   (peek-char T in NIL))
 
@@ -98,45 +103,49 @@
   (let ((kargs)
         (karg (gensym "KARG"))
         (vars ()))
-    (values (loop with mode = '&required
-                  for item in lambda-list
-                  for form = (cond ((find item '(&optional &key &rest &string))
-                                    (setf mode item)
-                                    (when (and (eql item '&key) (not kargs))
-                                      (setf kargs (gensym "KARGS"))
-                                      `(setf ,kargs (read-rest-arg ,input))))
-                                   (T
-                                    (case mode
-                                      (&required
-                                       (unless (symbolp item)
-                                         (error "Required argument ~s is not a symbol." item))
-                                       (push item vars)
-                                       `(setf ,item (read-value ,input)))
-                                      (&optional
-                                       (destructuring-bind (symb val provided) (normalize-opt-arg item)
-                                         (push symb vars)
-                                         (when provided (push provided vars))
-                                         `(unless (stream-end-p ,input)
-                                            ,@(when provided `((setf ,provided T)))
-                                            (setf ,symb (or (read-value ,input) ,val)))))
-                                      (&rest
-                                       (setf kargs item)
-                                       (push item vars)
-                                       `(setf ,item (read-rest-arg ,input)))
-                                      (&string
-                                       (push item vars)
-                                       `(setf ,item (read-string-arg ,input)))
-                                      (&key
-                                       (destructuring-bind (symb val provided) (normalize-opt-arg item)
-                                         (push symb vars)
-                                         (when provided (push provided vars))
-                                         `(let ((,karg (getf* ,kargs ,(format NIL ":~a" symb) :test #'string-equal)))
-                                            (cond (,karg
-                                                   ,@(when provided `((setf ,provided T)))
-                                                   (setf ,symb ,karg))
-                                                  (T
-                                                   (setf ,symb ,val)))))))))
-                  when form collect form)
+    (values (append (loop with mode = '&required
+                          for item in lambda-list
+                          for form = (cond ((find item '(&optional &key &rest &string))
+                                            (setf mode item)
+                                            (when (and (eql item '&key) (not kargs))
+                                              (setf kargs (gensym "KARGS"))
+                                              `(setf ,kargs (if (stream-end-p ,input)
+                                                                (error 'not-enough-arguments-error :lambda-list ',lambda-list)
+                                                                (read-rest-arg ,input)))))
+                                           (T
+                                            (case mode
+                                              (&required
+                                               (unless (symbolp item)
+                                                 (error "Required argument ~s is not a symbol." item))
+                                               (push item vars)
+                                               `(setf ,item (read-value ,input)))
+                                              (&optional
+                                               (destructuring-bind (symb val provided) (normalize-opt-arg item)
+                                                 (push symb vars)
+                                                 (when provided (push provided vars))
+                                                 `(unless (stream-end-p ,input)
+                                                    ,@(when provided `((setf ,provided T)))
+                                                    (setf ,symb (or (read-value ,input) ,val)))))
+                                              (&rest
+                                               (setf kargs item)
+                                               (push item vars)
+                                               `(setf ,item (read-rest-arg ,input)))
+                                              (&string
+                                               (push item vars)
+                                               `(setf ,item (read-string-arg ,input)))
+                                              (&key
+                                               (destructuring-bind (symb val provided) (normalize-opt-arg item)
+                                                 (push symb vars)
+                                                 (when provided (push provided vars))
+                                                 `(let ((,karg (getf* ,kargs ,(format NIL ":~a" symb) :test #'string-equal)))
+                                                    (cond (,karg
+                                                           ,@(when provided `((setf ,provided T)))
+                                                           (setf ,symb ,karg))
+                                                          (T
+                                                           (setf ,symb ,val)))))))))
+                          when form collect form)
+                    (list `(unless (stream-end-p ,input)
+                             (error 'too-many-arguments-error :lambda-list ',lambda-list))))
             (append (unless (symbol-package kargs) (list kargs))
                     (nreverse vars)))))
 

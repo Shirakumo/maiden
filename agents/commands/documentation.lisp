@@ -305,6 +305,11 @@ See COMMAND-CONDITION")
 
 See DESTRUCTURING-ERROR")
 
+  (type too-many-arguments-error
+    "Error signalled when the argument list was too long and the lambda-list was over-satisfied.
+
+See DESTRUCTURING-ERROR")
+
   (function peek
     "Peek ahead a character on the IN stream.
 

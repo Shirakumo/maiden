@@ -93,7 +93,8 @@
 
 (defmacro define-simple-command-invoker (name args event-type &key message-event-initarg documentation)
   (let ((event (gensym "EVENT"))
-        (fun-kargs (loop for arg in (lambda-fiddle:extract-lambda-vars args)
+        (fun-kargs (loop for arg in (let ((lambda-fiddle:*lambda-keywords* (cons '&string lambda-fiddle:*lambda-keywords*)))
+                                      (lambda-fiddle:extract-lambda-vars args))
                          collect (kw arg) collect arg)))
     `(define-command-invoker ,name (,event ,@args)
        ,documentation
@@ -106,7 +107,7 @@
   (form-fiddle:with-body-options (body options superclasses command command-event-variable) body
     (let ((command-event-variable (or command-event-variable (gensym "COMMAND-EVENT")))
           (error (gensym "ERROR")))
-      `(progn (define-function-handler (,consumer ,name ,event-type) (,instance ,command-event-variable ,@args)
+      `(progn (define-function-handler (,consumer ,name ,event-type) (,instance ,command-event-variable ,@(remove '&string args))
                 :superclasses (,@superclasses command-event)
                 ,@options
                 (let* ((,event (dispatch-event ,command-event-variable))
