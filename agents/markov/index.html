@@ -1,0 +1,200 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Markov</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Markov chains for Maiden"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-markov</h1> <span class="version">0.0.0</span> <p class="description">Markov chains for Maiden</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This provides a fast and compact Markov chains implementation. Markov chains are stored efficiently in memory and on disk, allowing for huge dictionaries without loss of resources or performance.</p> <p>It also implements its own binary format in order to save the dictionary fast and compact.</p> <h2>How To</h2> <p>Create a <code><a href="#MAIDEN-MARKOV:GENERATOR">generator</a></code> instance, and train it with <code><a href="#MAIDEN-MARKOV:LEARN">learn</a></code> or <code><a href="#MAIDEN-MARKOV:LEARN-FROM-FILE">learn-from-file</a></code></p> <pre><code>(<a href="http://l1sp.org/cl/defvar">defvar</a> *g* (<a href="http://l1sp.org/cl/make-instance">make-instance</a> 'generator))
+(<a href="#MAIDEN-MARKOV:LEARN">learn</a> &quot;Hey this is a sentence you can learn.&quot; *g*)
+(<a href="#MAIDEN-MARKOV:LEARN-FROM-FILE">learn-from-file</a> &quot;~/king-james.txt&quot; *g*)
+(<a href="#MAIDEN-MARKOV:LEARN-FROM-FILE">learn-from-file</a> &quot;~/sicp.txt&quot; *g*)
+(<a href="#MAIDEN-MARKOV:MAKE-SENTENCE">make-sentence</a> *g*)
+(<a href="#MAIDEN-MARKOV:FIND-SENTENCE">find-sentence</a> *g* &quot;lambda&quot;)
+</code></pre> <p>You can also make it learn from a chat channel by activating the module on that channel. See <a href="../activatable/">maiden-activatable</a> and the commands in the symbol index.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-markov</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-MARKOV" href="#MAIDEN-MARKOV">MAIDEN-MARKOV</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.MARKOV)</span> </h3> <ul><li> <a name="MAIDEN-MARKOV:GENERATOR"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:GENERATOR">GENERATOR</a></code></h4>  </header> <pre class="docstring">This contains all the state to allow you to generate new sentences using Markov chains.
+
+The chains are stored in an efficient indexed format
+in order to take up as little memory as possible.
+
+See WORDS
+See WORD-MAP
+See CHAINS
+See VISUALIZE
+See WORD
+See WORD-INDEX
+See CHAIN
+See ENSURE-CHAIN
+See ADD-CHAIN
+See NEXT-WORD-INDEX
+See RANDOM-TOKEN
+See MAKE-SENTENCE
+See FIND-SENTENCE
+See TOKEN-SCORE
+See FIND-TOPIC
+See LEARN-SENTENCE
+See LEARN
+See LEARN-FROM-FILE</pre> </article> </li><li> <a name="MAIDEN-MARKOV:MARKOV"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:MARKOV">MARKOV</a></code></h4>  </header> <pre class="docstring">This agent implements a markov-chain based chat bot for amusement. It can learn from the actual chat messages of a channel.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE">RAMBLE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE-ABOUT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE-ABOUT">RAMBLE-ABOUT</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE-CHANCE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE-CHANCE">RAMBLE-CHANCE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-MARKOV:SET-RAMBLE-CHANCE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:SET-RAMBLE-CHANCE">SET-RAMBLE-CHANCE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-MARKOV:STATS"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:STATS">STATS</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-MARKOV:CHAIN"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:CHAIN">CHAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR FIRST SECOND</code><code>)</code>  </header> <pre class="docstring">This accesses a vector of possible follow-up words for the given first and second words.
+
+The chains tables are automatically extended as necessary.
+
+See WORD-INDEX
+See CHAINS
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE-CHANCE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE-CHANCE">RAMBLE-CHANCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C</code><code>)</code>  </header> <pre class="docstring">Accessor to the chance (in percent) that the bot might reply to a message with random rambling.
+
+See MARKOV
+See MAIDEN-STORAGE:WITH-STORAGE</pre> </article> </li><li> <a name="MAIDEN-MARKOV:WORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:WORD">WORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">THING GENERATOR</code><code>)</code>  </header> <pre class="docstring">Accessor to a word in the generator.
+
+THING can be a number, symbol, or string, and returned is
+the word's index.
+If you set this place with a string, the string is added
+to the generator and gets its own index, which is returned.
+
+See GENERATOR
+See WORD-MAP
+See WORDS</pre> </article> </li><li> <a name="MAIDEN-MARKOV:ADD-CHAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:ADD-CHAIN">ADD-CHAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR FIRST SECOND &amp;REST POSSIBILITIES</code><code>)</code>  </header> <pre class="docstring">Add a new chain for the given first and second words and follow-up possibilities.
+
+See ENSURE-CHAIN
+See WORD-INDEX
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:ENSURE-CHAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:ENSURE-CHAIN">ENSURE-CHAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR FIRST SECOND</code><code>)</code>  </header> <pre class="docstring">This ensures that a chain for the given first and second words exists.
+
+See CHAIN
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:FIND-SENTENCE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:FIND-SENTENCE">FIND-SENTENCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR WORDS &amp;OPTIONAL START (MAX-ATTEMPTS 10000)</code><code>)</code>  </header> <pre class="docstring">Attempt to find a sentence that somehow relates to the words given.
+
+This proceeds by generating completely random sentences
+until one is found that contains one of the given words.
+Since this is not always guaranteed to work --luck may not
+be on your side-- it might also return NIL even though it
+is theoretically possible to build a chain. If nothing has
+been found after MAX-ATTEMPTS generations, it simply gives
+up.
+
+See MAKE-SENTENCE
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:LEARN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:LEARN">LEARN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STRING GENERATOR</code><code>)</code>  </header> <pre class="docstring">Learn the string.
+
+The string may contain multiple sentences at once.
+
+See FIND-SENTENCES
+See LEARN-SENTENCE</pre> </article> </li><li> <a name="MAIDEN-MARKOV:LEARN-FROM-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:LEARN-FROM-FILE">LEARN-FROM-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FILE GENERATOR</code><code>)</code>  </header> <pre class="docstring">This reads a file line-by-line and feeds each line to LEARN.
+
+See LEARN</pre> </article> </li><li> <a name="MAIDEN-MARKOV:LEARN-SENTENCE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:LEARN-SENTENCE">LEARN-SENTENCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SENTENCE GENERATOR</code><code>)</code>  </header> <pre class="docstring">Learn the sentence.
+
+This splits the sentence into tokens and builds Markov
+chains from the tokens, thus &quot;learning&quot; the sentence.
+
+See FIND-TOKENS
+See ADD-CHAIN</pre> </article> </li><li> <a name="MAIDEN-MARKOV:MAKE-SENTENCE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:MAKE-SENTENCE">MAKE-SENTENCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR &amp;OPTIONAL START</code><code>)</code>  </header> <pre class="docstring">Build a new sentence generated by markov chains in the generator.
+
+START can be a token to begin the chain with. If not
+given, a random starting token is picked.
+Chains are generated by using two words, selecting
+the chain the two words designate, and picking a random
+follow-up word from that chain. The second and new word
+then build the input for the next iteration until an END
+token is encountered as the next token.
+
+See *START*
+See *END*
+See WORD-INDEX
+See NEXT-WORD-INDEX
+See WORD
+See RANDOM-TOKEN
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:NEXT-WORD-INDEX"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:NEXT-WORD-INDEX">NEXT-WORD-INDEX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR FIRST SECOND</code><code>)</code>  </header> <pre class="docstring">Return the index of a follow-up word for the given first and second words.
+
+This index is chosen randomly from the possible indexes
+of follow-up words in the corresponding chain. If no
+follow-up can be found, NIL is returned.
+
+See CHAIN
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RANDOM-TOKEN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:RANDOM-TOKEN">RANDOM-TOKEN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR</code><code>)</code>  </header> <pre class="docstring">Find a random starting token to start a chain with.
+
+This searches through all possible starting chains in
+a hopefully somewhat random manner.
+
+See CHAINS
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:READ-GENERATOR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:READ-GENERATOR">READ-GENERATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SOURCE</code><code>)</code>  </header> <pre class="docstring">Reads a complete Markov generator instance from the source.
+
+Source may be a pathname-designator, a stream, or a
+fast-io::input-buffer.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:WORD-INDEX"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:WORD-INDEX">WORD-INDEX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR WORD</code><code>)</code>  </header> <pre class="docstring">Return the index of the word.
+
+This adds the word to the generator if it doesn't exist in
+its dictionary yet.
+
+See WORD
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:WRITE-GENERATOR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:WRITE-GENERATOR">WRITE-GENERATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GENERATOR TARGET</code><code>)</code>  </header> <pre class="docstring">Writes a complete Markov generator instance to the source.
+
+Source maybe be a pathname-designator, a stream, or a
+fast-io::output-buffer.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:GENERATOR"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:GENERATOR">GENERATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MARKOV</code><code>)</code>  </header> <pre class="docstring">Returns the generator of the markov client.
+
+If the client does not have a generator yet, a new one is
+created and set into the client's slit.
+
+See MARKOV
+See GENERATOR</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE">ramble</a></code></h4>  </header> <pre class="docstring">Generates a random sentence.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE-ABOUT"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE-ABOUT">ramble about</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL TOPIC</code><code>)</code>  </header> <pre class="docstring">Generates a random sentence that should be related to the given topic.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:RAMBLE-CHANCE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:RAMBLE-CHANCE">ramble chance</a></code></h4>  </header> <pre class="docstring">Display the chance [0,1] for the bot to reply to a message.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:SET-RAMBLE-CHANCE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-MARKOV:SET-RAMBLE-CHANCE">set ramble chance</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NEW-VALUE</code><code>)</code>  </header> <pre class="docstring">Update the chance [0,1] for the bot to reply to a message.</pre> </article> </li><li> <a name="MAIDEN-MARKOV:STATS"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-MARKOV:STATS">markov stats</a></code></h4>  </header> <pre class="docstring">Display some statistics about the dictionary of markov chains.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

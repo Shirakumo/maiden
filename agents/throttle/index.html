@@ -1,0 +1,129 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Throttle</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Module to allow throttling the number of commands a user can submit."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-throttle</h1> <span class="version">0.0.0</span> <p class="description">Module to allow throttling the number of commands a user can submit.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides throttling on the users. This prevents them from overloading or spamming the services provided through commands and minimises the risk of exposing the bot to lots of users. The behaviour of the throttling can be customised rather precisely.</p> <p>As soon as the throttling agent is put on a core, it will automatically record the usage stats of each user and throttle their commands at appropriate times. The few commands seen in the symbol index allow the management of the throttling configuration.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-throttle</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-THROTTLE" href="#MAIDEN-THROTTLE">MAIDEN-THROTTLE</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.THROTTLE)</span> </h3> <ul><li> <a name="MAIDEN-THROTTLE:CLEAR-TAX"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:CLEAR-TAX">CLEAR-TAX</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-THROTTLE:RECORD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:RECORD">RECORD</a></code></h4>  </header> <pre class="docstring">Container class to hold information about the throttling of a user.
+
+See ATTEMPTS
+See TIMESTAMP
+See TIMEOUT</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:SET-CONFIG"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:SET-CONFIG">SET-CONFIG</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-THROTTLE:THROTTLE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:THROTTLE">THROTTLE</a></code></h4>  </header> <pre class="docstring">Provides throttling to prevent spamming the bot with commands.</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:VIEW-CONFIG"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:VIEW-CONFIG">VIEW-CONFIG</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-THROTTLE:ATTEMPTS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:ATTEMPTS">ATTEMPTS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The current number of attempts that have been made by the user within the time-frame.
+
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:COOLDOWN-FUNCTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:COOLDOWN-FUNCTION">COOLDOWN-FUNCTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the symbol that designates a cooldown function used to calculate the number of seconds until the user is freed.
+
+Must be one of the following:
+- :CONSTANT     The cooldown is as much as the cooldown step.
+- :LINEAR       The cooldown is increased linearly for each
+                additional attempt within the cooldown.
+- :EXPONENTIAL  The cooldown is increased exponentially for
+                each additional attempt within the cooldown.
+
+See THROTTLE
+See COOLDOWN-STEP
+See COOLDOWN-MAX</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:COOLDOWN-MAX"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:COOLDOWN-MAX">COOLDOWN-MAX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the maximum amount of seconds that the user can be held in cooldown.
+
+See THROTTLE
+See COOLDOWN-FUNCTION
+See COOLDOWN-STEP</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:COOLDOWN-STEP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:COOLDOWN-STEP">COOLDOWN-STEP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the step used to increase the cooldown according to the cooldown function.
+
+See THROTTLE
+See COOLDOWN-FUNCTION
+See COOLDOWN-MAX</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:RECORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:RECORD">RECORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER THROTTLE</code><code>)</code>  </header> <pre class="docstring">Access the throttling record for the given user.
+
+See RECORDS
+See THROTTLE</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:RECORDS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:RECORDS">RECORDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash table associating user names to throttling records.
+
+See THROTTLE
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:TIME-FRAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:TIME-FRAME">TIME-FRAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the number of seconds that specify a time-frame for throttling.
+
+See THROTTLE
+See ATTEMPTS</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:TIMEOUT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:TIMEOUT">TIMEOUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The number of seconds for which the user has been timed out. 
+
+This is relative to TIMESTAMP.
+
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:TIMESTAMP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:TIMESTAMP">TIMESTAMP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The universal-time timestamp that specifies the time at which the timeframe began or the timeout began.
+
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:CLEAR-TAX"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:CLEAR-TAX">CLEAR-TAX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER THROTTLE</code><code>)</code>  </header> <pre class="docstring">Clear the tax on the user's record.
+
+This effectively makes them unthrottled.
+
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:TAX"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:TAX">TAX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER THROTTLE</code><code>)</code>  </header> <pre class="docstring">This function taxes the user for one attempt.
+
+If too many attempts have been made too quickly, the user is
+timed out. If further attempts are made while timed out, the
+timeout is increased gradually according to the throttle's
+timeout function and step. Once the user has passed their
+timeout, the tax is cleared again.
+
+See THROTTLE
+See RECORD</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:CLEAR-TAX"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:CLEAR-TAX">clear throttling for</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;KEY CLIENT</code><code>)</code>  </header> <pre class="docstring">Clear the throttling tax from a user.</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:SET-CONFIG"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-THROTTLE:SET-CONFIG">set throttle configuration</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY ATTEMPTS TIME-FRAME COOLDOWN-FUNCTION COOLDOWN-STEP COOLDOWN-MAX</code><code>)</code>  </header> <pre class="docstring">Update the configuration values for the throttling behaviour.</pre> </article> </li><li> <a name="MAIDEN-THROTTLE:VIEW-CONFIG"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-THROTTLE:VIEW-CONFIG">view throttle configuration</a></code></h4>  </header> <pre class="docstring">Shows the current configuration that the throttling works with.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

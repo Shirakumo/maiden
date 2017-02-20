@@ -1,0 +1,216 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Trivia</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Simple trivia game for Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-trivia</h1> <span class="version">0.0.0</span> <p class="description">Simple trivia game for Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides a simple trivia game for players in a chat channel. It also allows players to create, edit, and manage the existing questions in the system. Unfortunately, due to it being seemingly impossible to find a machine-readable, high-quality, free set of trivia questions on the internet, no standard set of questions is included in this library.</p> <h2>How To</h2> <p>Start a new trivia game by selecting a set of categories for the questions to use.</p> <pre><code>::start trivia game science technology
+</code></pre> <p>It should not show a first question. If someone in the channel answers the question correctly, they will be awarded points, and the next question is shown. If they are quick enough, they get a time bonus. If nobody manages to answer the question correctly, you can request a hint.</p> <pre><code>::hint answer
+</code></pre> <p>Not all questions include a hint however, and not all hints may be sufficiently indicative of the correct answer. You can also skip the question entirely.</p> <pre><code>::skip question
+</code></pre> <p>Finally, the game ends when all questions have been answered, or when it is ended explicitly.</p> <pre><code>:end trivia game
+</code></pre> <p>At the end the winner is announced.</p> <p>See the rest of the commands on how to manage the questions.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-trivia</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-TRIVIA" href="#MAIDEN-TRIVIA">MAIDEN-TRIVIA</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.TRIVIA)</span> </h3> <ul><li> <a name="MAIDEN-TRIVIA:ADD-CATEGORIES"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-CATEGORIES">ADD-CATEGORIES</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:ADD-QUESTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-QUESTION">ADD-QUESTION</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:CHANNEL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:CHANNEL">CHANNEL</a></code></h4>  </header> <pre class="docstring">Object representing a channel on a remote system somewhere.
+
+Channels are virtual &quot;rooms&quot; over which one or more users may
+communicate with each other.
+
+Channels have a name and a number of users that inhabit it.
+Additional properties are not guaranteed, but may be provided by a
+client.
+
+See CLIENT-ENTITY
+See USERS</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:END"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:END">END</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:GAME">GAME</a></code></h4>  </header> <pre class="docstring">This class represents a trivia game.
+
+It holds all necessary state information for a game to be
+played.
+
+See CHANNEL
+See QUESTIONS
+See QUESTION-TIME
+See QUESTION-LIMIT
+See SCORES
+See START
+See END
+See ANSWER
+See SKIP
+See WINNER
+See HINT
+See MAKE-GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:HINT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:HINT">HINT</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:QUESTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:QUESTION">QUESTION</a></code></h4>  </header> <pre class="docstring">Class to represent a trivia question.
+
+A question contains a question text and a list of possible answers.
+It may also include an optional hint to help players find an answer.
+Each question gets a unique ID to identify it by.
+
+See TEXT
+See ANSWERS
+See HINT
+See ID
+See ADD-QUESTION
+See UPDATE-QUESTION
+See REMOVE-QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-CATEGORIES"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-CATEGORIES">REMOVE-CATEGORIES</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-QUESTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-QUESTION">REMOVE-QUESTION</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:SKIP"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:SKIP">SKIP</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:START"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:START">START</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:TRIVIA"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:TRIVIA">TRIVIA</a></code></h4>  </header> <pre class="docstring">Provides a standard trivia game.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:UPDATE-QUESTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:UPDATE-QUESTION">UPDATE-QUESTION</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TRIVIA:ANSWERS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ANSWERS">ANSWERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of accepted answers for the question.
+
+Each answer should represent a substring that a potential answer
+must contain in order for it to be accepted as an answer to the
+question. This is done to reduce the potential for speech artefacts
+marking correct questions as invalid.
+
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:CHANNEL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:CHANNEL">CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the channel that the game is being played on.
+
+See MAIDEN-CLIENT-ENTITIES:CHANNEL
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:HINT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:HINT">HINT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the potential hint the question has to its solution.
+
+May be a string or NIL.
+
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ID"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ID">ID</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the IDentity of an entity.
+
+By default this is initialised to a fresh UUIDv4 string.
+
+See ENTITY</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:QUESTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:QUESTION">QUESTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID</code><code>)</code>  </header> <pre class="docstring">Accessor to the question instance of the given ID.
+
+See *QUESTIONS*
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:QUESTION-LIMIT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:QUESTION-LIMIT">QUESTION-LIMIT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the number of seconds players have to answer a question and get bonus points for.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:QUESTION-TIME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:QUESTION-TIME">QUESTION-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the universal-time that denotes when the current question was asked.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:QUESTIONS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:QUESTIONS">QUESTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of questions that the game can use.
+
+See QUESTION
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:SCORES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:SCORES">SCORES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the alist of users to their scores.
+
+See MAIDEN-CLIENT-ENTITIES:USER
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:TEXT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:TEXT">TEXT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the text of the question.
+
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ADD-CATEGORY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-CATEGORY">ADD-CATEGORY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY ID</code><code>)</code>  </header> <pre class="docstring">Create a new category or add a card to an existing category.
+
+ID has to be either a question's ID or a question object.
+
+See *CATEGORIES*</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ADD-QUESTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-QUESTION">ADD-QUESTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">QUESTION ANSWERS &amp;KEY HINT CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Add a new question to the system.
+
+See ADD-CATEGORY
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:CATEGORIES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:CATEGORIES">CATEGORIES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL ID</code><code>)</code>  </header> <pre class="docstring">Return a list of all known categories, or a list of categories for the given question.
+
+ID has to be either NIL (for all categories), or the ID of
+question, or a question object.
+
+See *CATEGORIES*</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:CATEGORY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:CATEGORY">CATEGORY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of question cards contained in the category.
+
+If no such category is known, an error is signalled.
+
+See *CATEGORIES*
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:GAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:GAME">GAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C EV &amp;OPTIONAL (ERROR T)</code><code>)</code>  </header> <pre class="docstring">Attempt to find a suitable game instance for the given client and event.
+
+If error is non-NIL and no game could be found, an error is signalled.
+
+See GAMES
+See TRIVIA</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:LOAD-QUESTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:LOAD-QUESTIONS">LOAD-QUESTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Load all question cards and categories from the disk storage.
+
+See MAIDEN-STORAGE:RESTORE</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:MAKE-GAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:MAKE-GAME">MAKE-GAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL CATEGORIES &amp;KEY (LIMIT 30)</code><code>)</code>  </header> <pre class="docstring">Create a new trivia game for the given channels, using questions from the specified categories.
+
+See CATEGORIES
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-CATEGORY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-CATEGORY">REMOVE-CATEGORY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY &amp;OPTIONAL ID</code><code>)</code>  </header> <pre class="docstring">Remove the category of the given name or the given card from the category.
+
+ID has to be either NIL (for the entire category), or the
+ID of a question, or a question object.
+
+See *CATEGORIES*</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-QUESTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-QUESTION">REMOVE-QUESTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID</code><code>)</code>  </header> <pre class="docstring">Remove the question of the given ID from the system.
+
+This also makes sure to remove the ID references from all
+categories the question was in previously.
+
+See *CATEGORIES*
+See REMQUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:SAVE-QUESTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:SAVE-QUESTIONS">SAVE-QUESTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Save all question cards and categories to the disk storage.
+
+See MAIDEN-STORAGE:OFFLOAD</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:UPDATE-QUESTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:UPDATE-QUESTION">UPDATE-QUESTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID &amp;KEY QUESTION ANSWERS (HINT NIL HINT-P) (CATEGORIES NIL CAT-P)</code><code>)</code>  </header> <pre class="docstring">Update an existing question with new fields.
+
+If a question of the requested ID does not exist, an error
+is signalled.
+
+See QUESTION</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ANSWER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ANSWER">ANSWER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER ANSWER GAME</code><code>)</code>  </header> <pre class="docstring">Submit an answer for the current question in the game on behalf of a user.
+
+If the answer is incorrect or the game is not running, nothing happens.
+Otherwise, the scores are adjusted and the next question is made current.
+
+See GAME
+See CHECK</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:CHECK"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:CHECK">CHECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ANSWER QUESTION</code><code>)</code>  </header> <pre class="docstring">Returns true if the answer is an accepted answer for the question.
+
+See QUESTION
+See ANSWERS</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:END"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:END">END</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">Stop the game.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:SKIP"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:SKIP">SKIP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">Skip the current question.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:START"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT-DELIVERY</code><code>)</code>  </header> <pre class="docstring">Start the event delivery and make it ready to accept and deliver events.
+
+If the delivery is already running this does nothing.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:WINNER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:WINNER">WINNER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">Return the winner of the game.
+
+This only returns something if the game is not running.
+
+See GAME
+See SCORES</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ADD-CATEGORIES"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-CATEGORIES">add trivia categories</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID &amp;REST CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Add new categories for questions.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:ADD-QUESTION"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:ADD-QUESTION">add trivia question</a></code></h4> <code class="qualifiers"></code> <code class="arguments">QUESTION ANSWERS &amp;KEY HINT (CATEGORIES &quot;&quot;)</code><code>)</code>  </header> <pre class="docstring">Add a new trivia question. The answers should be a string that is comma-separated.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:END"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:END">end trivia game</a></code></h4>  </header> <pre class="docstring">End the current trivia game. This will show the winner with the most points.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:HINT"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:HINT">hint answer</a></code></h4>  </header> <pre class="docstring">Request a hint for the current question.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-CATEGORIES"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-CATEGORIES">remove trivia categories</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID &amp;REST CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Remove categories for questions.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:REMOVE-QUESTION"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:REMOVE-QUESTION">remove trivia question</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID</code><code>)</code>  </header> <pre class="docstring">Remove an existing question. You need to use the ID of the question exactly.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:SKIP"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-TRIVIA:SKIP">skip question</a></code></h4>  </header> <pre class="docstring">Skip the current question.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:START"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:START">start trivia game</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Start a new trivia game. You need to specify a number of categories from which questions can be selected. Users don't have to explicitly join. Whoever replies with the correct answer first wins the point.</pre> </article> </li><li> <a name="MAIDEN-TRIVIA:UPDATE-QUESTION"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TRIVIA:UPDATE-QUESTION">update trivia question</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID &amp;KEY QUESTION ANSWERS HINT CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Update an existing question. You need to use the ID of the question exactly.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

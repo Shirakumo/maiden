@@ -1,0 +1,243 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Commands</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Command parsing and issuing module for Maiden"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-commands</h1> <span class="version">0.0.0</span> <p class="description">Command parsing and issuing module for Maiden</p> </header> <main> <article id="documentation">  <div><h2>Maiden-Commands</h2> <p>This agent is responsible for catching <code>message-event</code>s and turning them into <code><a href="#MAIDEN-COMMANDS:COMMAND-EVENT">command-event</a></code>s if apropriate. It also gives you the <code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND">define-command</a></code> macro to define user-invokable commands with.</p> <h2>How To</h2> <p>In order to define a command, use <code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND">define-command</a></code>, which will generate a matching event, function, and handler for you, similar to <code>define-instruction</code>. It will also create the appropriate translation for you through <code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND-INVOKER">define-command-invoker</a></code>.</p> <p>First, let's create a consumer and add a command to it.</p> <pre><code>(maiden:define-consumer tester () ())
+
+(<a href="#MAIDEN-COMMANDS:DEFINE-COMMAND">maiden-commands:define-command</a> (tester greet) (instance event name &amp;optional greeting)
+  (maiden:reply event &quot;~a, ~a&quot; (<a href="http://l1sp.org/cl/or">or</a> greeting &quot;Hello&quot;) name))
+</code></pre> <p>Now we have to create a test environment for us to work with.</p> <pre><code>(<a href="http://l1sp.org/cl/defvar">defvar</a> *core* (maiden:make-simple-core 'maiden-commands:commands 'tester))
+</code></pre> <p>We can now call the command as a function.</p> <pre><code>(greet *core* &quot;someone&quot;)
+</code></pre> <p>Or through a message that is recognised as a command.</p> <pre><code>(<a href="#MAIDEN-COMMANDS:ISSUE-MESSAGE">maiden-commands:issue-message</a> *core* &quot;!greet you&quot;)
+</code></pre> <p>In order for the latter to work, the <code><a href="#MAIDEN-COMMANDS:COMMANDS">commands</a></code> agent must be present on the core.</p> <p>You can manipulate what is recognised as a command message through the extractors. Calling <code><a href="#MAIDEN-COMMANDS:REMOVE-COMMAND-EXTRACTOR">remove-command-extractor</a></code> on <code><a href="#MAIDEN-COMMANDS:PREFIX">prefix</a></code> will stop the bang from being recognised as a command prefix. You can add arbitrary functions that do what you want through <code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND-EXTRACTOR">define-command-extractor</a></code>. The function should return the substring of the event's message that contains the actual command, or <code>NIL</code> if it is not a command message.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-commands</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-COMMANDS" href="#MAIDEN-COMMANDS">MAIDEN-COMMANDS</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.COMMANDS)</span> </h3> <ul><li> <a name="MAIDEN-COMMANDS:COMMAND-EVENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-EVENT">COMMAND-EVENT</a></code></h4>  </header> <pre class="docstring">Superclass for all command events.
+
+The dispatch-event defaults to either *DISPATCH-EVENT*, or
+if it is not present, an instance of FRAMEWORK-MESSAGE.
+
+Command events are by default advised to be public. If a
+command should not be publicly accessible, you need to set
+the advice to (not public).
+
+See DISPATCH-EVENT
+See MAIDEN:INSTRUCTION-EVENT
+See MAIDEN:ACTIVE-EVENT</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMAND-INVOKER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-INVOKER">COMMAND-INVOKER</a></code></h4>  </header> <pre class="docstring">Container class to hold a command invoker.
+
+Command invokers are responsible for parsing a command line
+and turning it into a command event instance, which is then
+issued onto a core to cause the actual command to be executed.
+
+See NAME
+See PREFIX
+See LAMBDA-LIST
+See INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMANDS"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMANDS">COMMANDS</a></code></h4>  </header> <pre class="docstring">Agent to allow users to issue commands over messages. It is responsible for detecting, parsing, and issuing the commands as events.</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:FRAMEWORK-MESSAGE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:FRAMEWORK-MESSAGE">FRAMEWORK-MESSAGE</a></code></h4>  </header> <pre class="docstring">A message event used to simulate commands or issue them without a specific client for them to come from.
+
+See *FRAMEWORK-CLIENT*
+See *FRAMEWORK-USER*
+See MAIDEN-CLIENT-ENTITIES:MESSAGE-EVENT
+See MAIDEN:PASSIVE-EVENT</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMAND-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-CONDITION">COMMAND-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions related to the command system.
+
+See MAIDEN:MAIDEN-CONDITION</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DESTRUCTURING-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:DESTRUCTURING-ERROR">DESTRUCTURING-ERROR</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions related to the destructuring of argument lists.
+
+See COMMAND-CONDITION</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:EXPECTED-KEY-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:EXPECTED-KEY-ERROR">EXPECTED-KEY-ERROR</a></code></h4>  </header> <pre class="docstring">Error signalled when a key was expected, but could not be found.
+
+See LEXING-ERROR</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:LEXING-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:LEXING-ERROR">LEXING-ERROR</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions related to the lexing and parsing of commands.
+
+See COMMAND-CONDITION</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:NOT-ENOUGH-ARGUMENTS-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-COMMANDS:NOT-ENOUGH-ARGUMENTS-ERROR">NOT-ENOUGH-ARGUMENTS-ERROR</a></code></h4>  </header> <pre class="docstring">Error signalled when the argument list was too short and could not satisfy the lambda-list.
+
+See DESTRUCTURING-ERROR</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMAND-EXTRACTOR"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-EXTRACTOR">COMMAND-EXTRACTOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to set/get the command-extractor of a given name.
+
+See *EXTRACTORS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMAND-INVOKER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-INVOKER">COMMAND-INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to the command-invoker of the given name.
+
+See COMMAND-INVOKER
+See *INVOKERS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:INVOKER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:INVOKER">INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the command invoker's invocation function.
+
+The invoker is responsible for parsing the message,
+destructuring it into the arguments necessary to produce the
+command event, and finally issuing the complete event onto
+the same core as the one the event originated from.
+
+The function must take two arguments, the event that caused
+the command, and the command string that needs to be parsed.
+
+See COMMAND-INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:LAMBDA-LIST"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:LAMBDA-LIST">LAMBDA-LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the command invoker's lambda-list.
+
+Note that this is not equal to the invoker's lambda-list.
+
+See COMMAND-INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:NAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Aecessor to the name of the entity.
+
+See NAMED-ENTITY</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:PREFIX"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:PREFIX">PREFIX</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the prefix that must be present in the command string for the invoker to be considered for it.
+
+See COMMAND-INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:CONSUMER-COMMANDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:CONSUMER-COMMANDS">CONSUMER-COMMANDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER</code><code>)</code>  </header> <pre class="docstring">Attempts to collect a list of all command invokers that the consumer defined.
+
+This is a heuristic and may not find everything if the
+developer of the commands is being sneaky. It works by
+going through all handlers defined on the consumer, looking
+at each handler's typespec, and checking whether it contains
+a type that is a subclass of COMMAND-EVENT. If so, a command-
+invoker by the name of the handler is attempted to be found.</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:FIND-COMMAND-INVOKER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:FIND-COMMAND-INVOKER">FIND-COMMAND-INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Attempt to find a command-invoker of the given name or prefix.
+
+See *INVOKERS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:FIND-MATCHING-COMMAND"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:FIND-MATCHING-COMMAND">FIND-MATCHING-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MESSAGE</code><code>)</code>  </header> <pre class="docstring">Attempt to find a command that matches the message.
+
+Returns two values-- the matching command-invoker if it
+could be found, and a list of alternatives, where each
+alternative is a cons cell of its distance to the message
+and the command-invoker.
+
+See COMPARE-ALTERNATIVES
+See LEVENSHTEIN-DISTANCE
+See *ALTERNATIVE-DISTANCE-THRESHOLD*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:ISSUE-MESSAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:ISSUE-MESSAGE">ISSUE-MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CORE COMMAND-STRING</code><code>)</code>  </header> <pre class="docstring">Issue a framework message onto the core.
+
+See FRAMEWORK-MESSAGE</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:LIST-COMMAND-INVOKERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:LIST-COMMAND-INVOKERS">LIST-COMMAND-INVOKERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return a fresh list of all command-invokers.
+
+See COMMAND-INVOKER
+See *INVOKERS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:RELAY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:RELAY">RELAY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EV NEW-COMMAND &amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-COMMANDS:REMOVE-COMMAND"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:REMOVE-COMMAND">REMOVE-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER NAME &amp;OPTIONAL (EVENT-TYPE NAME) (COMMAND (STRING NAME))</code><code>)</code>  </header> <pre class="docstring">Remove a command from the system.
+
+See REMOVE-FUNCTION-HANDLER
+See REMOVE-COMMAND-INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:REMOVE-COMMAND-EXTRACTOR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:REMOVE-COMMAND-EXTRACTOR">REMOVE-COMMAND-EXTRACTOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove the command-extractor of the given name.
+
+See *EXTRACTORS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:REMOVE-COMMAND-INVOKER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:REMOVE-COMMAND-INVOKER">REMOVE-COMMAND-INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove the command-invoker of the given name.
+
+See COMMAND-INVOKER
+See *INVOKERS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:COMMAND-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:COMMAND-P">COMMAND-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT</code><code>)</code>  </header> <pre class="docstring">Returns true if the event can be interpreted as a command.
+
+See EXTRACT-COMMAND</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DISPATCH-EVENT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:DISPATCH-EVENT">DISPATCH-EVENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the original event that lead to the command event being dispatched.
+
+See COMMAND-EVENT</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:EXTRACT-COMMAND"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:EXTRACT-COMMAND">EXTRACT-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT</code><code>)</code>  </header> <pre class="docstring">Attempt to extract a command string from the event.
+
+If this is not possible, NIL is returned.</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DEFINE-COMMAND"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND">DEFINE-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new command.
+
+This will define a new event for the command, a new handler
+for the event that will actually cause the desired code to
+be executed, and a command-invoker that is responsible for
+parsing the command from a message and issuing the event.
+
+The event will always have COMMAND-EVENT as a superclass,
+but you can specify additional superclasses through the
+usual body option.
+
+The following additional body options are present and will
+not be passed to DEFINE-FUNCTION-HANDLER:
+- :COMMAND                
+  The prefix string that will cause the command to be parsed
+  from a string. This prefix can contain any character
+  sequence you want, the system will be able to deal with it.
+  Defaults to the command name.
+- :COMMAND-EVENT-VARIABLE
+  The variable that the command-event is bound to. This is
+  not the same as the EVENT argument. The EVENT argument is
+  bound to the dispatching event of the command, which is
+  usually what you want to inspect and reply to. The command-
+  event may be useful in some circumstances, but usually it
+  will just be a carrier for the arguments, which will
+  already have been bound to distinct variables.
+
+If an error occurs during the execution of the command's
+body, a REPLY is done to the dispatching event with the
+message set to the error printed as a string.
+
+Within the body, *DISPATCH-EVENT* is bound to the dispatching
+event instance.
+
+See REPLY
+See *DISPATCH-EVENT*
+See MAIDEN:DEFINE-FUNCTION-HANDLER
+See DEFINE-SIMPLE-COMMAND-INVOKER
+See REMOVE-COMMAND</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DEFINE-COMMAND-EXTRACTOR"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND-EXTRACTOR">DEFINE-COMMAND-EXTRACTOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new command extractor.
+
+See *EXTRACTORS*</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DEFINE-COMMAND-INVOKER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:DEFINE-COMMAND-INVOKER">DEFINE-COMMAND-INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new command-invoker.
+
+The body defines the command-invoker's invoker function, with
+the lambda-list making up the lambda-list for WITH-COMMAND-
+DESTRUCTURING-BIND. The message is thus already properly
+parsed into the necessary arguments within the body.
+
+See COMMAND-INVOKER
+See INVOKER
+See WITH-COMMAND-DESTRUCTURING-BIND</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:DEFINE-SIMPLE-COMMAND-INVOKER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:DEFINE-SIMPLE-COMMAND-INVOKER">DEFINE-SIMPLE-COMMAND-INVOKER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new, simple command-invoker.
+
+This defines a command-invoker that simple issues a given
+event onto the loop, using the arguments to fill in the
+initargs of the event. The MESSAGE-EVENT-INITARG option
+specifies which initarg, if any, the dispatching event should
+be passed to.
+
+See DEFINE-COMMAND-INVOKER</pre> </article> </li><li> <a name="MAIDEN-COMMANDS:WITH-COMMAND-DESTRUCTURING-BIND"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-COMMANDS:WITH-COMMAND-DESTRUCTURING-BIND">WITH-COMMAND-DESTRUCTURING-BIND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Destructure the INPUT string according to the lambda-list.
+
+Required, optional, key, and rest arguments are supported.
+
+If the arguments cannot be parsed or if they do not match
+the lambda-list, an error is signalled.
+
+See GENERATE-LAMBDA-LIST-BINDINGS
+See LEX</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

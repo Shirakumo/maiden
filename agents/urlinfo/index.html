@@ -1,0 +1,88 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Urlinfo</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Access information about URLs in Maiden."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-urlinfo</h1> <span class="version">0.0.0</span> <p class="description">Access information about URLs in Maiden.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides URL inspection facilities. It automatically fetches the HTTP headers of an URL and provides useful information about its contents. It can do so automatically for whenever a user posts an URL in a message. In order to activate this, see <a href="../activatable/">maiden-activatable</a>.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-urlinfo</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-URLINFO" href="#MAIDEN-URLINFO">MAIDEN-URLINFO</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.URLINFO)</span> </h3> <ul><li> <a name="MAIDEN-URLINFO:TEST"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-URLINFO:TEST">TEST</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-URLINFO:URLINFO"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-URLINFO:URLINFO">URLINFO</a></code></h4>  </header> <pre class="docstring">This agent provides an automatic URL inspection. When an URL is encountered, it is looked up, and information about it is displayed in the channel. This can be useful to preview what a link is about.</pre> </article> </li><li> <a name="MAIDEN-URLINFO:FETCH"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-URLINFO:FETCH">FETCH</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URL</code><code>)</code>  </header> <pre class="docstring">Fetches the given HTTP URL.
+
+Returns three values:
+- The URL that was fetched in the end (due to redirects)
+- The content-type of the resource the URL points to
+- The stream to read the content body from
+
+See DRAKMA:HTTP-REQUEST</pre> </article> </li><li> <a name="MAIDEN-URLINFO:URLINFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-URLINFO:URLINFO">URLINFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URL &amp;OPTIONAL (URL-CUTOFF 30)</code><code>)</code>  </header> <pre class="docstring">Return a formatted string that presents some information about the given URL.
+
+In particular, it will include a short form of the actual URL
+as resolved by the request. It will also include the content-
+type of the data at the end, and the title of the document, if
+such a title is available.</pre> </article> </li><li> <a name="MAIDEN-URLINFO:TEST"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-URLINFO:TEST">test url</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URL</code><code>)</code>  </header> <pre class="docstring">Retrieve the information about an URL.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

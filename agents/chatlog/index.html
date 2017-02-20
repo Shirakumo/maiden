@@ -1,0 +1,125 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Chatlog</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="A chat logger to a Postgres database."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-chatlog</h1> <span class="version">0.0.0</span> <p class="description">A chat logger to a Postgres database.</p> </header> <main> <article id="documentation">  <div/>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-chatlog</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-CHATLOG" href="#MAIDEN-CHATLOG">MAIDEN-CHATLOG</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.CHATLOG)</span> </h3> <ul><li> <a name="MAIDEN-CHATLOG:ACTIVATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:ACTIVATE">ACTIVATE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CHATLOG:ACTIVATE-ON"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:ACTIVATE-ON">ACTIVATE-ON</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CHATLOG:CHATLOG"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:CHATLOG">CHATLOG</a></code></h4>  </header> <pre class="docstring">This agent handles the recording of messages and activity in a channel to a database, potentially for public viewing on the web.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:DEACTIVATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:DEACTIVATE">DEACTIVATE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CHATLOG:DEACTIVATE-ON"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:DEACTIVATE-ON">DEACTIVATE-ON</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CHATLOG:INITIALIZE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:INITIALIZE">INITIALIZE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CHATLOG:CONNECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:CONNECTION">CONNECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DESIGNATOR</code><code>)</code>  </header> <pre class="docstring">Accessor to the connection information.
+
+Returns a list of six values as expected by the
+postmodern interface. When set, it expects a
+plist where the values to set are given by their
+respective keyword-value pairs.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:ADD-CHANNEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:ADD-CHANNEL">ADD-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL-ISH</code><code>)</code>  </header> <pre class="docstring">Adds the channel for logging.
+
+If the channel is already being logged, an
+error is signalled.
+
+See CHANNEL-DESIGNATOR
+See WITH-DB</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:DEL-CHANNEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:DEL-CHANNEL">DEL-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL-ISH</code><code>)</code>  </header> <pre class="docstring">Removes the channel from logging.
+
+The actual data that was logged on the channel
+is not removed, however.
+
+If the channel is not being logged, an error
+is signalled.
+
+See CHANNEL-DESIGNATOR
+See WITH-DB</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:INITIALIZE-DATABASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:INITIALIZE-DATABASE">INITIALIZE-DATABASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS &amp;KEY DATABASE USER PASSWORD HOST PORT</code><code>)</code>  </header> <pre class="docstring">Set up the necessary tables on the database.
+
+The tables created will be called &quot;channels&quot;
+and &quot;chatlog&quot;, along with an index called
+&quot;chatlog_channel-id_index&quot;. The tables are
+not created if they already exist.
+
+See WITH-DB</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:MAYBE-RECORD-MESSAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:MAYBE-RECORD-MESSAGE">MAYBE-RECORD-MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C TYPE CHANNEL USER MESSAGE &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Records the message, if the connection to the database can be established.
+
+Push the message to record onto the back-queue
+of the client, and  then try to process the
+client's back-queue if possible.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:PREPARED-STATEMENT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:PREPARED-STATEMENT">PREPARED-STATEMENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STATEMENT &amp;REST VARIABLES</code><code>)</code>  </header> <pre class="docstring">Execute a prepared statement.
+
+See CL-POSTGRES:PREPARE-QUERY
+See CL-POSTGRES:EXEC-PREPARED</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:PROCESS-BACK-QUEUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:PROCESS-BACK-QUEUE">PROCESS-BACK-QUEUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C</code><code>)</code>  </header> <pre class="docstring">Process the queue on the consumer and record all messages, if possible.
+
+See MAYBE-RECORD-MESSAGE</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:RECORD-MESSAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:RECORD-MESSAGE">RECORD-MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE CHANNEL USER MESSAGE &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Record a message of a given type in the database.
+
+TYPE must be an acceptable type as by TYPE-&gt;CHAR
+
+See TYPE-&gt;CHAR
+See CHANNEL-DESIGNATOR
+See USER-DESIGNATOR</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:WITH-DB"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:WITH-DB">WITH-DB</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Call the body with an active database connection.
+
+If a connection is already active, nothing is
+done aside from evaluating the body.
+
+See POSTMODERN:*DATABASE*
+See POSTMODERN:WITH-CONNECTION
+See CONNECTION</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:ACTIVATE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:ACTIVATE">activate chatlog</a></code></h4>  </header> <pre class="docstring">Activate chat logging for the current channel.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:ACTIVATE-ON"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:ACTIVATE-ON">activate chatlog on</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT CHANNEL</code><code>)</code>  </header> <pre class="docstring">Activate logging on a specific client's channel.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:DEACTIVATE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CHATLOG:DEACTIVATE">deactivate chatlog</a></code></h4>  </header> <pre class="docstring">Deactivate chat logging on the current channel.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:DEACTIVATE-ON"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:DEACTIVATE-ON">deactivate chatlog on</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CLIENT CHANNEL</code><code>)</code>  </header> <pre class="docstring">Deactivate chat logging on a specific client's channel.</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:INITIALIZE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:INITIALIZE">initialize chatlog</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY (HOST &quot;localhost&quot;) (DB &quot;chatlog&quot;) (USER &quot;chatlog&quot;) PASSWORD (PORT 5432)</code><code>)</code>  </header> <pre class="docstring">Set up the chatlog's postgres connection details.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

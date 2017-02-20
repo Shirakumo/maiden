@@ -1,0 +1,153 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Accounts</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Account management agent for Maiden"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-accounts</h1> <span class="version">0.0.0</span> <p class="description">Account management agent for Maiden</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides accounts for Maiden. Accounts are things by which users can be linked across different networks and different identities. Users can also store information and preferences in an account, which can then be reused by other parts of the system to provide better user interaction.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-accounts</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-ACCOUNTS" href="#MAIDEN-ACCOUNTS">MAIDEN-ACCOUNTS</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.ACCOUNTS)</span> </h3> <ul><li> <a name="MAIDEN-ACCOUNTS:ACCOUNT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNT">ACCOUNT</a></code></h4>  </header> <pre class="docstring">This class represents an account.
+
+Accounts are things by which users can be linked across
+different networks and different identities. Users can
+also store information and preferences in an account,
+which can then be reused by other parts of the system to
+provide better user interaction.
+
+See IDENTITIES
+See PASSWORD
+See MAIDEN:NAMED-ENTITY
+See MAIDEN:DATA-ENTITY</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCOUNTS"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNTS">ACCOUNTS</a></code></h4>  </header> <pre class="docstring">This agent handles user accounts and related information. User accounts can be used to store information about a user, allowing the bot to tailor responses to them. Accounts also allow authentication of users on servers where no native authentication is possible.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ASSOCIATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ASSOCIATE">ASSOCIATE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:CREATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:CREATE">CREATE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DEASSOCIATE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DEASSOCIATE">DEASSOCIATE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DESTROY"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DESTROY">DESTROY</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:FIELD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:FIELD">FIELD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:FIELD-INFO"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:FIELD-INFO">FIELD-INFO</a></code></h4>  </header> <pre class="docstring">This class represents metadata information about an account field.
+
+Using this info, the access to a field can be
+restricted and the field's purpose can be documented.
+
+See NAME
+See CL:DOCUMENTATION
+See ACCESS</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:LOGIN"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:LOGIN">LOGIN</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:LOGOUT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:LOGOUT">LOGOUT</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:SET-FIELD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:SET-FIELD">SET-FIELD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:TEST-AUTHENTICATION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:TEST-AUTHENTICATION">TEST-AUTHENTICATION</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:UPDATE-PASSWORD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:UPDATE-PASSWORD">UPDATE-PASSWORD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCOUNT-ALREADY-EXISTS"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNT-ALREADY-EXISTS">ACCOUNT-ALREADY-EXISTS</a></code></h4>  </header> <pre class="docstring">Condition signalled when an account is attempted to be created, but already exists.
+
+See ACCOUNT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCOUNT-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNT-CONDITION">ACCOUNT-CONDITION</a></code></h4>  </header> <pre class="docstring">Superclass for all conditions relating to the account system.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCOUNT-NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNT-NOT-FOUND">ACCOUNT-NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when no account can be found for a given name or object.
+
+See ACCOUNT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:NO-ACCOUNT-FOR-IDENTITY"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:NO-ACCOUNT-FOR-IDENTITY">NO-ACCOUNT-FOR-IDENTITY</a></code></h4>  </header> <pre class="docstring">Condition signalled when no matching account can be found for the identity.
+
+See ACCOUNT-CONDITION</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCOUNT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCOUNT">ACCOUNT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT &amp;KEY ERROR</code><code>)</code>  </header> <pre class="docstring">Return the account object suitable for the given object.
+
+If :ERROR is non-NIL and no suitable account for the
+given object can be found, a condition of type NO-
+ACCOUNT-FOR-IDENTITY is signalled.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD ACCOUNT USER</code><code>)</code>  </header> <pre class="docstring">Access the given field on the account, using the user as the accessing identity.
+
+See ACCESS-P
+See FIELD-INFO
+See ACCOUNT</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:FIELD-INFO"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:FIELD-INFO">FIELD-INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor for the field-info object for the given field name.
+
+See FIELD-INFO</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:IDENTITIES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:IDENTITIES">IDENTITIES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of identities that this account is tied to.
+
+An identity attempts to identify a user object on a
+client. This way, an authenticated user on a client
+can use an account directly without the need for a
+manual login.
+
+See ACCOUNT</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:NAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Aecessor to the name of the entity.
+
+See NAMED-ENTITY</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:PASSWORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:PASSWORD">PASSWORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the password of the account.
+
+See ACCOUNT</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DELETE-ACCOUNT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DELETE-ACCOUNT">DELETE-ACCOUNT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT-ISH</code><code>)</code>  </header> <pre class="docstring">Completely delete the given account.
+
+This will also delete the storage file on disk, so
+the account will be gone for good once its object is
+garbage-collected.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:REMOVE-FIELD-INFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:REMOVE-FIELD-INFO">REMOVE-FIELD-INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove the field-info object for the given field.
+
+See FIELD-INFO</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCESS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCESS">ACCESS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the access information on the field-info.
+
+Should be a property list mapping readers to access
+permissions. A reader can be one of :OWNER :WORLD.
+Access permissions can be :R :RW or NIL, describing
+read-only, read-write, or no access respectively.
+
+See FIELD-INFO</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ACCESS-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ACCESS-P">ACCESS-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD ACCOUNT USER ACCESS</code><code>)</code>  </header> <pre class="docstring">Returns true if the given user has access to the given field and account.
+
+See ACCOUNT
+See FIELD-INFO</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ADD-IDENTITY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ADD-IDENTITY">ADD-IDENTITY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT-ISH IDENTITY-ISH</code><code>)</code>  </header> <pre class="docstring">Add a new identity to the account.
+
+See ACCOUNT
+See IDENTITY</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:IDENTITY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:IDENTITY">IDENTITY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT</code><code>)</code>  </header> <pre class="docstring">Construct an identity string for the given object.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:IDENTITY-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:IDENTITY-P">IDENTITY-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT-ISH IDENTITY-ISH</code><code>)</code>  </header> <pre class="docstring">Returns whether the given identity is one for the given account.
+
+See ACCOUNT
+See IDENTITY</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:REMOVE-IDENTITY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:REMOVE-IDENTITY">REMOVE-IDENTITY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT-ISH IDENTITY-ISH</code><code>)</code>  </header> <pre class="docstring">Remove an identity from an account.
+
+See ACCOUNT
+See IDENTITY</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DEFINE-FIELDS"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DEFINE-FIELDS">DEFINE-FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define account field information.
+
+Each field must be a lambda-list of the following
+structure:
+  (name (&amp;key owner world) &amp;optional documentation)
+
+See FIELD-INFO
+See ACCESS</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:ASSOCIATE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:ASSOCIATE">associate with account</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ACCOUNT PASSWORD</code><code>)</code>  </header> <pre class="docstring">Associate the current identity with your account for automatic login. The identity must be authenticated by an outside source.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:CREATE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:CREATE">create account</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY PASSWORD NAME</code><code>)</code>  </header> <pre class="docstring">Create a new account. Accounts allow you to store information about yourself that may help the bot to better tailor responses to you. An account is also necessary for permission management. If no password is specified, one is randomly generated for you. Be sure not to do this on a public channel.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DEASSOCIATE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DEASSOCIATE">deassociate from account</a></code></h4>  </header> <pre class="docstring">Deassociate the current identity from your account, removing its automatic login.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:DESTROY"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:DESTROY">destroy account</a></code></h4>  </header> <pre class="docstring">Destroy your own account. You need to be logged in in order to do this.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:FIELD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:FIELD">show account field</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD &amp;OPTIONAL ACCOUNT</code><code>)</code>  </header> <pre class="docstring">Retrieve the value of a user account field.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:LOGIN"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:LOGIN">login</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PASSWORD &amp;OPTIONAL ACCOUNT</code><code>)</code>  </header> <pre class="docstring">Allows you to login in to an existing account in case your identity does not log you in automatically. If your identity is not associated, you might need to supply the account name.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:LOGOUT"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:LOGOUT">logout</a></code></h4>  </header> <pre class="docstring">Explicitly log out from an account.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:SET-FIELD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:SET-FIELD">set account field</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD VALUE &amp;OPTIONAL ACCOUNT</code><code>)</code>  </header> <pre class="docstring">Update the value of a user account field.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:TEST-AUTHENTICATION"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:TEST-AUTHENTICATION">test authentication</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL USER</code><code>)</code>  </header> <pre class="docstring">Test whether the bot can verify the authenticity of a user, or yourself.</pre> </article> </li><li> <a name="MAIDEN-ACCOUNTS:UPDATE-PASSWORD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-ACCOUNTS:UPDATE-PASSWORD">update password</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NEW-PASSWORD</code><code>)</code>  </header> <pre class="docstring">Change your account password. Be sure not to do this on a public channel.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

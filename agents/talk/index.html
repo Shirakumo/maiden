@@ -1,0 +1,100 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Talk</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Performs text-to-speech"/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-talk</h1> <span class="version">0.0.0</span> <p class="description">Performs text-to-speech</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent provides a Text To Speech functionality and allows you to play back random text on your computer. It also provides some commands for people to do that. Naturally, the TTS won't happen on their end, but nevertheless this can be useful for situations like a stream, where the other users will see and hear your screen. The available functions and commands should be self-explanatory, so see the symbol index.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-talk</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-TALK" href="#MAIDEN-TALK">MAIDEN-TALK</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.TALK)</span> </h3> <ul><li> <a name="MAIDEN-TALK:TALK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TALK:TALK">TALK</a></code></h4>  </header> <pre class="docstring">This agent provides text-to-speech reading.</pre> </article> </li><li> <a name="MAIDEN-TALK:TALK-EN"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TALK:TALK-EN">TALK-EN</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TALK:TALK-LANG"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-TALK:TALK-LANG">TALK-LANG</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-TALK:GET-SPEECH-STREAM"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:GET-SPEECH-STREAM">GET-SPEECH-STREAM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TEXT LANGUAGE</code><code>)</code>  </header> <pre class="docstring">Attempts to translate the text into the language using Google Translate TTS.
+
+If successful, returns a stream to the MP3 file returned by the API.
+If unsuccessful, an error is signalled. Note that only some languages
+are supported, and that only text up to 200 characters is allowed.
+
+See LANGUAGE-CODE</pre> </article> </li><li> <a name="MAIDEN-TALK:PLAY-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:PLAY-FILE">PLAY-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FILE &amp;KEY OUTPUT</code><code>)</code>  </header> <pre class="docstring">Play back the given MP3 file on the given output.
+
+If output is not given, a new one is constructed.
+
+See CL-MPG123:CONNECT
+See CL-OUT123:PLAY
+See WITH-OUTPUT</pre> </article> </li><li> <a name="MAIDEN-TALK:TALK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:TALK">TALK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TEXT &amp;KEY (LANGUAGE &quot;en-US&quot;) OUTPUT</code><code>)</code>  </header> <pre class="docstring">Speak the given text back.
+
+If the text is too long for the TTS API it is split up into multiple
+requests. Thus there might be an occasional gap where a new request
+and playback is started in the middle of the text.
+
+See SPLIT-WORD-BOUNDARY
+See PLAY-FILE</pre> </article> </li><li> <a name="MAIDEN-TALK:WITH-OUTPUT"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:WITH-OUTPUT">WITH-OUTPUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Wrap the body in an environment where OUT is a cl-out123:output that is ready for playback.
+
+See CL-OUT123:CONNECT
+See CL-OUT123:START</pre> </article> </li><li> <a name="MAIDEN-TALK:WITH-SPEECH-FILE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:WITH-SPEECH-FILE">WITH-SPEECH-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Wrap the body in an env where PATH is a pathname to an MP3 file.
+
+See CALL-WITH-SPEECH-FILE</pre> </article> </li><li> <a name="MAIDEN-TALK:TALK-EN"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:TALK-EN">talk</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST TEXT</code><code>)</code>  </header> <pre class="docstring">Speak the given text in English. Note that this will be played back on the bot owner's machine.</pre> </article> </li><li> <a name="MAIDEN-TALK:TALK-LANG"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-TALK:TALK-LANG">talk in</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LANGUAGE &amp;REST TEXT</code><code>)</code>  </header> <pre class="docstring">Speak the given text in the requested language, if possible. Note that this will be played back on the bot owner's machine.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

@@ -1,0 +1,382 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Crimes</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Play Cards Against Humanity."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-crimes</h1> <span class="version">0.0.0</span> <p class="description">Play Cards Against Humanity.</p> </header> <main> <article id="documentation">  <div><h2>About Maiden-Crimes</h2> <p>This is a clone of the popular Cardcast / Cards Against Humanity / Xyzzy type of game. It supports custom deck creation as well as downloading decks directly from <a href="https://cardcastgame.com">https://cardcastgame.com</a>. The game works through text only and should thus be compatible with any kind of client that has support for the <a href="../../modules/client-entities/">maiden-client-entities</a> protocol.</p> <h2>How To</h2> <p>First, open up a game lobby</p> <pre><code>::open crimes
+</code></pre> <p>Following this, users can enter the game. Users can still enter the game while it is running too, though.</p> <pre><code>::join crimes
+</code></pre> <p>Next you should add card decks to the game. You can either create your own decks locally and add those, or search for ones and download them through <a href="https://www.cardcastgame.com/">Cardcast</a>. You only need to download them once, but you do need to add the decks to each new game you start. Here's all of the codes for the official CAH packs for your convenience:</p> <pre><code>::download crime deck CAHBS CAH
+::download crime deck CAHE1 CAHE1
+::download crime deck CAHE2 CAHE2
+::download crime deck CAHE3 CAHE3
+::download crime deck CAHE4 CAHE4
+::download crime deck EU6CJ CAHE5
+::download crime deck PEU3Q CAHE6
+::download crime deck XMAS1 CAHH2
+::download crime deck K4QVW CAHH3
+::download crime deck CDJDV CAHH4
+::download crime deck BBBOX CAHBB
+::download crime deck NXEP0 CAH90
+::download crime deck PNNE9 CAHSCI
+::download crime deck KW8B6 CAHNS2
+::download crime deck DP2VU CAHNS3
+::download crime deck PAXP3 CAHPAX
+</code></pre> <p>To create a game with them, simply use the add command. You can also add by CardCast ID directly.</p> <pre><code>::add crimes deck CAH
+::add crimes deck CAHBB
+</code></pre> <p>Once you have all the cards as you like them and all the players who want to play have joined, you can start the game proper.</p> <pre><code>::start crimes
+</code></pre> <p>From there on out, every round an officer will be selected, while everyone else is a potential criminal. The criminals will get a private message that lists all the possible cards in their hand that they can use to answer the call card. To enter responses, each player can use</p> <pre><code>::commit crime 2 3 4
+</code></pre> <p>Where <code>2 3 4</code> are the numbers of the cards the player would like to select. You can also submit multiple times, if you prefer doing that. Each time you submit, it will show you a preview of what your submission will look like. Once all players have submitted enough responses to fill the call, the responses are sorted randomly and presented to all players in the main channel. The officer then gets to convict a criminal.</p> <pre><code>::convict criminal 3
+</code></pre> <p>The criminal's name is then revealed, his score is increased, and a new round with a new officer is started. This continues until either the game is ended explicitly, all players have left the game, or a player reaches the necessary score.</p> <p>See the other commands in the symbol index to see how you can create and manage decks using commands.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-crimes</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-CRIMES" href="#MAIDEN-CRIMES">MAIDEN-CRIMES</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.CRIMES)</span> </h3> <ul><li> <a name="MAIDEN-CRIMES:*CARDCAST/DECK*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:*CARDCAST/DECK*">*CARDCAST/DECK*</a></code></h4>  </header> <pre class="docstring">Address to retrieve information about a cardcast deck from.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:*CARDCAST/DECK/CARDS*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:*CARDCAST/DECK/CARDS*">*CARDCAST/DECK/CARDS*</a></code></h4>  </header> <pre class="docstring">Address to retrieve a list of cards for a cardcast deck from.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:*CARDCAST/DECKS*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:*CARDCAST/DECKS*">*CARDCAST/DECKS*</a></code></h4>  </header> <pre class="docstring">Address to retrieve a list of cardcast decks from.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:*DECKS*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:*DECKS*">*DECKS*</a></code></h4>  </header> <pre class="docstring">A hash-table of deck names to deck instances.
+
+See DECK
+See REMOVE-DECK</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-CALL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-CALL">ADD-CALL</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-DECK">ADD-DECK</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-RESPONSE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-RESPONSE">ADD-RESPONSE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:CALL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:CALL">CALL</a></code></h4>  </header> <pre class="docstring">Class to represent a call card in a play deck.
+
+Call cards hold a list of string fragments as their text
+property. Between each two adjacent fragment is a &quot;gap&quot;
+that should be filled by a response card's text.
+
+See CARD
+See ADD-CALL</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CARD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:CARD">CARD</a></code></h4>  </header> <pre class="docstring">Class to represent a card in a play deck.
+
+See TEXT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CHANNEL"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:CHANNEL">CHANNEL</a></code></h4>  </header> <pre class="docstring">Object representing a channel on a remote system somewhere.
+
+Channels are virtual &quot;rooms&quot; over which one or more users may
+communicate with each other.
+
+Channels have a name and a number of users that inhabit it.
+Additional properties are not guaranteed, but may be provided by a
+client.
+
+See CLIENT-ENTITY
+See USERS</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CREATE-DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:CREATE-DECK">CREATE-DECK</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:CRIMES"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:CRIMES">CRIMES</a></code></h4>  </header> <pre class="docstring">This is an implementation of the popular Cards Against Humanity card game. It works by displaying the hands of the players in a private conversation. Picks and results are shown in a global channel. See 'open crimes' for how to start a game.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:DECK">DECK</a></code></h4>  </header> <pre class="docstring">Container class for a deck of crimes cards.
+
+It contains a table of call cards and a table of response cards.
+
+See NAME
+See TITLE
+See CALLS
+See RESPONSES</pre> </article> </li><li> <a name="MAIDEN-CRIMES:DOWNLOAD-DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:DOWNLOAD-DECK">DOWNLOAD-DECK</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:END-GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:END-GAME">END-GAME</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:GAME">GAME</a></code></h4>  </header> <pre class="docstring">Class to represent a game of Crimes.
+
+This holds all the necessary state to play a game of
+crimes.
+
+See CHANNEL
+See CALLS
+See RESPONSES
+See PLAYERS
+See SCRAMBLED
+See HAND-SIZE
+See WIN-SCORE
+See IN-SESSION
+See ADD-DECK
+See OFFICER
+See START
+See END
+See JOIN
+See LEAVE
+See SUBMIT
+See COMPLETE-P
+See WINNER
+See FINISH-ROUND
+See NEXT-ROUND</pre> </article> </li><li> <a name="MAIDEN-CRIMES:JOIN-GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:JOIN-GAME">JOIN-GAME</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:LEAVE-GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:LEAVE-GAME">LEAVE-GAME</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:LIST-DECKS"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:LIST-DECKS">LIST-DECKS</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:OPEN-GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:OPEN-GAME">OPEN-GAME</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:PLAYER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:PLAYER">PLAYER</a></code></h4>  </header> <pre class="docstring">Class to represent a player in a game.
+
+This keeps track of the associated user object, the game
+they are playing in, the hand and score they have, and
+their current response.
+
+See USER
+See GAME
+See HAND
+See SCORE
+See RESULT
+See COMPLETE-P
+See REMAINING-RESPONSES
+See DRAW-CARDS
+See NEXT-ROUND</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-CARD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-CARD">REMOVE-CARD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-DECK">REMOVE-DECK</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:RESPONSE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:RESPONSE">RESPONSE</a></code></h4>  </header> <pre class="docstring">Class to represent a response card in a play deck.
+
+Response cards are used to fill the gaps in call cards.
+
+See CARD
+See ADD-RESPONSE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:RESULT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:RESULT">RESULT</a></code></h4>  </header> <pre class="docstring">Container class to represent a possible answer to a call.
+
+Contains a single call card and a number of response cards
+that should be used to fill the gaps in the call card.
+Calling TEXT on a result will give the currently filled in
+call card text as per the result cards entered into the result.
+
+See CALL
+See RESPONSES
+See REQUIRED-RESPONSES
+See REMAINING-RESPONSES
+See COMPLETE-P
+See ADD-RESPONSE
+See TEXT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SEARCH-DECK"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:SEARCH-DECK">SEARCH-DECK</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:SELECT-WINNER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:SELECT-WINNER">SELECT-WINNER</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:START"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:START">START</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:START-GAME"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:START-GAME">START-GAME</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:SUBMIT-CARD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:SUBMIT-CARD">SUBMIT-CARD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:USER">USER</a></code></h4>  </header> <pre class="docstring">Object representing a user on a remote system somewhere.
+
+Users have a name and may be authenticated. Additional properties
+are not guaranteed, but may be provided by a client.
+
+See CLIENT-ENTITY
+See AUTHENTICATE
+See AUTHENTICATED-P</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CALL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CALL">CALL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:CALLS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CALLS">CALLS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the table or list of call cards.
+
+See DECK
+See GAME
+See CALL</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CHANNEL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CHANNEL">CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the channel object the event relates to
+
+See CHANNEL-EVENT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:DECK"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:DECK">DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Acessor to the deck storage.
+
+If a deck is attempted to be read that is not yet in the table,
+it is attempted to be loaded from disk. When a deck is set, it
+is automatically offloaded to disk.
+
+See *DECKS*
+See NORMALIZE-NAME
+See LOAD-DECK</pre> </article> </li><li> <a name="MAIDEN-CRIMES:GAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:GAME">GAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the game object the player is part of.
+
+See GAME
+See PLAYER</pre> </article> </li><li> <a name="MAIDEN-CRIMES:GAMES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:GAMES">GAMES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CRIMES:HAND"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:HAND">HAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the player's list of response cards they currently hold in their hand.
+
+See PLAYER
+See RESPONSE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:HAND-SIZE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:HAND-SIZE">HAND-SIZE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the number of response cards every player should hold in their hand.
+
+See GAME
+See HAND</pre> </article> </li><li> <a name="MAIDEN-CRIMES:IN-SESSION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:IN-SESSION">IN-SESSION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to whether the game is started or whether it's still in &quot;lobby mode&quot; and waiting for players to join.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CRIMES:NAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Aecessor to the name of the entity.
+
+See NAMED-ENTITY</pre> </article> </li><li> <a name="MAIDEN-CRIMES:PLAYERS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:PLAYERS">PLAYERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of players participating in this game.
+
+See GAME
+See JOIN
+See LEAVE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:RESPONSES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:RESPONSES">RESPONSES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the table or list of response cards.
+
+See DECK
+See GAME
+See RESPONSE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:RESULT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:RESULT">RESULT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the player's result response for the current round.
+
+See PLAYER
+See RESULT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SCORE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SCORE">SCORE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the player's current score.
+
+The score is the number of rounds that they've won.
+
+See PLAYER</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SCRAMBLED"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SCRAMBLED">SCRAMBLED</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the list of index numbers for each player.
+
+The list is in the same order as the players list and
+associates a unique number to each player. This number
+is used to represent the results in an anonymous manner
+such that the person who played it cannot be determined.
+
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CRIMES:TEXT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:TEXT">TEXT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the text that the card holds.
+
+The text may either be a direct string, or a list of
+strings.
+
+See CARD</pre> </article> </li><li> <a name="MAIDEN-CRIMES:TITLE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:TITLE">TITLE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the descriptive title of the card deck.
+
+See DECK</pre> </article> </li><li> <a name="MAIDEN-CRIMES:USER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
+
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:WIN-SCORE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:WIN-SCORE">WIN-SCORE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the maximum score necessary for a player to win the game.
+
+See GAME
+See SCORE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CARDCAST/DECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CARDCAST/DECK">CARDCAST/DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK-ID</code><code>)</code>  </header> <pre class="docstring">Request information about a specific cardcast deck.
+
+The returned result is the parsed JSON return value from the API.
+
+See *CARDCAST/DECK*</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CARDCAST/DECK/CARDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CARDCAST/DECK/CARDS">CARDCAST/DECK/CARDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK-ID</code><code>)</code>  </header> <pre class="docstring">Request the card list for a specific deck from the cardcast server.
+
+The returned result is the parsed JSON return value from the API.
+
+See *CARDCAST/DECK/CARDS*</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CARDCAST/DECKS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CARDCAST/DECKS">CARDCAST/DECKS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY (OFFSET 0) (LIMIT 20) SEARCH AUTHOR CATEGORY</code><code>)</code>  </header> <pre class="docstring">Search or list decks from the cardcast server.
+
+The returned result is the parsed JSON return value from the API.
+
+See *CARDCAST/DECKS*</pre> </article> </li><li> <a name="MAIDEN-CRIMES:FIND-CARDCAST-DECKS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:FIND-CARDCAST-DECKS">FIND-CARDCAST-DECKS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">QUERY</code><code>)</code>  </header> <pre class="docstring">Returns a list of lists of name to deck id of matching decks for the given search query.
+
+See CARDCAST/DECKS</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LOAD-CARDCAST-DECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:LOAD-CARDCAST-DECK">LOAD-CARDCAST-DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK-ID</code><code>)</code>  </header> <pre class="docstring">Load a deck from the cardcast server and parse it into a DECK instance.
+
+See DECK
+See CARDCAST/DECK
+See CARDCAST/DECK/CARDS
+See CARDCAST-LIST-&gt;MAP</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LOAD-DECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:LOAD-DECK">LOAD-DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Load the given deck from disk if possible.
+
+If no storage for the given deck can be found, an error
+is signalled.
+
+See DECK
+See SAVE-DECK
+See NORMALIZE-NAME
+See MAIDEN-STORAGE:WITH-STORAGE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-DECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-DECK">REMOVE-DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Completely remove the given deck.
+
+The deck is both removed from the cached table, and from the
+disk. It is not possible to recover it once the deck's instance
+has been garbage collected.
+
+See DECK</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SAVE-DECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SAVE-DECK">SAVE-DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK</code><code>)</code>  </header> <pre class="docstring">Save the given deck to disk so that it can be restored later.
+
+The deck's NAME is used as the storage designator.
+
+See DECK
+See LOAD-DECK
+See MAIDEN-STORAGE:WITH-STORAGE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:USER-GAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:USER-GAME">USER-GAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C EV &amp;OPTIONAL (ERROR T)</code><code>)</code>  </header> <pre class="docstring">Attempt to find the game for the user of the given event and client.
+
+If no such game can be found, and ERROR is non-NIL,
+an error is signalled.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-CALL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-CALL">ADD-CALL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CALL DECK</code><code>)</code>  </header> <pre class="docstring">Add a new call card to the deck.
+
+See CALL
+See CALLS
+See PARSE-CALL</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-DECK"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-DECK">ADD-DECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK GAME</code><code>)</code>  </header> <pre class="docstring">Add a deck of cards to the game's set.
+
+If this is attempted to be done while the game is in
+session, an error is signalled.
+
+See DECK
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-RESPONSE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-RESPONSE">ADD-RESPONSE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RESPONSE DECK</code><code>)</code>  </header> <pre class="docstring">Add a new response card to the deck.
+
+See RESPONSE
+See RESPONSES</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CARD"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CARD">CARD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID DECK</code><code>)</code>  </header> <pre class="docstring">Accessor to the card of the given ID in the deck.
+
+See DECK
+See CARD</pre> </article> </li><li> <a name="MAIDEN-CRIMES:COMPLETE-P"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:COMPLETE-P">COMPLETE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RESULT</code><code>)</code>  </header> <pre class="docstring">Returns whether the result is complete or needs more response cards.
+
+See RESULT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:DRAW-CARDS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:DRAW-CARDS">DRAW-CARDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PLAYER</code><code>)</code>  </header> <pre class="docstring">Draws new cards for the player until the hand has the necessary amount again.
+
+See HAND-SIZE
+See HAND
+See GAME
+See PLAYER</pre> </article> </li><li> <a name="MAIDEN-CRIMES:END"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:END">END</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">End the game immediately.
+
+See IN-SESSION
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CRIMES:FINISH-ROUND"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:FINISH-ROUND">FINISH-ROUND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">WINNER GAME</code><code>)</code>  </header> <pre class="docstring">Finish the round by picking a winner.
+
+An error is signalled if a player is picked that is
+not participating in the game, or if the officer
+picks themselves. The next round is started
+automatically.
+
+See NEXT-ROUND</pre> </article> </li><li> <a name="MAIDEN-CRIMES:JOIN"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:JOIN">JOIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER GAME</code><code>)</code>  </header> <pre class="docstring">Make a user join the game.
+
+An error is signalled if the user is already playing.
+If the game is already in session, the user will only
+be participating in the next round.
+
+See GAME
+See LEAVE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LEAVE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:LEAVE">LEAVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER GAME</code><code>)</code>  </header> <pre class="docstring">Make a user leave the game
+
+The player's cards are re-added to the game's set and
+if no more players are in the game, the game is
+automatically ended.
+
+See GAME
+See JOIN</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LIST-CALLS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:LIST-CALLS">LIST-CALLS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK</code><code>)</code>  </header> <pre class="docstring">Return a fresh list of all call cards in the deck.
+
+See CALLS
+See CALL</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LIST-RESPONSES"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:LIST-RESPONSES">LIST-RESPONSES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK</code><code>)</code>  </header> <pre class="docstring">Return a fresh list of all response cards in the deck.
+
+See RESPONSES
+See RESPONSE</pre> </article> </li><li> <a name="MAIDEN-CRIMES:NEXT-ROUND"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:NEXT-ROUND">NEXT-ROUND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PLAYER</code><code>)</code>  </header> <pre class="docstring">Advance the object to the next round of the game.
+
+For a player this means redrawing cards into the hand,
+putting the used up response cards back into the game
+deck, and preparing a new response object.
+
+For a game this means removing the current call card,
+checking whether someone won the game by max score,
+otherwise picking the next officer and scrambling the
+numbers used for each player.
+
+See PLAYER</pre> </article> </li><li> <a name="MAIDEN-CRIMES:OFFICER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:OFFICER">OFFICER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">Returns the player who is currently designated as the officer in the game.
+
+See PLAYER
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMAINING-RESPONSES"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REMAINING-RESPONSES">REMAINING-RESPONSES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RESULT</code><code>)</code>  </header> <pre class="docstring">Return the number of remaining response cards necessary to satisfy the result.
+
+See RESULT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-CARD"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-CARD">REMOVE-CARD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID DECK</code><code>)</code>  </header> <pre class="docstring">Removes the card with the given ID from the deck.
+
+See DECK</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REQUIRED-RESPONSES"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REQUIRED-RESPONSES">REQUIRED-RESPONSES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CALL</code><code>)</code>  </header> <pre class="docstring">Return the number of required response cards to properly fill this call card.
+
+See CALL
+See RESULT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:START"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT-DELIVERY</code><code>)</code>  </header> <pre class="docstring">Start the event delivery and make it ready to accept and deliver events.
+
+If the delivery is already running this does nothing.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SUBMIT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SUBMIT">SUBMIT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RESPONSE PLAYER GAME</code><code>)</code>  </header> <pre class="docstring">Submit a response on behalf of the player for the given game.
+
+An error is signalled if:
+- The response is not a card on the player's hand
+- The player is currently the officer
+- The response has already been submitted
+- The index of the response is out of bounds
+
+See PLAYER
+See GAME
+See ADD-RESPONSE
+See RESULT</pre> </article> </li><li> <a name="MAIDEN-CRIMES:WINNER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:WINNER">WINNER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">GAME</code><code>)</code>  </header> <pre class="docstring">Returns the winner of the game if the game is complete and has any players to pick from.
+
+The secondary value is the player's score.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-CALL"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-CALL">add crime call</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK &amp;REST TEXT</code><code>)</code>  </header> <pre class="docstring">Add a call card to a card deck. Use two or more underscores to signify the blanks that people should fill in.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-DECK"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-DECK">add crimes deck</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME/ID</code><code>)</code>  </header> <pre class="docstring">Add a new card deck to the stack of the current game. This can only be done by players.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:ADD-RESPONSE"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:ADD-RESPONSE">add crime response</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DECK &amp;REST TEXT</code><code>)</code>  </header> <pre class="docstring">Add a response card to a card deck.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:CREATE-DECK"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:CREATE-DECK">create crime deck</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (TITLE &quot;&quot;)</code><code>)</code>  </header> <pre class="docstring">Create a new card deck from scratch. Use 'add crime call' and 'add crime response' to add call and response cards respectively. Note that you can also download decks from cardcast with 'search for crime deck' and 'download crime deck'.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:DOWNLOAD-DECK"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:DOWNLOAD-DECK">download crime deck</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID &amp;OPTIONAL NEW-NAME</code><code>)</code>  </header> <pre class="docstring">Download a crime deck from cardcastgame.com. You must supply the deck's ID. Use the website or the command 'search for crime deck' to find the ID of a deck.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:END-GAME"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:END-GAME">end crimes</a></code></h4>  </header> <pre class="docstring">End the currently opened game early.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:JOIN-GAME"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:JOIN-GAME">join crimes</a></code></h4>  </header> <pre class="docstring">Join the current crimes game session. You'll be entered as a new user and be shown your hand in a private conversation once the next round begins.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LEAVE-GAME"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:LEAVE-GAME">leave crimes</a></code></h4>  </header> <pre class="docstring">Leave the current crimes game session. You can also end the game entirely with 'end crimes'.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:LIST-DECKS"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:LIST-DECKS">list crime decks</a></code></h4>  </header> <pre class="docstring">Show a list of the names of all locally available decks.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:OPEN-GAME"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:OPEN-GAME">open crimes</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY (WINNING-SCORE &quot;7&quot;) (HAND-SIZE &quot;10&quot;)</code><code>)</code>  </header> <pre class="docstring">Start a new game of crimes. You can specify the number of points necessary to win, and the number of cards for  each player. Once opened, add cards with 'add crimes deck' and enter the game with 'join crimes'. When everyone is ready, start the game proper with 'start crimes'.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-CARD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-CARD">remove crime card</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CARD DECK</code><code>)</code>  </header> <pre class="docstring">Remove a card from a card deck. The text must match exactly.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:REMOVE-DECK"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:REMOVE-DECK">remove crime deck</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Remove an existing card deck.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SEARCH-DECK"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SEARCH-DECK">search for crime deck</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SEARCH</code><code>)</code>  </header> <pre class="docstring">Search for decks on CardCast. This will return a list of deck IDs that matched the query.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SELECT-WINNER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SELECT-WINNER">convict criminal</a></code></h4> <code class="qualifiers"></code> <code class="arguments">WINNING-NUMBER</code><code>)</code>  </header> <pre class="docstring">Select the criminal who won the current round. Only the officer can do this.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:START"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:START">start trivia game</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST CATEGORIES</code><code>)</code>  </header> <pre class="docstring">Start a new trivia game. You need to specify a number of categories from which questions can be selected. Users don't have to explicitly join. Whoever replies with the correct answer first wins the point.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:START-GAME"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CRIMES:START-GAME">start crimes</a></code></h4>  </header> <pre class="docstring">Actually start the opened game. Players can still enter later, while the game is running.</pre> </article> </li><li> <a name="MAIDEN-CRIMES:SUBMIT-CARD"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CRIMES:SUBMIT-CARD">commit crime</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST CARDS</code><code>)</code>  </header> <pre class="docstring">Submit the selected card(s) as your pick for the current round. You can use this command multiple times, or supply multiple card numbers at once. You should do this in the private conversation. You cannot do this when you are the officer.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

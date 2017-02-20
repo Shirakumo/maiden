@@ -1,0 +1,94 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Maiden-Core-Manager</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Manage the core through an agent."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>maiden-core-manager</h1> <span class="version">0.0.0</span> <p class="description">Manage the core through an agent.</p> </header> <main> <article id="documentation">  <div><h2>About</h2> <p>This agent offers some commands to help manage the various consumers on a core. It will also allow you to stop the core altogether, or to reload the configuration.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>maiden-core-manager</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shinmera/maiden">https://github.com/Shinmera/maiden</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="MAIDEN-CORE-MANAGER" href="#MAIDEN-CORE-MANAGER">MAIDEN-CORE-MANAGER</a> <span class="nicknames">(ORG.SHIRAKUMO.MAIDEN.AGENTS.CORE-MANAGER)</span> </h3> <ul><li> <a name="MAIDEN-CORE-MANAGER:ADD-CONSUMER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:ADD-CONSUMER">ADD-CONSUMER</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:CORE-MANAGER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:CORE-MANAGER">CORE-MANAGER</a></code></h4>  </header> <pre class="docstring">This agent handles the management of consumers on the bot's core. Specifically it allows adding, removing, starting, and stopping consumers.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:LIST-CONSUMERS"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:LIST-CONSUMERS">LIST-CONSUMERS</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:RELOAD"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:RELOAD">RELOAD</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:REMOVE-CONSUMER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:REMOVE-CONSUMER">REMOVE-CONSUMER</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:START-CONSUMER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:START-CONSUMER">START-CONSUMER</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:STOP-CORE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:STOP-CORE">STOP-CORE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:ADD-CONSUMER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:ADD-CONSUMER">ADD-CONSUMER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER TARGET</code><code>)</code>  </header> <pre class="docstring">Add the consumer to the core.
+
+If the consumer already exists on the core, nothing is done.
+If a consumer of the same name already exists on the core, a
+warning of type CONSUMER-NAME-DUPLICATED-WARNING is signalled.
+
+If a consumer has been added, an event of type CONSUMER-ADDED
+is issued onto the core.
+
+See CONSUMER-NAME-DUPLICATED-WARNING
+See CONSUMER-ADDED</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:REMOVE-CONSUMER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:REMOVE-CONSUMER">REMOVE-CONSUMER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER TARGET</code><code>)</code>  </header> <pre class="docstring">Remove the consumer from the core.
+
+If the consumer doesn't exist on the core, nothing is done.
+Otherwise the consumer is removed from the core's list.
+
+If a consumer has been removed, an event of type CONSUMER-
+REMOVED is issued onto the core.
+
+See CONSUMER-REMOVED</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:ADD-CONSUMER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:ADD-CONSUMER">add consumer</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PACKAGE &amp;KEY SYMBOL NAME</code><code>)</code>  </header> <pre class="docstring">Create and add a new consumer to the current core.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:LIST-CONSUMERS"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:LIST-CONSUMERS">list consumers</a></code></h4>  </header> <pre class="docstring">Show a list of all consumers on the current core by their names or IDs.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:RELOAD"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:RELOAD">reload</a></code></h4>  </header> <pre class="docstring">Reload the bot configuration files lazily by clearing out the internal configuration cache.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:REMOVE-CONSUMER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:REMOVE-CONSUMER">remove consumer</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER</code><code>)</code>  </header> <pre class="docstring">Completely remove an existing consumer of the given name from the current core.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:START-CONSUMER"> </a> <article> <header class="command"> <span class="type">command</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:START-CONSUMER">start consumer</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONSUMER</code><code>)</code>  </header> <pre class="docstring">Start an existing consumer of the given name on the current core.</pre> </article> </li><li> <a name="MAIDEN-CORE-MANAGER:STOP-CORE"> </a> <article> <header class="command"> <span class="type">command</span>  <h4 class="name"><code><a href="#MAIDEN-CORE-MANAGER:STOP-CORE">stop core</a></code></h4>  </header> <pre class="docstring">Stop the current core completely. Note that this will effectively shut down the bot, but not the lisp instance.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
