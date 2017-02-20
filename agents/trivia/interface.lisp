@@ -11,8 +11,7 @@
 
 (defun game (c ev &optional (error T))
   (or (find (channel ev) (games c) :key #'channel)
-      (and error
-           (error "No trivia game going on here."))))
+      (when error (error "No trivia game going on here."))))
 
 (defun handle-next (c ev game)
   (cond ((null (questions game))

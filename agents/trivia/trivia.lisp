@@ -38,7 +38,7 @@
 
 (defun category (category)
   (mapcar #'question (or (gethash category *categories*)
-                       (error "No such category ~s." category))))
+                         (error "No such category ~s." category))))
 
 (defun add-category (category id)
   (pushnew (id id) (gethash category *categories*)))
