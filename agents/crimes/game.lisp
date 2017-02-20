@@ -105,7 +105,7 @@
   (let ((player (make-instance 'player :user user :game game)))
     ;; Late-joiner. Draw cards.
     (when (in-session game)
-      (prep-for-round player))
+      (next-round player))
     ;; We have to make sure to push to end, otherwise we'd mess up
     ;; the player indexes in SCRAMBLED and the current officer.
     (push-to-end player (players game))))

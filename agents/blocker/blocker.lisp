@@ -118,6 +118,7 @@
   ((rules :initarg :rules :accessor rules)))
 
 (defmethod initialize-instance :after ((blocker blocker) &key (rules NIL rules-p))
+  (declare (ignore rules))
   (unless rules-p
     (with-storage (blocker)
       (setf (rules blocker) (or (value :rules) (make-hash-table :test 'equal))))))

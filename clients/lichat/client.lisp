@@ -36,6 +36,9 @@
 (defclass lichat-channel (simple-channel)
   ())
 
+(defmethod anonymous-p ((channel lichat-channel))
+  (char= #\@ (char (name channel) 0)))
+
 (defmethod reply ((channel lichat-channel) message &rest args)
   (lichat-cmd:message (client channel) channel (apply #'format NIL message args)))
 
@@ -61,7 +64,7 @@
     :timeout 30
     (cond ((typep ev 'lichat-rpl:connect)
            (setf (servername client) (name (slot-value ev 'user))))
-          (error "Failed to connect: ~a" ev))))
+          (T (error "Failed to connect: ~a" ev)))))
 
 (defmethod close-connection :before ((client lichat-client))
   (when (client-connected-p client)
