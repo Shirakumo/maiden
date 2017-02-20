@@ -18,9 +18,10 @@
   (setf *extractors* (remove name *extractors* :key #'car)))
 
 (defmacro define-command-extractor (name (event) &body body)
-  `(setf (command-extractor ',name)
-         (lambda (,event)
-           ,@body)))
+  `(progn (setf (command-extractor ',name)
+                (lambda (,event)
+                  ,@body))
+          ',name))
 
 (defmethod extract-command ((event message-event))
   (loop for extractor in *extractors*
