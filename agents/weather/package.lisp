@@ -15,4 +15,9 @@
    #:location-weather-data
    #:format-weather-data
    #:format-daily-forecast
-   #:weather))
+   #:weather
+   #:weather-dwim
+   #:weather-location
+   #:forecast-location
+   #:weather-user
+   #:forecast-user))
