@@ -37,4 +37,4 @@
 (define-command-extractor username (event)
   (when (starts-with (username (client event))
                      (message event))
-    (subseq (message event) (length (username (client event))))))
+    (string-left-trim ":, " (subseq (message event) (length (username (client event)))))))
