@@ -125,7 +125,7 @@
     ((:topic) "t")
     (T (string type))))
 
-(defun record-message (type channel user message &rest format-args)
+(defun record-message (type channel user time message &rest format-args)
   (let ((channel (channel-designator channel))
         (user (user-designator user)))
     (with-db ()
@@ -133,21 +133,21 @@
                            VALUES ((SELECT \"id\" FROM \"channels\" WHERE \"channels\".\"server\"=$1
                                                                     AND \"channels\".\"channel\"=$2),
                                    $3,$4,$5,$6)"
-                          (car channel) (cdr channel) user (get-unix-time) (type->char type)
+                          (car channel) (cdr channel) user time (type->char type)
                           (apply #'format NIL message format-args)))))
 
 (defun process-back-queue (c)
   (with-db ()
-    (loop for (type channel user message format-args) in (back-queue c)
+    (loop for (type channel user time message format-args) in (back-queue c)
           do (when (channel-exists-p channel)
-               (apply #'record-message type channel user message format-args))
+               (apply #'record-message type channel user time message format-args))
              (pop (back-queue c)))))
 
 (defun maybe-record-message (c type channel user message &rest format-args)
   (bt:with-lock-held ((lock c))
     (handler-case
         (with-db ()
-          (push (list type channel user message format-args)
+          (push (list type channel user (get-unix-time) message format-args)
                 (back-queue c))
           (process-back-queue c))
       (error (err)
