@@ -123,9 +123,11 @@
                                                (destructuring-bind (symb val provided) (normalize-opt-arg item)
                                                  (push symb vars)
                                                  (when provided (push provided vars))
-                                                 `(unless (stream-end-p ,input)
-                                                    ,@(when provided `((setf ,provided T)))
-                                                    (setf ,symb (or (read-value ,input) ,val)))))
+                                                 `(cond ((stream-end-p ,input)
+                                                         (setf ,symb ,val))
+                                                        (T
+                                                         ,@(when provided `((setf ,provided T)))
+                                                         (setf ,symb (read-value ,input))))))
                                               (&rest
                                                (setf kargs item)
                                                (push item vars)
