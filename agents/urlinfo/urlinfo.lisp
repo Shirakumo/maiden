@@ -82,7 +82,7 @@
   :command "test url"
   (reply ev "~a" (urlinfo url)))
 
-(define-handler (urlinfo auto-respond message-event) (c ev message)
+(define-handler (urlinfo auto-respond (and message-event passive-event)) (c ev message)
   :class activatable-handler
   :module #.*package*
   (dolist (url (find-urls-in-string message))
