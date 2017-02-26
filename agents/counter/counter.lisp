@@ -56,7 +56,7 @@
   :command "list counters"
   (reply ev "~{~a~^, ~}" (loop for c in (list-counters) collect (getf c :name))))
 
-(define-handler (counter respond message-event) (c ev message)
+(define-handler (counter respond (and message-event passive-event)) (c ev message)
   :class activatable-handler
   :module #.*package*
   (dolist (c (list-counters))
