@@ -11,7 +11,7 @@
 
 (define-handler (chatlog message message-event) (c ev user message)
   (let ((channel (if (typep ev 'channel-event) (channel ev) user)))
-    (maybe-record-message c :message channel user message)))
+    (maybe-record-message c :message channel user "~a" message)))
 
 (define-handler (chatlog enter user-entered) (c ev user channel)
   (maybe-record-message c :enter channel user "** JOIN"))
