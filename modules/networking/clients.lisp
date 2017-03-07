@@ -128,7 +128,7 @@
    :interval 2))
 
 (defmethod handle-connection-error (err (client reconnecting-client))
-  (v:log :debug :maiden.client.reconnection err)
+  (v:debug :maiden.client.reconnection err)
   (v:warn :maiden.client.reconnection "~a Encountered a connection error. Attempting to reconnect..." client)
   (cond ((eq (bt:current-thread) (read-thread client))
          ;; We cannot call CLOSE-CONNECTION as it would end
