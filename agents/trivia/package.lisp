@@ -26,10 +26,10 @@
   ;; interface.lisp
   (:export
    #:trivia
-   #:start
+   #:start-game
    #:hint
    #:skip
-   #:end
+   #:end-game
    #:add-question
    #:update-question
    #:remove-question

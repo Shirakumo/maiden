@@ -22,7 +22,7 @@
         (T
          (reply ev "Question: ~a" (text (first (questions game)))))))
 
-(define-command (trivia start) (c ev &rest categories)
+(define-command (trivia start-game) (c ev &rest categories)
   :command "start trivia game"
   (when (game c ev NIL)
     (error "There's already a trivia game going on here!"))
@@ -50,7 +50,7 @@
            (answers trivia))
     (handle-next c ev game)))
 
-(define-command (trivia end) (c ev)
+(define-command (trivia end-game) (c ev)
   :command "end trivia game"
   (let ((game (game c ev)))
     (end game)

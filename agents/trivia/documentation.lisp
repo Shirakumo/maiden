@@ -130,7 +130,7 @@ See TRIVIA")
 
 Only non-empty substrings are gathered into the resulting list.")
 
-  (command start
+  (command start-game
     "Start a new trivia game. You need to specify a number of categories from which questions can be selected. Users don't have to explicitly join. Whoever replies with the correct answer first wins the point.")
 
   (command hint
@@ -139,7 +139,7 @@ Only non-empty substrings are gathered into the resulting list.")
   (command skip
     "Skip the current question.")
 
-  (command end
+  (command end-game
     "End the current trivia game. This will show the winner with the most points.")
 
   (command add-question
