@@ -71,7 +71,19 @@ See CL:FORMAT")
     "Respond with a randomly selected jerkcity comic strip.")
 
   (command roll
-    "Roll some dice.   Note that this is not provided with the intention of providing gambling means.")
+           "Roll some dice.   Note that this is not provided with the intention of providing gambling means.")
+
+  (command hello
+           "Greet the bot.")
+
+  (command present
+           "Give the bot something nice!")
+
+  (command you-are
+           "Tell the bot what it is.")
+
+  (command make
+           "Order the bot to make you something nice.")
 
   (variable *fortunes*
     "Holds a list of \"fortune\" messages.

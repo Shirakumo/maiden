@@ -18,4 +18,8 @@
    #:eight
    #:jerkcity
    #:roll
+   #:hello
+   #:present
+   #:you-are
+   #:make
    #:fortune))

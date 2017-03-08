@@ -140,8 +140,14 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
            (reply ev "I don't know how to roll that."))))))
 
 (defun profane-p (thing)
-  (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist")
+  (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist" "scrap" "trash" "garbage" "junk" "sex")
         :test (lambda (a b) (search b a))))
+
+(define-command (silly hello) (c ev &string other)
+  (cond ((profane-p other)
+         (reply ev "Well fuck you, too."))
+        (T
+         (reply ev "Hi!"))))
 
 (define-command (silly present) (c ev &string thing)
   :command "have a"
@@ -149,6 +155,17 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
          (reply ev "... Hey!"))
         (T
          (reply ev "Thanks for the ~a!" thing))))
+
+(define-command (silly you-are) (c ev &string thing)
+  :command "you are"
+  (cond ((profane-p thing)
+         (reply ev "You must be pretty miserable not to have anything better to do than to try and insult a bot."))
+        (T
+         (reply ev (alexandria:random-elt
+                    '("If you want me to be."
+                      "If that's what you want to believe, sure."
+                      "Sure."
+                      "Ok?"))))))
 
 (define-command (silly make) (c ev &string thing)
   :command "make me a"
