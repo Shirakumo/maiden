@@ -13,7 +13,7 @@
   (code-char (+ int (1- (char-code #\a)))))
 
 (defun letter->integer (char)
-  (- (char-code char) (1- (char-code #\a))))
+  (- (char-code (char-downcase char)) (1- (char-code #\a))))
 
 (define-command (vote start-vote) (c ev &rest options)
   :command "vote between"
