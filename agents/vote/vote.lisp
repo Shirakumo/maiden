@@ -45,8 +45,8 @@
 
 (define-handler (vote vote-counter (and message-event passive-event)) (c ev message)
   (cl-ppcre:register-groups-bind (option) ("\\s*(\\w)[.)!]\\s*" message)
-    (let ((options (rest (gethash (channel ev) (votes c))))
-          (option (nth (1- (letter->integer (elt option 0))) options)))
+    (let* ((options (rest (gethash (channel ev) (votes c))))
+           (option (nth (1- (letter->integer (elt option 0))) options)))
       (when (and option (not (find (user ev) (cdr option))))
         (setf (cdr option) (cons (user ev) (cdr option)))
         ;; If all users in the channel voted, end it automatically.
