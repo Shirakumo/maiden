@@ -196,3 +196,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
   (if name
       (reply ev "~@(~a~)'s fortune for today is: ~a" name (fortune name))
       (reply ev "Your fortune for today is: ~a" (fortune (name (user ev))))))
+
+(define-command (silly fortune-for) (c ev name)
+  :command "fortune for"
+  (reply ev "~@(~a~)'s fortune for today is: ~a" name (fortune name)))
