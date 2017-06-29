@@ -98,13 +98,11 @@
 
 (define-command (talk talk-en) (c ev &string text)
   :command "talk"
-  (bt:with-lock-held ((lock c))
-    (talk (format NIL "~{~a~^ ~}" text)
-          :output (output c))))
+  (talk (format NIL "~{~a~^ ~}" text)
+        :output (output c)))
 
 (define-command (talk talk-lang) (c ev language &string text)
   :command "talk in"
-  (bt:with-lock-held ((lock c))
-    (talk (format NIL "~{~a~^ ~}" text)
-          :language language
-          :output (output c))))
+  (talk (format NIL "~{~a~^ ~}" text)
+        :language language
+        :output (output c)))

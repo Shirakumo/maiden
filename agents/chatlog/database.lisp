@@ -145,7 +145,7 @@
              (pop (back-queue c)))))
 
 (defun maybe-record-message (c type channel user message &rest format-args)
-  (bt:with-lock-held ((lock c))
+  (bt:with-recursive-lock-held ((lock c))
     (handler-case
         (with-db ()
           (push (list type channel user (get-unix-time) message format-args)
