@@ -60,10 +60,12 @@
    #:handlers
    #:cores
    #:lock
+   #:core-handlers
    #:abstract-handler
    #:target-class
    #:options
    #:name
+   #:add-to-consumer
    #:instantiate-handler
    #:define-handler
    #:remove-handler

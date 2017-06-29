@@ -205,10 +205,14 @@ See CONSUMER-CLASS")
 Consumers are responsible for issuing and responding to
 events that happen on a core. They do this by having a number
 of handler definitions tied to them, which are instantiated
-into proper handlers when they are added to a core. These
-handlers are then added to the core's event-loop in order to
-react to events. See the Deeds library for information on how
-the event-loop and handlers work in detail.
+into proper handlers for each consumer instance. Consumers
+can have handlers that are registered directly on the consumer
+or are instead added to the core the consumer is being added
+to. The former allows the grouping of handlers and a more
+granular management of resources, whereas the latter allows
+you to circumvent potential bottleneck or ordering issues.
+See the Deeds library for information on how the event-loop
+and handlers work in detail.
 
 Consumers are divided into two classes, ones of which only a
 single instance should exist on the core, and ones of which
@@ -238,7 +242,9 @@ of the time, locking of resources and access to the consumer
 from different handlers is vital.
 
 The list of handler instances is held in the HANDLERS slot.
-The list of cores the consumer is on is held in the CORES slot.
+The list of handlers that are tied directly to cores is held
+in the CORE-HANDLERS slot. The list of cores the consumer is
+on is held in the CORES slot.
 
 You can start and stop all the handlers on a consumer by the
 usual Deeds START and STOP functions.
@@ -250,12 +256,15 @@ into actual handler instances by way of INSTANTIATE-HANDLER and
 push them onto its HANDLERS list.
 
 See NAMED-ENTITY
+See COMPILED-EVENT-LOOP
+See HANDLER
 See CONSUMER-CLASS
 See AGENT
 See CLIENT
 See DEFINE-CONSUMER
 See DEFINE-HANDLER
 See HANDLERS
+See CORE-HANDLERS
 See CORES
 See LOCK
 See START
@@ -277,10 +286,14 @@ See CONSUMER")
     "This handles the updating of handler definitions on a consumer.
 
 The procedure is as follows:
-1. The consumer is removed from all its cores
-2. The handlers list is emptied
-3. New handlers are created from the list of abstract handlers
-4. The consumer is added to all of its cores again
+1. All direct handlers are deregistered from the consumer.
+2. New direct handlers are instantiated, started, and registered on
+   the consumer.
+3. The old direct handlers are stopped.
+4. All core handlers are deregistered from all cores of the consumer.
+5. New core handlers are instantiated, started, and registered on the
+   cores.
+6. The old core handlers are stopped.
 
 See CONSUMER
 See INSTANTIATE-HANDLER
@@ -289,10 +302,16 @@ See HANDLERS")
   (type abstract-handler
     "This is an object to represent a handler definition. It contains all data necessary to construct an appropriate handler instance for a consumer.
 
+See ADD-TO-CONSUMER
 See TARGET-CLASS
 See OPTIONS
 See INSTANTIATE-HANDLER
 See DEFINE-HANDLER")
+
+  (function add-to-consumer
+    "Whether the generated handler of this abstract handler should be added to the consumer or the cores of the consumer.
+
+See ABSTRACT-HANDLER")
 
   (function target-class
     "Accessor to the target class that the actual handler should be of when the abstract-handler is instantiated.
@@ -353,7 +372,7 @@ BODY        a number of extra handler definition options as a plist
 The body options are evaluated and passed as class initargs to the
 resulting handler instance once one is constructed. Note that as such
 the values will be shared across all instances of the handler defined
-here. Also note that there are two options which are exempt from
+here. Also note that there are three options which are exempt from
 this and play special roles:
 
   :DELIVERY-FUNCTION This option is already provided by default.
@@ -365,6 +384,10 @@ this and play special roles:
                      clients, in order to ensure that the handler from
                      the client instance that matches the client the
                      event is intended for is called.
+  :ADD-TO-CONSUMER   By default T; decides whether the resulting
+                     handler instances should be added to the consumer
+                     directly, or to the cores the consumer is added
+                     to.
 
 In effect this constructs an appropriate ABSTRACT-HANDLER instance
 and calls UPDATE-HANDLER with it on the consumer class.

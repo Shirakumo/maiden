@@ -77,6 +77,7 @@
            (when (and (name consumer) (matches (name current) (name consumer)))
              (warn 'consumer-name-duplicated-warning :new-consumer consumer :existing-consumer current :core core))
         finally (push consumer (consumers core))
+                (register-handler consumer (primary-loop core))
                 (when (running core)
                   (do-issue core consumer-added :consumer consumer))))
 
@@ -96,7 +97,8 @@
   (setf (consumers core)
         (loop for consumer in (consumers core)
               if (matches consumer id)
-              do (when (running core)
+              do  (deregister-handler consumer (primary-loop core))
+                  (when (running core)
                    (do-issue core consumer-removed :consumer consumer))
               else collect consumer)))
 

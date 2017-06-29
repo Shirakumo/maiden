@@ -72,16 +72,17 @@
     (consumer (remove-handler abstract-handler (class-of class-ish)))
     (symbol (remove-handler abstract-handler (find-class class-ish)))))
 
-(defclass consumer (named-entity)
-  ((handlers :initform () :accessor handlers)
-   (cores :initform () :accessor cores)
-   (lock :initform (bt:make-recursive-lock) :accessor lock))
+(defclass consumer (named-entity compiled-event-loop handler)
+  ((cores :initform () :accessor cores)
+   (core-handlers :initform () :accessor core-handlers)
+   (deeds:event-loop-lock :accessor lock))
   (:metaclass consumer-class))
 
 (defmethod initialize-instance :after ((consumer consumer) &key)
   (push (tg:make-weak-pointer consumer) (instances (class-of consumer)))
   (dolist (abstract-handler (effective-handlers (class-of consumer)))
-    (push (instantiate-handler abstract-handler consumer) (handlers consumer))))
+    (register-handler (instantiate-handler abstract-handler consumer)
+                      consumer)))
 
 (defmethod reinitialize-handlers :around ((consumer consumer) handlers)
   (bt:with-recursive-lock-held ((lock consumer))
@@ -90,56 +91,67 @@
 ;; FIXME: Keeping book on what's started or not and retaining that.
 (defmethod reinitialize-handlers ((consumer consumer) abstract-handlers)
   (v:info :maiden.core.consumer "~a updating handlers." consumer)
-  (let ((cores (cores consumer)))
-    ;; Deregister
-    (remove-consumer consumer cores)
-    ;; Rebuild
-    (setf (handlers consumer) ())
+  ;; Update direct handlers
+  (let ((handlers (loop for v being the hash-values of (handlers consumer))))
+    (deregister-handler handlers consumer)
     (dolist (abstract-handler abstract-handlers)
-      (push (start (instantiate-handler abstract-handler consumer)) (handlers consumer)))
-    ;; Reregister
-    (add-consumer consumer cores)))
+      (when (add-to-consumer abstract-handler)
+        (register-handler (start (instantiate-handler abstract-handler consumer))
+                          consumer)))
+    (mapc #'stop handlers))
+  ;; Update core handlers
+  (let ((handlers (core-handlers consumer)))
+    (dolist (core (cores consumer))
+      (deregister-handler handlers core))
+    (setf (core-handlers consumer) NIL)
+    (dolist (abstract-handler abstract-handlers)
+      (unless (add-to-consumer abstract-handler)
+        (let ((handler (start (instantiate-handler abstract-handler consumer))))
+          (push handler (core-handlers consumer))
+          (dolist (core (cores consumer))
+            (register-handler handler core)))))
+    (mapc #'stop handlers)))
+
+(defmethod handler ((consumer consumer) (event-loop event-loop))
+  (gethash consumer (handlers event-loop)))
+
+(defmethod (setf handler) ((consumer consumer) (event-loop event-loop))
+  (setf (gethash consumer (handlers event-loop)) consumer))
+
+(defmethod start :after ((consumer consumer))
+  (mapc #'start (core-handlers consumer)))
+
+(defmethod stop :after ((consumer consumer))
+  (mapc #'stop (core-handlers consumer)))
 
 (defmethod add-consumer :after ((consumer consumer) (core core))
-  (register-handler (handlers consumer) core)
-  (push core (cores consumer)))
+  (push core (cores consumer))
+  (register-handler (core-handlers consumer) core))
 
 (defmethod remove-consumer ((consumer consumer) (everywhere (eql T)))
   (dolist (core (cores consumer))
     (remove-consumer consumer core)))
 
 (defmethod remove-consumer :after ((consumer consumer) (core core))
-  (deregister-handler (handlers consumer) core)
-  (setf (cores consumer) (remove core (cores consumer))))
-
-(defmethod running ((consumer consumer))
-  (running (handlers consumer)))
-
-(defmethod start ((consumer consumer))
-  (start (handlers consumer))
-  consumer)
-
-(defmethod stop ((consumer consumer))
-  (stop (handlers consumer))
-  consumer)
+  (setf (cores consumer) (remove core (cores consumer)))
+  (deregister-handler (core-handlers consumer) core))
 
 (defmethod find-entity (id (consumer consumer))
   (or (call-next-method)
       (find-entity id (cores consumer))))
 
 (defclass abstract-handler ()
-  ((target-class :initform 'queued-handler :accessor target-class)
+  ((target-class :initform 'locally-blocking-handler :accessor target-class)
+   (add-to-consumer :initarg :add-to-consumer :accessor add-to-consumer)
    (options :initarg :options :accessor options)
    (name :initarg :name :accessor name))
   (:default-initargs
-   :options ()))
+   :options ()
+   :add-to-consumer T))
 
 (defmethod initialize-instance :after ((handler abstract-handler) &rest args &key target-class &allow-other-keys)
-  (when target-class (setf (target-class handler) target-class))
-  ;; We have to remove the name because handlers cannot exist twice on the same
-  ;; loop with different names. If we propagated the name it would not work with
-  ;; multiple instances of a consumer!
-  (setf (options handler) (deeds::removef args :target-class :name :options)))
+  (setf (options handler) (deeds::removef args :target-class :options :add-to-consumer))
+  (when target-class (setf (target-class handler) target-class)))
 
 (defmethod instantiate-handler ((handler abstract-handler) (consumer consumer))
   (let* ((options (options handler))
@@ -164,7 +176,7 @@
          (update-handler
           (make-instance
            'abstract-handler
-           :target-class ',(or class 'deeds:queued-handler)
+           :target-class ',(or class 'deeds:locally-blocking-handler)
            :name ',name
            :event-type ',event-type
            :delivery-function (named-lambda ,name (,compvar ,event)

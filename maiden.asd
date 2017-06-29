@@ -9,7 +9,7 @@
 (pushnew :deeds-no-startup *features*)
 
 (asdf:defsystem maiden
-  :version "3.0.0"
+  :version "3.1.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
