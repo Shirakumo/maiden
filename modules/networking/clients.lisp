@@ -200,7 +200,7 @@
   ((element-type :initform '(unsigned-byte 8) :reader element-type)
    (idle-interval :initarg :idle-interval :accessor idle-interval))
   (:default-initargs
-   :idle-interval 10))
+   :idle-interval 0.01))
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
