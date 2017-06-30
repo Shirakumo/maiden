@@ -62,7 +62,12 @@
 (define-consumer socket-client (ip-client)
   ((socket :initform NIL :accessor socket)
    (read-thread :initform NIL :accessor read-thread)
-   (socket-lock :initform (bt:make-lock) :accessor socket-lock)))
+   (send-lock :initform NIL :accessor send-lock)
+   (recv-lock :initform NIL :accessor recv-lock)))
+
+(defmethod initialize-instance :after ((client socket-client) &key)
+  (setf (send-lock client) (bt:make-lock (format NIL "send lock ~a" client)))
+  (setf (recv-lock client) (bt:make-lock (format NIL "recv lock ~a" client))))
 
 (defmethod client-connected-p ((client socket-client))
   (socket client))
@@ -111,11 +116,11 @@
     (close-connection client)))
 
 (defmethod receive :around ((client socket-client))
-  (bt:with-lock-held ((socket-lock client))
+  (bt:with-lock-held ((recv-lock client))
     (call-next-method)))
 
 (defmethod send :around (message (client socket-client))
-  (bt:with-lock-held ((socket-lock client))
+  (bt:with-lock-held ((send-lock client))
     (call-next-method)))
 
 (define-consumer reconnecting-client (socket-client)

@@ -42,7 +42,8 @@
    #:socket-client
    #:socket
    #:read-thread
-   #:socket-lock
+   #:recv-lock
+   #:send-lock
    #:reconnecting-client
    #:failures
    #:max-failures
