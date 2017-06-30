@@ -66,8 +66,8 @@
    (recv-lock :initform NIL :accessor recv-lock)))
 
 (defmethod initialize-instance :after ((client socket-client) &key)
-  (setf (send-lock client) (bt:make-lock (format NIL "send lock ~a" client)))
-  (setf (recv-lock client) (bt:make-lock (format NIL "recv lock ~a" client))))
+  (setf (send-lock client) (bt:make-recursive-lock (format NIL "send lock ~a" client)))
+  (setf (recv-lock client) (bt:make-recursive-lock (format NIL "recv lock ~a" client))))
 
 (defmethod client-connected-p ((client socket-client))
   (socket client))
@@ -116,11 +116,11 @@
     (close-connection client)))
 
 (defmethod receive :around ((client socket-client))
-  (bt:with-lock-held ((recv-lock client))
+  (bt:with-recursive-lock-held ((recv-lock client))
     (call-next-method)))
 
 (defmethod send :around (message (client socket-client))
-  (bt:with-lock-held ((send-lock client))
+  (bt:with-recursive-lock-held ((send-lock client))
     (call-next-method)))
 
 (define-consumer reconnecting-client (socket-client)
