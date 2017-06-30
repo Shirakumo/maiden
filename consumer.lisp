@@ -80,9 +80,7 @@
 
 (defmethod initialize-instance :after ((consumer consumer) &key)
   (push (tg:make-weak-pointer consumer) (instances (class-of consumer)))
-  (dolist (abstract-handler (effective-handlers (class-of consumer)))
-    (register-handler (instantiate-handler abstract-handler consumer)
-                      consumer)))
+  (reinitialize-handlers consumer (effective-handlers (class-of consumer))))
 
 (defmethod reinitialize-handlers :around ((consumer consumer) handlers)
   (bt:with-recursive-lock-held ((lock consumer))
@@ -90,7 +88,7 @@
 
 ;; FIXME: Keeping book on what's started or not and retaining that.
 (defmethod reinitialize-handlers ((consumer consumer) abstract-handlers)
-  (v:info :maiden.core.consumer "~a updating handlers." consumer)
+  (v:debug :maiden.core.consumer "~a updating handlers." consumer)
   ;; Update direct handlers
   (let ((handlers (loop for v being the hash-values of (handlers consumer))))
     (deregister-handler handlers consumer)
