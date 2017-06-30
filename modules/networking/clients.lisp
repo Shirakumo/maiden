@@ -206,7 +206,7 @@
   ((element-type :initform '(unsigned-byte 8) :reader element-type)
    (idle-interval :initarg :idle-interval :accessor idle-interval))
   (:default-initargs
-   :idle-interval 0.01))
+   :idle-interval 10))
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
@@ -220,8 +220,13 @@
 
 (defmethod handle-connection ((client tcp-client))
   (with-retry-restart (continue "Discard the message and continue.")
-    (loop (loop until (nth-value 1 (usocket:wait-for-input (socket client) :timeout (idle-interval client)))
-                do (handle-connection-idle client))
+    (loop (loop with time = (get-internal-real-time)
+                until (nth-value 1 (usocket:wait-for-input (socket client) :timeout 0.001))
+                do (when (<= (idle-interval client)
+                             (/ (- (get-internal-real-time) time)
+                                internal-time-units-per-second))
+                     (handle-connection-idle client)
+                     (setf time (get-internal-real-time))))
           (process (receive client) client))))
 
 (defmethod handle-connection-idle ((client tcp-client))
