@@ -148,6 +148,7 @@
 (define-handler (blocker block-commands command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
+  :add-to-consumer NIL
   (when (blocked-p dispatch-event c)
     (cancel ev)
     (reply dispatch-event "I can't let you do that, ~a."

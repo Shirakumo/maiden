@@ -79,6 +79,7 @@
 (define-handler (throttle block-commands command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
+  :add-to-consumer NIL
   (when (typep dispatch-event 'user-event)
     (let* ((record (tax (user dispatch-event) c)))
       (when (< 0 (timeout record))

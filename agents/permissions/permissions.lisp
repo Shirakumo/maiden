@@ -147,6 +147,7 @@
 (define-handler (permissions check command-event) (c ev dispatch-event)
   :before '(:main)
   :class deeds:locally-blocking-handler
+  :add-to-consumer NIL
   (unless (or (find 'public (advice ev) :test #'string=)
               (allowed-p (user dispatch-event) ev))
     (cancel ev)
