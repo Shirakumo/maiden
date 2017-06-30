@@ -61,7 +61,8 @@
 
 (define-consumer socket-client (ip-client)
   ((socket :initform NIL :accessor socket)
-   (read-thread :initform NIL :accessor read-thread)))
+   (read-thread :initform NIL :accessor read-thread)
+   (socket-lock :initform (bt:make-lock) :accessor socket-lock)))
 
 (defmethod client-connected-p ((client socket-client))
   (socket client))
@@ -110,11 +111,11 @@
     (close-connection client)))
 
 (defmethod receive :around ((client socket-client))
-  (bt:with-recursive-lock-held ((lock client))
+  (bt:with-lock-held ((socket-lock client))
     (call-next-method)))
 
 (defmethod send :around (message (client socket-client))
-  (bt:with-recursive-lock-held ((lock client))
+  (bt:with-lock-held ((socket-lock client))
     (call-next-method)))
 
 (define-consumer reconnecting-client (socket-client)
