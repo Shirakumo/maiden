@@ -38,11 +38,12 @@
         stream)))
 
 (defun call-with-speech-file (function text language)
-  (uiop:with-temporary-file (:stream out :pathname path :prefix "maiden-talk")
-    (let ((in (get-speech-stream text language)))
-      (uiop:copy-stream-to-stream in out :element-type '(unsigned-byte 8))
-      (close in))
-    (close out)
+  (let ((path (merge-pathnames (format NIL "maiden-talk-~d-~d.mp3" (get-universal-time) (random 1000))
+                               (uiop:temporary-directory))))
+    (with-open-file (out path :if-exists :supersede :direction :output)
+      (let ((in (get-speech-stream text language)))
+        (uiop:copy-stream-to-stream in out :element-type '(unsigned-byte 8))
+        (close in)))
     (funcall function path)))
 
 (defmacro with-speech-file ((path text &key (language "en-US")) &body body)
