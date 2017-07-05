@@ -40,11 +40,15 @@
 (defun call-with-speech-file (function text language)
   (let ((path (merge-pathnames (format NIL "maiden-talk-~d-~d.mp3" (get-universal-time) (random 1000))
                                (uiop:temporary-directory))))
-    (with-open-file (out path :if-exists :supersede :direction :output)
+    (with-open-file (out path :if-exists :supersede
+                              :direction :output
+                              :element-type '(unsigned-byte 8))
       (let ((in (get-speech-stream text language)))
         (uiop:copy-stream-to-stream in out :element-type '(unsigned-byte 8))
         (close in)))
-    (funcall function path)))
+    (unwind-protect
+         (funcall function path)
+      (uiop:delete-file-if-exists path))))
 
 (defmacro with-speech-file ((path text &key (language "en-US")) &body body)
   `(call-with-speech-file (lambda (,path) ,@body) ,text ,language))
