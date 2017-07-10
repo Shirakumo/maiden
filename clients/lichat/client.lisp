@@ -99,7 +99,8 @@
     (v:trace :maiden.client.lichat.connection "Received update: ~a" update)
     update))
 
-(defmethod handle-connection-idle ((client lichat-client)))
+(defmethod handle-connection-idle ((client lichat-client))
+  (send (make-instance 'lichat-cmd:ping :from (username client) :client client) client))
 
 (defmethod authenticate ((user lichat-user) (client lichat-client))
   (let ((message (make-instance 'lichat-rpl:user-info
