@@ -8,7 +8,7 @@
 
 (defun fetch (url)
   (multiple-value-bind (stream status headers url)
-      (drakma:http-request url :want-stream T)
+      (drakma:http-request url :want-stream T :connection-timeout 2)
     (unless (= status 200)
       (error "Failed to fetch URL, received status code ~a." status))
     (values (puri:render-uri url NIL) (cdr (assoc :content-type headers)) stream)))
