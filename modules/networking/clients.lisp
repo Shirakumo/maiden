@@ -75,7 +75,8 @@
 (defmethod initiate-connection :after ((client socket-client))
   (with-slots (read-thread) client
     (unless (and read-thread (bt:thread-alive-p read-thread))
-      (setf read-thread (bt:make-thread (lambda () (handle-connection client)))))))
+      (setf read-thread (bt:make-thread (lambda () (handle-connection client))
+                                        :name (format NIL "~a read thread" client))))))
 
 (defmethod close-connection :around ((client socket-client))
   (handler-bind ((error (lambda (err)
