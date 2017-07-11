@@ -67,7 +67,7 @@
   (with-storage ('activatable)
     (value (normalize-ident ident))))
 
-(defclass activatable-handler (deeds:queued-handler)
+(defclass activatable-handler (deeds:locally-blocking-handler)
   ((module :initarg :module :reader module))
   (:default-initargs
    :module (error "MODULE required.")))
