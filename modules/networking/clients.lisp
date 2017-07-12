@@ -116,6 +116,9 @@
              (call-next-method))))
     (close-connection client)))
 
+(defmethod handle-connection-error :before (err (client client))
+  (maybe-invoke-debugger err))
+
 (defmethod receive :around ((client socket-client))
   (bt:with-recursive-lock-held ((recv-lock client))
     (call-next-method)))
