@@ -12,10 +12,19 @@
                         :type NIL
                         :version NIL
                         :defaults #.(or *compile-file-pathname* *load-pathname*)))
-(defvar *debugger* (find-package :swank))
+
+(defvar *debugger* :if-swank-connected)
+
+(defun swank-connected-p ()
+  (and (find-package :swank)
+       (find "repl-thread" (bt:all-threads) :key #'bt:thread-name :test #'equal)
+       (find "reader-thread" (bt:all-threads) :key #'bt:thread-name :test #'equal)
+       (find "control-thread" (bt:all-threads) :key #'bt:thread-name :test #'equal)))
 
 (defun maybe-invoke-debugger (condition &optional restart &rest values)
-  (cond (*debugger*
+  (cond ((case *debugger*
+           (:if-swank-connected (swank-connected-p))
+           ((T) T))
          (with-simple-restart (continue "Don't handle ~a." condition)
            (invoke-debugger condition)))
         (restart
