@@ -145,7 +145,7 @@
          (setf (socket client) NIL)
          (broadcast (cores client) 'connection-closed :client client))
         (T
-         (close-connection client)))
+         (ignore-errors (close-connection client))))
   (loop
     (when (< (max-failures client) (failures client))
       (error 'client-reconnection-exceeded-error :client client))
