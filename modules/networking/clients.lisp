@@ -114,6 +114,8 @@
                             (lambda (err)
                               (handle-connection-error err client))))
              (call-next-method))))
+    (v:debug :maiden.client.connection "~a Exiting connection handling"
+             client)
     (close-connection client)))
 
 (defmethod handle-connection-error :before (err (client client))
