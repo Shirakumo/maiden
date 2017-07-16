@@ -59,12 +59,16 @@
     (setf (name client) (host client))))
 
 (defmethod initiate-connection :after ((client lichat-client))
-  (with-awaiting (client lichat-rpl:update) (ev)
-      (lichat-cmd:connect client (password client))
-    :timeout 30
-    (cond ((typep ev 'lichat-rpl:connect)
-           (setf (servername client) (name (slot-value ev 'user))))
-          (T (error "Failed to connect: ~a" ev)))))
+  (unless (with-awaiting (client lichat-rpl:update) (ev)
+              (lichat-cmd:connect client (password client))
+            :timeout 30
+            (cond ((typep ev 'lichat-rpl:connect)
+                   (setf (servername client) (name (slot-value ev 'user))))
+                  (T
+                   (usocket:socket-close (socket client))
+                   (error "Failed to connect: ~a" ev))))
+    (usocket:socket-close (socket client))
+    (error "Failed to connect: timed out.")))
 
 (defmethod close-connection :before ((client lichat-client))
   (when (client-connected-p client)
@@ -137,7 +141,12 @@
   (send ev client))
 
 (define-handler (lichat-client pong lichat-rpl:ping) (client ev)
+  :match-consumer 'client
   (lichat-cmd:pong client))
+
+(define-handler (lichat-client reconnect lichat-rpl:connection-unstable) (client ev)
+  :match-consumer 'client
+  (initiate-connection (close-connection client)))
 
 (define-handler (lichat-client track-join lichat-rpl:join) (client ev channel user)
   :match-consumer 'client

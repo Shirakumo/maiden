@@ -34,16 +34,15 @@
     (close-connection client)))
 
 (defmethod initiate-connection :around ((client remote-client))
-  (let (connection-successful)
-    (unwind-protect
-         (prog1 (call-next-method)
-           (setf connection-successful T))
-      (unless connection-successful
-        (ignore-errors
-         (close-connection client))))))
+  (call-next-method)
+  client)
 
 (defmethod initiate-connection :after ((client remote-client))
   (broadcast (cores client) 'connection-initiated :client client))
+
+(defmethod close-connection :around ((client remote-client))
+  (call-next-method)
+  client)
 
 (defmethod close-connection :after ((client remote-client))
   (broadcast (cores client) 'connection-closed :client client))
@@ -73,10 +72,10 @@
   (socket client))
 
 (defmethod initiate-connection :after ((client socket-client))
-  (with-slots (read-thread) client
+  (let ((read-thread (read-thread client)))
     (unless (and read-thread (bt:thread-alive-p read-thread))
-      (setf read-thread (bt:make-thread (lambda () (handle-connection client))
-                                        :name (format NIL "~a read thread" client))))))
+      (setf (read-thread client) (bt:make-thread (lambda () (handle-connection client))
+                                                 :name (format NIL "~a read thread" client))))))
 
 (defmethod close-connection :around ((client socket-client))
   (handler-bind ((error (lambda (err)
@@ -86,40 +85,44 @@
     (call-next-method)))
 
 (defmethod close-connection ((client socket-client))
-  (with-slots (socket read-thread) client
+  (let ((read-thread (read-thread client)))
     (unwind-protect
          (when (and read-thread (bt:thread-alive-p read-thread))
            (cond ((eql (bt:current-thread) read-thread)
                   (when (find-restart 'abort)
                     (abort)))
                  (T
-                  (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort)))
-                  (setf read-thread NIL))))
-      (when socket
-        (ignore-errors (usocket:socket-close socket))
-        (setf socket NIL))))
-  client)
+                  (bt:interrupt-thread read-thread (lambda () (invoke-restart 'abort))))))
+      (when (socket client)
+        (ignore-errors (usocket:socket-close (socket client)))))))
 
 (defmethod handle-connection :around ((client client))
   (unwind-protect
-       (with-simple-restart (abort "Exit the connection handling.")
+       (handler-bind ((error (lambda (err)
+                               (v:error :maiden.client.connection "~a encountered severe error in connection handling: ~a" client err)
+                               (v:debug :maiden.client.connection err))))
          (with-retry-restart (continue "Retry handling the connection.")
-           (handler-bind (((or usocket:ns-try-again-condition 
-                               usocket:timeout-error 
-                               usocket:shutdown-error
-                               usocket:connection-reset-error
-                               usocket:connection-aborted-error
-                               cl:end-of-file
-                               client-timeout-error)
-                            (lambda (err)
-                              (handle-connection-error err client))))
-             (call-next-method))))
+           (restart-case
+               (handler-bind ((error #'maybe-invoke-debugger))
+                 (handler-bind (((or usocket:ns-try-again-condition 
+                                     usocket:timeout-error
+                                     usocket:shutdown-error
+                                     usocket:connection-reset-error
+                                     usocket:connection-aborted-error
+                                     cl:stream-error
+                                     client-timeout-error)
+                                  (lambda (err)
+                                    (invoke-restart 'handle-error err))))
+                   (call-next-method)))
+             (abort (&optional err)
+               :report "Exit the connection handling."
+               (declare (ignore err)))
+             (handle-error (&optional err)
+               :report "Attempt to recover by handling the connection error."
+               (handle-connection-error err client)))))
     (v:debug :maiden.client.connection "~a Exiting connection handling"
              client)
     (close-connection client)))
-
-(defmethod handle-connection-error :before (err (client client))
-  (maybe-invoke-debugger err))
 
 (defmethod receive :around ((client socket-client))
   (bt:with-recursive-lock-held ((recv-lock client))
@@ -146,26 +149,27 @@
          ;; We cannot call CLOSE-CONNECTION as it would end
          ;; our own thread with the restart invocation.
          ;; We don't care if it fails to close gracefully.
+         (ignore-errors (close (usocket:socket-stream (socket client))))
          (ignore-errors (usocket:socket-close (socket client)))
-         (setf (socket client) NIL)
          (broadcast (cores client) 'connection-closed :client client))
         (T
          (ignore-errors (close-connection client))))
-  (loop
-    (when (< (max-failures client) (failures client))
-      (error 'client-reconnection-exceeded-error :client client))
-    (incf (failures client))
-    (sleep (ecase (backoff client)
-             (:constant (interval client))
-             (:linear (* (interval client) (failures client)))
-             (:exponential (expt (interval client) (failures client)))))
-    (handler-case
-        (progn (initiate-connection client)
-               (setf (failures client) 0)
-               (continue))
-      (error (err)
-        (v:error :maiden.client.reconnection "~a Failed to reconnect: ~a" client err)
-        NIL))))
+  (setf (failures client) 0)
+  (loop (when (and (max-failures client)
+                   (< (max-failures client) (failures client)))
+          (v:error :maiden.client.reconnection "~a Exceeded maximum reconnection attempts." client)
+          (error 'client-reconnection-exceeded-error :client client))
+        (incf (failures client))
+        (sleep (ecase (backoff client)
+                 (:constant (interval client))
+                 (:linear (* (interval client) (failures client)))
+                 (:exponential (expt (interval client) (failures client)))))
+        (handler-case
+            (progn (initiate-connection client)
+                   (setf (failures client) 0)
+                   (continue))
+          (error (err)
+            (v:error :maiden.client.reconnection "~a Failed to reconnect: ~a" client err)))))
 
 (define-consumer timeout-client (remote-client)
   ((timeout :initarg :timeout :accessor timeout)
@@ -220,13 +224,14 @@
        (open-stream-p (usocket:socket-stream (socket client)))))
 
 (defmethod initiate-connection ((client tcp-client))
-  (with-slots (socket host port) client
-    (unless socket
-      (setf socket (usocket:socket-connect host port :element-type (element-type client))))))
+  (with-slots (host port) client
+    (unless (and (socket client) (open-stream-p (usocket:socket-stream (socket client))))
+      (setf (socket client) (usocket:socket-connect host port :element-type (element-type client))))))
 
 (defmethod handle-connection ((client tcp-client))
   (with-retry-restart (continue "Discard the message and continue.")
     (loop (loop with time = (get-internal-real-time)
+                while (client-connected-p client)
                 until (nth-value 1 (usocket:wait-for-input (socket client) :timeout 0.001))
                 do (when (<= (idle-interval client)
                              (/ (- (get-internal-real-time) time)
@@ -249,8 +254,8 @@
     (call-next-method)))
 
 (defmethod initiate-connection ((server tcp-server))
-  (with-slots (socket host port) server
-    (setf socket (usocket:socket-listen host port))))
+  (with-slots (host port) server
+    (setf (socket client) (usocket:socket-listen host port))))
 
 (defmethod close-connection :after ((server tcp-server))
   (loop for client = (car (clients server))
