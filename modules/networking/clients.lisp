@@ -38,7 +38,8 @@
   client)
 
 (defmethod initiate-connection :after ((client remote-client))
-  (broadcast (cores client) 'connection-initiated :client client))
+  (broadcast (cores client) 'connection-initiated :client client)
+  (v:info :maiden.client.connection "~a connection established." client))
 
 (defmethod close-connection :around ((client remote-client))
   (call-next-method)
