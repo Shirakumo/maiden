@@ -74,6 +74,7 @@
 
 (define-command (lastfm stream-scrobbles-for) (c ev user)
   :command "stream scrobbles for"
+  :advice (not public)
   (let ((data (list (channel ev) (name (user ev)))))
     (push (list* (bt:make-thread (lambda () (stream-scrobbles data))) data)
           (streams c))))
@@ -93,6 +94,7 @@
 
 (define-command (lastfm stop-scrobbles-stream) (c ev &optional user)
   :command "stop scrobbles stream"
+  :advice (not public)
   (setf (streams c)
         (loop for data in (streams c)
               for (thread channel username) = data
