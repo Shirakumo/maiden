@@ -44,6 +44,10 @@
   (when (client-connected-p client)
     (irc:quit client)))
 
+(defmethod close-connection :after ((client irc-client))
+  (clrhash (user-map client))
+  (clrhash (channel-map client)))
+
 (defmethod handle-connection :around ((client irc-client))
   (with-simple-restart (abort "Exit the connection handling.")
     (handler-bind ((data-parse-error

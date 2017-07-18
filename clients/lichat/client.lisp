@@ -86,6 +86,10 @@
     (ignore-errors
      (send (make-instance 'lichat-cmd:disconnect :from (username client)) client))))
 
+(defmethod close-connection :after ((client lichat-client))
+  (clrhash (user-map client))
+  (clrhash (channel-map client)))
+
 (defmethod handle-connection :around ((client lichat-client))
   (with-simple-restart (abort "Exit the connection handling.")
     (handler-bind ((lichat-protocol:wire-condition
