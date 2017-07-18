@@ -56,7 +56,7 @@
     (end game)
     (handle-next c ev game)))
 
-(define-handler (trivia handler (and message-event passive-event)) (c ev message)
+(define-handler (trivia handler (and message-event channel-event passive-event)) (c ev message)
   (unless (command-p ev)
     (let ((game (game c ev NIL)))
       (when game

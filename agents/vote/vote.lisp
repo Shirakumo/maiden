@@ -43,7 +43,7 @@
         for option in options
         do (reply ev "~c. ~a" (integer->letter i) option)))
 
-(define-handler (vote vote-counter (and message-event passive-event)) (c ev message)
+(define-handler (vote vote-counter (and message-event channel-event passive-event)) (c ev message)
   (cl-ppcre:register-groups-bind (option) ("\\s*(\\w)[.)!]\\s*" message)
     (let ((options (rest (gethash (channel ev) (votes c)))))
       (when (and options (< 0 (letter->integer (elt option 0))))
