@@ -14,6 +14,8 @@
       (setf (car sexpr) (or (find-symbol (string (car sexpr)) '#:org.shirakumo.maiden.clients.lichat.rpl)
                             (error 'lichat-protocol:unknown-wire-object :update sexpr)))
       (lichat-protocol:check-update-options sexpr)
+      (loop for char = (read-char stream NIL)
+            until (or (not char) (char= #\Nul char)))
       (apply #'make-instance (first sexpr) :client client (rest sexpr)))))
 
 (defun good-initarg-p (initarg)
@@ -33,7 +35,8 @@
                                     (named-entity (name value))
                                     ((or string list symbol real) value)
                                     (T (error 'lichat-protocol:unprintable-object :object value)))))
-   stream))
+   stream)
+  (write-char #\Nul stream))
 
 (defmacro define-update (name superclasses args)
   (let ((name-cmd (intern (string name) '#:org.shirakumo.maiden.clients.lichat.cmd))

@@ -91,6 +91,8 @@
     (handler-bind ((lichat-protocol:wire-condition
                      (lambda (err)
                        (v:error :maiden.client.lichat.connection "Parse error: ~a" err)
+                       (loop for char = (read-char stream NIL)
+                             until (or (not char) (char= #\Nul char)))
                        (invoke-restart 'continue))))
       (call-next-method))))
 
