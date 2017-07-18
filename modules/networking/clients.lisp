@@ -83,7 +83,9 @@
                           (warn 'client-connection-closed-uncleanly-warning :client client :closing-error err)
                           (when (find-restart 'continue)
                             (continue)))))
-    (call-next-method)))
+    (unwind-protect
+         (call-next-method)
+      (setf (socket client) NIL))))
 
 (defmethod close-connection ((client socket-client))
   (let ((read-thread (read-thread client)))
