@@ -61,7 +61,7 @@
 (define-command (lastfm currently-playing-for) (c ev user)
   :command "currently playing for"
   (let ((track (first (json-v (user/get-recent-tracks user :limit 1) "recenttracks" "track"))))
-    (if (and track (equal (json-v track "@attr" "nowplaying") "true"))
+    (if (and track (json-v track "@attr") (equal (json-v track "@attr" "nowplaying") "true"))
         (reply ev "~@(~a~) is now listening to ~a by ~a"
                user (json-v track "name") (json-v track "artist" "#text"))
         (reply ev "~@(~a~) does not seem to be listening to anything we know about right now."
@@ -77,7 +77,8 @@
   :advice (not public)
   (let ((data (list (channel ev) (name (user ev)))))
     (push (list* (bt:make-thread (lambda () (stream-scrobbles data))) data)
-          (streams c))))
+          (streams c))
+    (reply ev "Scrobbles for ~a are now being streamed here." user)))
 
 (defun stream-scrobbles (data)
   (with-simple-restart (abort "Exit scrobble streaming.")
