@@ -33,6 +33,10 @@
       (setf (slot-value user 'authenticated)
             (authenticate user (client user)))))
 
+(defmethod authenticate :around ((user user) client)
+  (let ((value (call-next-method)))
+    (setf (slot-value user 'authenticated) value)))
+
 ;; Shitty default implementation
 (defmethod channels ((user user))
   (when (typep (client user) 'channel-client)
