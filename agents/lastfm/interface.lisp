@@ -39,7 +39,8 @@
 (define-command (lastfm set-api-key) (c ev api-key)
   :command "set last.fm api key"
   :advice (not public)
-  (setf (maiden-storage:value :api-key) api-key))
+  (setf (maiden-storage:value :api-key) api-key)
+  (reply ev "API key updated."))
 
 (define-command (lastfm recently-played-for) (c ev user)
   :command "list recent tracks for"
