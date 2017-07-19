@@ -88,7 +88,8 @@
 
 (defmethod close-connection :after ((client lichat-client))
   (clrhash (user-map client))
-  (clrhash (channel-map client)))
+  (loop for channel being the hash-values of (channel-map client)
+        do (clrhash (user-map channel))))
 
 (defmethod handle-connection :around ((client lichat-client))
   (with-simple-restart (abort "Exit the connection handling.")
