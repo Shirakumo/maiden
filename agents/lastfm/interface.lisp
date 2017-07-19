@@ -7,6 +7,7 @@
 (in-package #:org.shirakumo.maiden.agents.lastfm)
 
 (defvar *lastfm-api* "http://ws.audioscrobbler.com/2.0/")
+(defvar *tinyurl-api* "http://tinyurl.com/api-create.php")
 
 (define-consumer lastfm (agent)
   ((streams :initform NIL :accessor streams)))
@@ -47,15 +48,21 @@
     (setf (maiden-storage:value :api-key) api-key))
   (reply ev "API key updated."))
 
+(defun format-track (track)
+  (let ((url (ignore-errors (request *tinyurl-api* :get `(("url" ,(json-v track "url")))))))
+    (format NIL "~a by ~a~@[ <~a>~]"
+            (json-v track "name")
+            (json-v track "artist" "#text")
+            url)))
+
 (define-command (lastfm recently-played-for) (c ev user)
   :command "list recent tracks for"
   (let ((tracks (json-v (user/get-recent-tracks user :limit 5) "recenttracks" "track")))
     (if tracks
         (let ((tracks (loop for track in tracks
                             collect (list (format-time (unix-to-universal (parse-integer (json-v track "date" "uts"))))
-                                          (json-v track "name")
-                                          (json-v track "artist" "#text")))))
-          (reply ev "~{~{~a: ~a by ~a~}~^~%~}" tracks))
+                                          (format-track track)))))
+          (reply ev "~{~{~a: ~a~}~^~%~}" tracks))
         (reply ev "~a has no last.fm profile, or nothing scrobbled so far."
                user))))
 
@@ -68,8 +75,8 @@
   :command "currently playing for"
   (let ((track (first (json-v (user/get-recent-tracks user :limit 1) "recenttracks" "track"))))
     (if (and track (json-v track "@attr") (equal (json-v track "@attr" "nowplaying") "true"))
-        (reply ev "~@(~a~) is now listening to ~a by ~a"
-               user (json-v track "name") (json-v track "artist" "#text"))
+        (reply ev "~@(~a~) is now listening to ~a"
+               user (format-track track))
         (reply ev "~@(~a~) does not seem to be listening to anything we know about right now."
                user))))
 
@@ -93,14 +100,16 @@
 (defun stream-scrobbles (data)
   (with-simple-restart (abort "Exit scrobble streaming.")
     (destructuring-bind (channel user) data
-      (loop with mbid = NIL
+      (loop with url = NIL
             for track = (first (json-v (user/get-recent-tracks user :limit 1) "recenttracks" "track"))
-            do (when (and track (json-v track "@attr") (equal (json-v track "@attr" "nowplaying") "true"))
-                 (unless (equal mbid (json-v track "mbid"))
-                   (reply channel "~@(~a~) is now listening to ~a by ~a"
-                          user (json-v track "name") (json-v track "artist" "#text"))
-                   (setf mbid (json-v track "mbid"))))
-               (sleep 10)))))
+            do (cond ((and track (json-v track "@attr") (equal (json-v track "@attr" "nowplaying") "true"))
+                      (unless (equal url (json-v track "url"))
+                        (reply channel "~@(~a~) is now listening to ~a"
+                               user (format-track track))
+                        (setf url (json-v track "url"))))
+                     (T
+                      (setf url NIL)))
+               (sleep 30)))))
 
 (define-command (lastfm stop-scrobbles-stream) (c ev &optional user)
   :command "stop scrobbles stream"
