@@ -49,6 +49,7 @@
    #:max-failures
    #:backoff
    #:interval
+   #:max-reconnect-delay
    #:timeout-client
    #:timeout
    #:last-received-time
