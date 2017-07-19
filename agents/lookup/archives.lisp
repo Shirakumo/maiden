@@ -7,12 +7,13 @@
 (in-package #:org.shirakumo.maiden.agents.lookup)
 
 (define-webpage-lookup clhs (term)
-  (format NIL "http://l1sp.org/cl/~a" term))
+  (format NIL "http://l1sp.org/cl/~a" (drakma:url-encode term :utf-8)))
 
 (macrolet ((define-l1sp-lookups (&rest lookups)
              `(progn ,@(loop for lookup in lookups
                              collect `(define-webpage-lookup ,lookup (term)
-                                        (format NIL "http://l1sp.org/~a/~a" ,(string-downcase lookup) term))))))
+                                        (format NIL "http://l1sp.org/~a/~a"
+                                                ,(string-downcase lookup) (drakma:url-encode term :utf-8)))))))
   (define-l1sp-lookups asdf ccl cffi clim clisp clx mop pcl sbcl))
 
 (define-table-lookup lichat
