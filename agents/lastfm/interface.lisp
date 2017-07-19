@@ -11,12 +11,16 @@
 (define-consumer lastfm (agent)
   ((streams :initform NIL :accessor streams)))
 
+(defun api-key ()
+  (maiden-storage:with-storage ('config)
+    (maiden-storage:value :api-key)))
+
 (defun lastfm-request (function &rest args)
-  (unless (maiden-storage:value :api-key)
+  (unless (api-key)
     (error "Please configure a last.fm API key."))
   (request-as :json *lastfm-api*
               :get (list* (list "method" function)
-                          (list "api_key" (maiden-storage:value :api-key))
+                          (list "api_key" (api-key))
                           (list "format" "json")
                           (loop for (key val) on args by #'cddr
                                 when val
@@ -39,7 +43,8 @@
 (define-command (lastfm set-api-key) (c ev api-key)
   :command "set last.fm api key"
   :advice (not public)
-  (setf (maiden-storage:value :api-key) api-key)
+  (maiden-storage:with-storage ('config)
+    (setf (maiden-storage:value :api-key) api-key))
   (reply ev "API key updated."))
 
 (define-command (lastfm recently-played-for) (c ev user)
