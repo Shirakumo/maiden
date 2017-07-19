@@ -19,14 +19,20 @@
 (defun lastfm-request (function &rest args)
   (unless (api-key)
     (error "Please configure a last.fm API key."))
-  (request-as :json *lastfm-api*
-              :get (list* (list "method" function)
-                          (list "api_key" (api-key))
-                          (list "format" "json")
-                          (loop for (key val) on args by #'cddr
-                                when val
-                                collect (list (string-downcase key)
-                                              (princ-to-string val))))))
+  (multiple-value-bind (data code)
+      (request-as :json *lastfm-api*
+                  :get (list* (list "method" function)
+                              (list "api_key" (api-key))
+                              (list "format" "json")
+                              (loop for (key val) on args by #'cddr
+                                    when val
+                                    collect (list (string-downcase key)
+                                                  (princ-to-string val)))))
+    (when (/= 200 code)
+      (error "Failed to access the last.fm API."))
+    (when (json-v data "error")
+      (error (json-v data "message")))
+    data))
 
 (defun user/get-recent-tracks (user &key (limit 50)
                                          (page 1)
