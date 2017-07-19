@@ -82,6 +82,8 @@
   :command "stream scrobbles for"
   :advice (not public)
   (let ((data (list (channel ev) (name (user ev)))))
+    (unless (api-key)
+      (error "Please configure a last.fm API key."))
     (push (list* (bt:make-thread (lambda () (stream-scrobbles data))) data)
           (streams c))
     (reply ev "Scrobbles for ~a are now being streamed here." user)))
@@ -97,7 +99,7 @@
                    (reply channel "~@(~a~) is now listening to ~a by ~a"
                           user (json-v track "name") (json-v track "artist" "#text"))
                    (setf mbid (json-v track "mbid"))))
-               (sleep 5)))))
+               (sleep 10)))))
 
 (define-command (lastfm stop-scrobbles-stream) (c ev &optional user)
   :command "stop scrobbles stream"
