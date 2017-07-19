@@ -84,7 +84,9 @@
   (let ((data (list (channel ev) (name (user ev)))))
     (unless (api-key)
       (error "Please configure a last.fm API key."))
-    (push (list* (bt:make-thread (lambda () (stream-scrobbles data))) data)
+    (push (list* (bt:make-thread (lambda () (stream-scrobbles data))
+                                 :name (format NIL "scrobbles stream for ~a" user))
+                 data)
           (streams c))
     (reply ev "Scrobbles for ~a are now being streamed here." user)))
 
@@ -93,7 +95,6 @@
     (destructuring-bind (channel user) data
       (loop with mbid = NIL
             for track = (first (json-v (user/get-recent-tracks user :limit 1) "recenttracks" "track"))
-            while (car data)
             do (when (and track (json-v track "@attr") (equal (json-v track "@attr" "nowplaying") "true"))
                  (unless (equal mbid (json-v track "mbid"))
                    (reply channel "~@(~a~) is now listening to ~a by ~a"
@@ -107,8 +108,8 @@
   (setf (streams c)
         (loop for data in (streams c)
               for (thread channel username) = data
-              for match = (and (eql channel (channel ev))
+              for match = (and (matches channel (channel ev))
                                (or (not user) (string-equal user username)))
-              when match do (setf (car data) NIL)
-              unless match collect data))
+              when match do (bt:interrupt-thread thread (lambda () (abort)))
+              when (and (not match) (bt:thread-alive-p thread)) collect data))
   (reply ev "Scrobbles stream stopped~@[ for ~a~]" user))
