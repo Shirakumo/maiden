@@ -58,26 +58,20 @@
   (unless (name client)
     (setf (name client) (host client))))
 
-(defmethod initiate-connection :after ((client lichat-client))
-  (flet ((process (ev)
-           (cond ((typep ev 'lichat-rpl:connect)
-                  (setf (servername client) (name (slot-value ev 'user))))
-                 (T
-                  (usocket:socket-close (socket client))
-                  (error "Failed to connect: ~a" ev)))))
-    (cond ((eql (bt:current-thread) (read-thread client))
-           (lichat-cmd:connect client (password client))
-           (unless (nth-value 1 (usocket:wait-for-input (socket client) :timeout 10))
-             (usocket:socket-close (socket client))
-             (error "Failed to connect: timed out."))
-           (process (receive client)))
-          (T
-           (unless (with-awaiting (client lichat-rpl:update) (ev)
-                       (lichat-cmd:connect client (password client))
-                     :timeout 10
-                     (process ev))
-             (usocket:socket-close (socket client))
-             (error "Failed to connect: timed out."))))))
+(defmethod initiate-connection ((client lichat-client))
+  ;; Open socket
+  (call-next-method)
+  ;; Handle connection sequence
+  (lichat-cmd:connect client (password client))
+  (unless (nth-value 1 (usocket:wait-for-input (socket client) :timeout 10))
+    (usocket:socket-close (socket client))
+    (error "Failed to connect: timed out."))
+  (let ((ev (receive client)))
+    (unless (typep ev 'lichat-rpl:connect)
+      (error "Failed to connect, received ~a instead of CONNECT." ev))
+    (process ev client))
+  ;; After methods will take care of setting up read thread.
+  )
 
 (defmethod close-connection :before ((client lichat-client))
   (when (client-connected-p client)
@@ -149,6 +143,7 @@
 
 (define-handler (lichat-client handle-init lichat-rpl:connect) (client ev)
   :match-consumer 'client
+  (setf (servername client) (name (slot-value ev 'user)))
   (loop for channel being the hash-keys of (channel-map client)
         do (lichat-cmd:join client channel)))
 
