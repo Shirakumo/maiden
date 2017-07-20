@@ -139,11 +139,13 @@
   ((failures :initform 0 :accessor failures)
    (max-failures :initarg :max-failures :accessor max-failures)
    (backoff :initarg :backoff :accessor backoff)
-   (interval :initarg :interval :accessor interval))
+   (interval :initarg :interval :accessor interval)
+   (max-reconnect-delay :initarg :max-reconnect-delay :accessor max-reconnect-delay))
   (:default-initargs
-   :max-failures 6
+   :max-failures NIL
    :backoff :exponential
-   :interval 2))
+   :interval 2
+   :max-reconnect-delay (* 60 60)))
 
 (defmethod handle-connection-error (err (client reconnecting-client))
   (when err (v:debug :maiden.client.reconnection err))
@@ -163,10 +165,11 @@
           (v:error :maiden.client.reconnection "~a Exceeded maximum reconnection attempts." client)
           (error 'client-reconnection-exceeded-error :client client))
         (incf (failures client))
-        (sleep (ecase (backoff client)
-                 (:constant (interval client))
-                 (:linear (* (interval client) (failures client)))
-                 (:exponential (expt (interval client) (failures client)))))
+        (sleep (min (ecase (backoff client)
+                      (:constant (interval client))
+                      (:linear (* (interval client) (failures client)))
+                      (:exponential (expt (interval client) (failures client))))
+                    (max-reconnect-delay client)))
         (handler-case
             (progn (initiate-connection client)
                    (setf (failures client) 0)

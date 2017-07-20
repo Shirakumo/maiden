@@ -234,9 +234,12 @@ MAX-FAILURES. The amount of time that is waited between each
 successive reconnection attempt is handled by BACKOFF and INTERVAL
 where BACKOFF is one of :CONSTANT :LINEAR :EXPONENTIAL, and the
 INTERVAL is the step for each respective function combined by
-the number of failed attempts so far. If the number of failed
+the number of failed attempts so far. The client never waits more
+than the number of seconds in MAX-RECONNECT-DELAY between
+reconnection attempts however. If the number of allowed failed
 attempts is exceeded, a condition of type CLIENT-RECONNECTION-
-EXCEEDED-ERROR is signalled.
+EXCEEDED-ERROR is signalled. If MAX-FAILURES is NIL, this never
+happens.
 
 This implements a primary method for HANDLE-CONNECTION-ERROR.
 
@@ -244,6 +247,7 @@ See FAILURES
 See MAX-FAILURES
 See BACKOFF
 See INTERVAL
+See MAX-RECONNECT-DELAY
 See CLIENT-RECONNECTION-EXCEEDED-ERROR
 See HANDLE-CONNECTION-ERROR
 See SOCKET-CLIENT")
@@ -255,6 +259,8 @@ See RECONNECTING-CLIENT")
 
   (function max-failures
     "The maximum number of failed connection attempts that may occur before it gives up.
+
+If this is NIL, reconnection attempts will not stop automatically.
 
 See RECONNECTING-CLIENT")
 
@@ -273,6 +279,11 @@ See RECONNECTING-CLIENT")
     "The interval used for the calculation of the backoff time between reconnection attempts.
 
 See BACKOFF
+See RECONNECTING-CLIENT")
+
+  (function max-reconnect-delay
+    "The number of seconds that are waited at most between reconnection attempts.
+
 See RECONNECTING-CLIENT")
 
   (type timeout-client
