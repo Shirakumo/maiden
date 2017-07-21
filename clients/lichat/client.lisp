@@ -62,7 +62,11 @@
   ;; Open socket
   (call-next-method)
   ;; Handle connection sequence
-  (lichat-cmd:connect client (password client))
+  (send (make-instance 'lichat-cmd:connect
+                       :client client
+                       :password (password client)
+                       :from (username client))
+        client)
   (unless (nth-value 1 (usocket:wait-for-input (socket client) :timeout 10))
     (usocket:socket-close (socket client))
     (error "Failed to connect: timed out."))

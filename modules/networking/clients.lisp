@@ -72,6 +72,14 @@
 (defmethod client-connected-p ((client socket-client))
   (socket client))
 
+(defmethod initiate-connection :around ((client socket-client))
+  (let ((success NIL))
+    (unwind-protect (multiple-value-prog1 (call-next-method)
+                      (setf success T))
+      (unless success
+        (ignore-errors (usocket:socket-close (socket client)))
+        (setf (socket client) NIL)))))
+
 (defmethod initiate-connection :after ((client socket-client))
   (let ((read-thread (read-thread client)))
     (unless (and read-thread (bt:thread-alive-p read-thread))
@@ -236,15 +244,13 @@
 
 (defmethod handle-connection ((client tcp-client))
   (with-retry-restart (continue "Discard the message and continue.")
-    (loop (loop with time = (get-internal-real-time)
-                while (client-connected-p client)
-                until (nth-value 1 (usocket:wait-for-input (socket client) :timeout 0.001))
-                do (when (<= (idle-interval client)
-                             (/ (- (get-internal-real-time) time)
-                                internal-time-units-per-second))
-                     (handle-connection-idle client)
-                     (setf time (get-internal-real-time))))
-          (process (receive client) client))))
+    (let ((time (get-universal-time)))
+      (loop (cond ((nth-value 1 (usocket:wait-for-input (socket client) :timeout 0.001))
+                   (process (receive client) client))
+                  ((<= (idle-interval client)
+                       (- (get-universal-time) time))
+                   (setf time (get-universal-time))
+                   (handle-connection-idle client)))))))
 
 (defmethod handle-connection-idle ((client tcp-client))
   client)
