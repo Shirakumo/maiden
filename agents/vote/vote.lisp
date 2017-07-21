@@ -44,18 +44,19 @@
         do (reply ev "~c. ~a" (integer->letter i) option)))
 
 (define-handler (vote vote-counter (and message-event channel-event passive-event)) (c ev message)
-  (cl-ppcre:register-groups-bind (option) ("\\s*(\\w)[.)!]\\s*" message)
-    (let ((options (rest (gethash (channel ev) (votes c)))))
-      (when (and options (< 0 (letter->integer (elt option 0))))
-        (let ((option (nth (1- (letter->integer (elt option 0))) options)))
-          (when (and option (not (find (user ev) (cdr option))))
-            (setf (cdr option) (cons (user ev) (cdr option)))
-            ;; If all users in the channel voted, end it automatically.
-            (when (loop for user in (users (channel ev))
-                        always (or (eql (name user) (username c))
-                                   (loop for option in options
-                                         thereis (find user (rest option)))))
-              (end-vote c ev))))))))
+  (unless (matches (username (client ev)) (user ev))
+    (cl-ppcre:register-groups-bind (option) ("\\s*(\\w)[.)!]\\s*" message)
+      (let ((options (rest (gethash (channel ev) (votes c)))))
+        (when (and options (< 0 (letter->integer (elt option 0))))
+          (let ((option (nth (1- (letter->integer (elt option 0))) options)))
+            (when (and option (not (find (user ev) (cdr option))))
+              (setf (cdr option) (cons (user ev) (cdr option)))
+              ;; If all users in the channel voted, end it automatically.
+              (when (loop for user in (users (channel ev))
+                          always (or (eql (name user) (username c))
+                                     (loop for option in options
+                                           thereis (find user (rest option)))))
+                (end-vote c ev)))))))))
 
 (define-command (vote end-vote) (c ev option)
   :command "end vote"

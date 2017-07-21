@@ -57,7 +57,7 @@
     (handle-next c ev game)))
 
 (define-handler (trivia handler (and message-event channel-event passive-event)) (c ev message)
-  (unless (command-p ev)
+  (unless (or (command-p ev) (matches (username (client ev)) (user ev)))
     (let ((game (game c ev NIL)))
       (when game
         (let ((correct (answer (user ev) message game)))

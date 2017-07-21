@@ -53,10 +53,11 @@
         (reply ev "No emoticons have been defined yet."))))
 
 (define-handler (emoticon respond (and passive-event message-event)) (c ev message)
-  (let ((counter 0))
-    (cl-ppcre:do-register-groups (name) (":(.*?):" message)
-      (let ((emoticon (emoticon name)))
-        (when emoticon
-          (when (= (incf counter) (maximum c))
-            (return))
-          (reply ev "~a" emoticon))))))
+  (unless (matches (username (client ev)) (user ev))
+    (let ((counter 0))
+      (cl-ppcre:do-register-groups (name) (":(.*?):" message)
+        (let ((emoticon (emoticon name)))
+          (when emoticon
+            (when (= (incf counter) (maximum c))
+              (return))
+            (reply ev "~a" emoticon)))))))

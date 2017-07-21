@@ -59,6 +59,7 @@
 (define-handler (counter respond (and message-event passive-event)) (c ev message)
   :class activatable-handler
   :module #.*package*
-  (dolist (c (list-counters))
-    (when (cl-ppcre:scan (getf c :match) (string-downcase message))
-      (reply ev (getf c :response) (incf (getf c :count))))))
+  (unless (matches (username (client ev)) (user ev))
+    (dolist (c (list-counters))
+      (when (cl-ppcre:scan (getf c :match) (string-downcase message))
+        (reply ev (getf c :response) (incf (getf c :count)))))))
