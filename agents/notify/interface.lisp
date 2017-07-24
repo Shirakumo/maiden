@@ -30,7 +30,8 @@
                 (name (user ev)) target))))
 
 (define-handler (notify new-message message-event) (c ev user)
-  (handle-note-notification ev user :message))
+  (unless (maiden-commands:command-p ev)
+    (handle-note-notification ev user :message)))
 
 (define-handler (notify user-enter user-entered) (c ev user)
   (handle-note-notification ev user :join))
@@ -39,10 +40,10 @@
   :command "forget notes"
   :before '(new-message)
   (if target
-      (clear-notes (user ev))
       (dolist (note (user-notes target))
         (when (string-equal (name (user ev)) (from note))
-          (remove-note note))))
+          (remove-note note)))
+      (clear-notes (user ev)))
   (reply ev "Ok, I forgot all about the notes."))
 
 (define-command (notify send-join-note) (c ev target &string message)
