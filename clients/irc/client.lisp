@@ -42,7 +42,8 @@
 
 (defmethod close-connection :before ((client irc-client))
   (when (client-connected-p client)
-    (irc:quit client)))
+    (ignore-errors
+     (send "QUIT" client))))
 
 (defmethod close-connection :after ((client irc-client))
   (clrhash (user-map client))
