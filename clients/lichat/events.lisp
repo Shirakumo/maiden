@@ -114,7 +114,9 @@
   ())
 
 (define-update connect (update)
-  (password &optional (version (lichat-protocol:protocol-version))))
+  (password &optional
+            (version (lichat-protocol:protocol-version))
+            (extensions '("shirakumo-backfill" "shirakumo-data"))))
 
 (define-update disconnect (update)
   ())
@@ -158,10 +160,19 @@
 (define-update user-info (target-update)
   (&optional (registered NIL) (connections 1)))
 
+(define-update backfill (channel-update)
+  ())
+
+(define-update data (channel-update)
+  (content-type payload &optional (filename NIL)))
+
 (define-update failure (text-update)
   (&optional text))
 
 (define-update malformed-update (failure)
+  (&optional text))
+
+(define-update update-too-long (failure)
   (&optional text))
 
 (define-update connection-unstable (failure)
@@ -223,3 +234,6 @@
 
 (define-update too-many-updates (update-failure)
   (update-id &optional text))
+
+(define-update bad-content-type (update-failure)
+  (update-id &optional allowed-content-types))
