@@ -5,7 +5,7 @@ Maiden is a collection of systems to help you build applications and libraries t
 If you only care about using Maiden to set up a bot of some kind, the steps to do so are rather straightforward. First we'll want to load in Maiden and all of the modules and components that you'd like to use in your bot.
 
 ```
-(ql:quickload '(maiden maiden-irc maiden-command maiden-silly))
+(ql:quickload '(maiden maiden-irc maiden-commands maiden-silly))
 ```
 
 And then we'll create a core with instances of the consumers added to it as we'd like them to be.
@@ -13,7 +13,7 @@ And then we'll create a core with instances of the consumers added to it as we'd
 ```
 (defvar *core* (maiden:make-core
                  '(:maiden-irc :nickname "MaidenTest" :host "irc.freenode.net" :channels ("##testing"))
-                 :maiden-command
+                 :maiden-commands
                  :maiden-silly))
 ```
 
