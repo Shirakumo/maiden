@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:cl-user)
+
 
 (asdf:defsystem maiden-circ
   :version "1.0.0"
