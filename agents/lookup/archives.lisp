@@ -16,6 +16,19 @@
                                                 ,(string-downcase lookup) (drakma:url-encode term :utf-8)))))))
   (define-l1sp-lookups asdf ccl cffi clim clisp clx mop pcl sbcl))
 
+#+()
+(defun generate-table-from-staple-page (url)
+  (lquery:$ (initialize (drakma:http-request url))
+    "#symbol-index article"
+    (each (lambda (a)
+            (cl-ppcre:register-groups-bind (b c d) ("([^ ]+ ([^:]+:(.+)))" (lquery:$1 a (attr :id)))
+              (format T "~&((~{~s~^ ~}) ~s~%~s)"
+                      (list b c d)
+                      (format NIL "~a~a" url (lquery:$1 a ".name a" (attr :href)))
+                      (format NIL "~@(~a~)~a" (char b 0) (subseq b 1))))
+            T)))
+  NIL)
+
 (define-table-lookup lichat
   (("1" "wire format") "https://github.com/Shirakumo/lichat-protocol#1-wire-format")
   (("1.1" "symbols") "https://github.com/Shirakumo/lichat-protocol#11-symbols")
