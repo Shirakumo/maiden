@@ -11,8 +11,11 @@
 
 (define-command (lookup look-up) (c ev archive &string term)
   :command "look up"
-  (destructuring-bind (url &optional title) (look-up archive term)
-    (reply ev "~@[~@(~a~) ~]~a" title url)))
+  (let ((matches (look-up archive term)))
+    (if (rest matches)
+        (reply ev "Found: ~{~a~^, ~}" (mapcar #'first matches))
+        (destructuring-bind (match url &optional title) (first matches)
+            (reply ev "~@[~@(~a~) ~]~a" title url)))))
 
 (defmacro define-shorthand-command (name &key (archive (string name)) (command (string name)))
   `(define-command (lookup ,name) (c ev &string term)

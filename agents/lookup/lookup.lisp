@@ -36,14 +36,21 @@
        (declare (ignore headers))
        (when (/= code 200)
          (error "~s not found in ~a." ,(first args) ',archive))
-       (list (puri:render-uri url NIL)
-             (lquery:$1 root "title" (text))))))
+       (list (list ,(first args)
+                   (puri:render-uri url NIL)
+                   (lquery:$1 root "title" (text)))))))
+
+(defun longest (things)
+  (let ((longest (first things)))
+    (dolist (thing (rest things) longest)
+      (when (< (length longest) (length thing))
+        (setf longest thing)))))
 
 (defun table-find (term table)
   (loop for (matches . data) in table
-        do (when (loop for match in matches
-                       thereis (or (string-equal term match)))
-             (return data))))
+        when (loop for match in matches
+                   thereis (or (string-equal term match)))
+        collect (list* (longest matches) data)))
 
 (defmacro define-table-lookup (archive &body entries)
   (let ((term (gensym "TERM"))
