@@ -15,7 +15,8 @@
     (if (rest matches)
         (reply ev "Found: ~{~a~^, ~}" (mapcar #'first matches))
         (destructuring-bind (match url &optional title) (first matches)
-            (reply ev "~@[~@(~a~) ~]~a" title url)))))
+          (declare (ignore match))
+          (reply ev "~@[~@(~a~) ~]~a" title url)))))
 
 (defmacro define-shorthand-command (name &key (archive (string name)) (command (string name)))
   `(define-command (lookup ,name) (c ev &string term)

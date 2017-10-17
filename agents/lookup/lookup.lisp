@@ -47,10 +47,12 @@
         (setf longest thing)))))
 
 (defun table-find (term table)
-  (loop for (matches . data) in table
-        when (loop for match in matches
-                   thereis (or (string-equal term match)))
-        collect (list* (longest matches) data)))
+  (let ((term (cl-ppcre:split " +" term)))
+    (loop for (matches . data) in table
+          when (loop for match in matches
+                     thereis (loop for part in term
+                                   always (search part match :test #'char-equal)))
+          collect (list* (longest matches) data))))
 
 (defmacro define-table-lookup (archive &body entries)
   (let ((term (gensym "TERM"))

@@ -176,233 +176,233 @@
   (("2.11" "session") "https://github.com/shirakumo/radiance#211-session")
   (("2.12" "user") "https://github.com/shirakumo/radiance#212-user")
   (("SPECIAL RADIANCE-CORE:*DEBUGGER*" "RADIANCE-CORE:*DEBUGGER*" "*DEBUGGER*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ADEBUGGER%2A"
-   "Function radiance-core:*debugger*")
+   "Special radiance-core:*debugger*")
   (("SPECIAL RADIANCE-CORE:*DEFAULT-API-FORMAT*" "RADIANCE-CORE:*DEFAULT-API-FORMAT*" "*DEFAULT-API-FORMAT*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ADEFAULT-API-FORMAT%2A"
-   "Function radiance-core:*default-api-format*")
+   "Special radiance-core:*default-api-format*")
   (("SPECIAL RADIANCE-CORE:*DEFAULT-CONTENT-TYPE*" "RADIANCE-CORE:*DEFAULT-CONTENT-TYPE*" "*DEFAULT-CONTENT-TYPE*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ADEFAULT-CONTENT-TYPE%2A"
-   "Function radiance-core:*default-content-type*")
+   "Special radiance-core:*default-content-type*")
   (("SPECIAL RADIANCE-CORE:*DEFAULT-EXTERNAL-FORMAT*" "RADIANCE-CORE:*DEFAULT-EXTERNAL-FORMAT*" "*DEFAULT-EXTERNAL-FORMAT*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ADEFAULT-EXTERNAL-FORMAT%2A"
-   "Function radiance-core:*default-external-format*")
+   "Special radiance-core:*default-external-format*")
   (("SPECIAL RADIANCE-CORE:*ENVIRONMENT-ROOT*" "RADIANCE-CORE:*ENVIRONMENT-ROOT*" "*ENVIRONMENT-ROOT*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2AENVIRONMENT-ROOT%2A"
-   "Function radiance-core:*environment-root*")
+   "Special radiance-core:*environment-root*")
   (("SPECIAL RADIANCE-CORE:*MODULES-DIRECTORY*" "RADIANCE-CORE:*MODULES-DIRECTORY*" "*MODULES-DIRECTORY*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2AMODULES-DIRECTORY%2A"
-   "Function radiance-core:*modules-directory*")
+   "Special radiance-core:*modules-directory*")
   (("SPECIAL RADIANCE-CORE:*RANDOM-STRING-CHARACTERS*" "RADIANCE-CORE:*RANDOM-STRING-CHARACTERS*" "*RANDOM-STRING-CHARACTERS*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ARANDOM-STRING-CHARACTERS%2A"
-   "Function radiance-core:*random-string-characters*")
+   "Special radiance-core:*random-string-characters*")
   (("SPECIAL RADIANCE-CORE:*REQUEST*" "RADIANCE-CORE:*REQUEST*" "*REQUEST*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2AREQUEST%2A"
-   "Function radiance-core:*request*")
+   "Special radiance-core:*request*")
   (("SPECIAL RADIANCE-CORE:*RESPONSE*" "RADIANCE-CORE:*RESPONSE*" "*RESPONSE*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ARESPONSE%2A"
-   "Function radiance-core:*response*")
+   "Special radiance-core:*response*")
   (("SPECIAL RADIANCE-CORE:*STARTUP-TIME*" "RADIANCE-CORE:*STARTUP-TIME*" "*STARTUP-TIME*") "https://shirakumo.github.io/radiance#SPECIAL%20RADIANCE-CORE%3A%2ASTARTUP-TIME%2A"
-   "Function radiance-core:*startup-time*")
+   "Special radiance-core:*startup-time*")
   (("CLASS RADIANCE-CORE:API-ENDPOINT" "RADIANCE-CORE:API-ENDPOINT" "API-ENDPOINT") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AAPI-ENDPOINT"
-   "Function radiance-core:api-endpoint")
+   "Class radiance-core:api-endpoint")
   (("CLASS RADIANCE-CORE:COOKIE" "RADIANCE-CORE:COOKIE" "COOKIE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3ACOOKIE"
-   "Function radiance-core:cookie")
+   "Class radiance-core:cookie")
   (("CLASS RADIANCE-CORE:DOCUMENTABLE" "RADIANCE-CORE:DOCUMENTABLE" "DOCUMENTABLE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3ADOCUMENTABLE"
-   "Function radiance-core:documentable")
+   "Class radiance-core:documentable")
   (("CLASS RADIANCE-CORE:HOOK" "RADIANCE-CORE:HOOK" "HOOK") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AHOOK"
-   "Function radiance-core:hook")
+   "Class radiance-core:hook")
   (("CLASS RADIANCE-CORE:MODULE" "RADIANCE-CORE:MODULE" "MODULE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AMODULE"
-   "Function radiance-core:module")
+   "Class radiance-core:module")
   (("CLASS RADIANCE-CORE:OPTION" "RADIANCE-CORE:OPTION" "OPTION") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AOPTION"
-   "Function radiance-core:option")
+   "Class radiance-core:option")
   (("CLASS RADIANCE-CORE:REQUEST" "RADIANCE-CORE:REQUEST" "REQUEST") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AREQUEST"
-   "Function radiance-core:request")
+   "Class radiance-core:request")
   (("CLASS RADIANCE-CORE:RESOURCE-TYPE" "RADIANCE-CORE:RESOURCE-TYPE" "RESOURCE-TYPE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3ARESOURCE-TYPE"
-   "Function radiance-core:resource-type")
+   "Class radiance-core:resource-type")
   (("CLASS RADIANCE-CORE:RESPONSE" "RADIANCE-CORE:RESPONSE" "RESPONSE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3ARESPONSE"
-   "Function radiance-core:response")
+   "Class radiance-core:response")
   (("CLASS RADIANCE-CORE:ROUTE" "RADIANCE-CORE:ROUTE" "ROUTE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AROUTE"
-   "Function radiance-core:route")
+   "Class radiance-core:route")
   (("CLASS RADIANCE-CORE:URI" "RADIANCE-CORE:URI" "URI") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AURI"
-   "Function radiance-core:uri")
+   "Class radiance-core:uri")
   (("CLASS RADIANCE-CORE:URI-DISPATCHER" "RADIANCE-CORE:URI-DISPATCHER" "URI-DISPATCHER") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AURI-DISPATCHER"
-   "Function radiance-core:uri-dispatcher")
+   "Class radiance-core:uri-dispatcher")
   (("CLASS RADIANCE-CORE:VIRTUAL-MODULE" "RADIANCE-CORE:VIRTUAL-MODULE" "VIRTUAL-MODULE") "https://shirakumo.github.io/radiance#CLASS%20RADIANCE-CORE%3AVIRTUAL-MODULE"
-   "Function radiance-core:virtual-module")
+   "Class radiance-core:virtual-module")
   (("RESOURCE-TYPE RADIANCE-CORE:API" "RADIANCE-CORE:API" "API") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20RADIANCE-CORE%3AAPI"
-   "Function radiance-core:api")
+   "Resource-type radiance-core:api")
   (("RESOURCE-TYPE RADIANCE-CORE:DOMAIN" "RADIANCE-CORE:DOMAIN" "DOMAIN") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20RADIANCE-CORE%3ADOMAIN"
-   "Function radiance-core:domain")
+   "Resource-type radiance-core:domain")
   (("RESOURCE-TYPE RADIANCE-CORE:PAGE" "RADIANCE-CORE:PAGE" "PAGE") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20RADIANCE-CORE%3APAGE"
-   "Function radiance-core:page")
+   "Resource-type radiance-core:page")
   (("RESOURCE-TYPE RADIANCE-CORE:STATIC" "RADIANCE-CORE:STATIC" "STATIC") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20RADIANCE-CORE%3ASTATIC"
-   "Function radiance-core:static")
+   "Resource-type radiance-core:static")
   (("option PAGE RADIANCE-CORE:ACCESS" "PAGE RADIANCE-CORE:ACCESS" "ACCESS") "https://shirakumo.github.io/radiance#option%20PAGE%20RADIANCE-CORE%3AACCESS"
-   "Function page radiance-core:access")
+   "Option page radiance-core:access")
   (("option PAGE RADIANCE-CORE:HOOK" "PAGE RADIANCE-CORE:HOOK" "HOOK") "https://shirakumo.github.io/radiance#option%20PAGE%20RADIANCE-CORE%3AHOOK"
-   "Function page radiance-core:hook")
+   "Option page radiance-core:hook")
   (("option API RADIANCE-CORE:ACCESS" "API RADIANCE-CORE:ACCESS" "ACCESS") "https://shirakumo.github.io/radiance#option%20API%20RADIANCE-CORE%3AACCESS"
-   "Function api radiance-core:access")
+   "Option api radiance-core:access")
   (("ROUTE RADIANCE-CORE:DOMAIN" "RADIANCE-CORE:DOMAIN" "DOMAIN") "https://shirakumo.github.io/radiance#ROUTE%20RADIANCE-CORE%3ADOMAIN"
-   "Function radiance-core:domain")
+   "Route radiance-core:domain")
   (("ROUTE RADIANCE-CORE:DOMAIN" "RADIANCE-CORE:DOMAIN" "DOMAIN") "https://shirakumo.github.io/radiance#ROUTE%20RADIANCE-CORE%3ADOMAIN"
-   "Function radiance-core:domain")
+   "Route radiance-core:domain")
   (("ROUTE RADIANCE-CORE:VIRTUAL-MODULE" "RADIANCE-CORE:VIRTUAL-MODULE" "VIRTUAL-MODULE") "https://shirakumo.github.io/radiance#ROUTE%20RADIANCE-CORE%3AVIRTUAL-MODULE"
-   "Function radiance-core:virtual-module")
+   "Route radiance-core:virtual-module")
   (("ROUTE RADIANCE-CORE:VIRTUAL-MODULE" "RADIANCE-CORE:VIRTUAL-MODULE" "VIRTUAL-MODULE") "https://shirakumo.github.io/radiance#ROUTE%20RADIANCE-CORE%3AVIRTUAL-MODULE"
-   "Function radiance-core:virtual-module")
+   "Route radiance-core:virtual-module")
   (("CONDITION RADIANCE-CORE:API-ARGUMENT-INVALID" "RADIANCE-CORE:API-ARGUMENT-INVALID" "API-ARGUMENT-INVALID") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-ARGUMENT-INVALID"
-   "Function radiance-core:api-argument-invalid")
+   "Condition radiance-core:api-argument-invalid")
   (("CONDITION RADIANCE-CORE:API-ARGUMENT-MISSING" "RADIANCE-CORE:API-ARGUMENT-MISSING" "API-ARGUMENT-MISSING") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-ARGUMENT-MISSING"
-   "Function radiance-core:api-argument-missing")
+   "Condition radiance-core:api-argument-missing")
   (("CONDITION RADIANCE-CORE:API-AUTH-ERROR" "RADIANCE-CORE:API-AUTH-ERROR" "API-AUTH-ERROR") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-AUTH-ERROR"
-   "Function radiance-core:api-auth-error")
+   "Condition radiance-core:api-auth-error")
   (("CONDITION RADIANCE-CORE:API-CALL-NOT-FOUND" "RADIANCE-CORE:API-CALL-NOT-FOUND" "API-CALL-NOT-FOUND") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-CALL-NOT-FOUND"
-   "Function radiance-core:api-call-not-found")
+   "Condition radiance-core:api-call-not-found")
   (("CONDITION RADIANCE-CORE:API-ERROR" "RADIANCE-CORE:API-ERROR" "API-ERROR") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-ERROR"
-   "Function radiance-core:api-error")
+   "Condition radiance-core:api-error")
   (("CONDITION RADIANCE-CORE:API-RESPONSE-EMPTY" "RADIANCE-CORE:API-RESPONSE-EMPTY" "API-RESPONSE-EMPTY") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-RESPONSE-EMPTY"
-   "Function radiance-core:api-response-empty")
+   "Condition radiance-core:api-response-empty")
   (("CONDITION RADIANCE-CORE:API-UNKNOWN-FORMAT" "RADIANCE-CORE:API-UNKNOWN-FORMAT" "API-UNKNOWN-FORMAT") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AAPI-UNKNOWN-FORMAT"
-   "Function radiance-core:api-unknown-format")
+   "Condition radiance-core:api-unknown-format")
   (("CONDITION RADIANCE-CORE:ENVIRONMENT-NOT-SET" "RADIANCE-CORE:ENVIRONMENT-NOT-SET" "ENVIRONMENT-NOT-SET") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AENVIRONMENT-NOT-SET"
-   "Function radiance-core:environment-not-set")
+   "Condition radiance-core:environment-not-set")
   (("CONDITION RADIANCE-CORE:FILE-TO-SERVE-DOES-NOT-EXIST" "RADIANCE-CORE:FILE-TO-SERVE-DOES-NOT-EXIST" "FILE-TO-SERVE-DOES-NOT-EXIST") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AFILE-TO-SERVE-DOES-NOT-EXIST"
-   "Function radiance-core:file-to-serve-does-not-exist")
+   "Condition radiance-core:file-to-serve-does-not-exist")
   (("CONDITION RADIANCE-CORE:INTERFACE-IMPLEMENTATION-NOT-SET" "RADIANCE-CORE:INTERFACE-IMPLEMENTATION-NOT-SET" "INTERFACE-IMPLEMENTATION-NOT-SET") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AINTERFACE-IMPLEMENTATION-NOT-SET"
-   "Function radiance-core:interface-implementation-not-set")
+   "Condition radiance-core:interface-implementation-not-set")
   (("CONDITION RADIANCE-CORE:INTERNAL-ERROR" "RADIANCE-CORE:INTERNAL-ERROR" "INTERNAL-ERROR") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AINTERNAL-ERROR"
-   "Function radiance-core:internal-error")
+   "Condition radiance-core:internal-error")
   (("CONDITION RADIANCE-CORE:NO-SUCH-POST-PARAMETER" "RADIANCE-CORE:NO-SUCH-POST-PARAMETER" "NO-SUCH-POST-PARAMETER") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3ANO-SUCH-POST-PARAMETER"
-   "Function radiance-core:no-such-post-parameter")
+   "Condition radiance-core:no-such-post-parameter")
   (("CONDITION RADIANCE-CORE:POST-PARAMETER-NOT-A-FILE" "RADIANCE-CORE:POST-PARAMETER-NOT-A-FILE" "POST-PARAMETER-NOT-A-FILE") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3APOST-PARAMETER-NOT-A-FILE"
-   "Function radiance-core:post-parameter-not-a-file")
+   "Condition radiance-core:post-parameter-not-a-file")
   (("CONDITION RADIANCE-CORE:RADIANCE-CONDITION" "RADIANCE-CORE:RADIANCE-CONDITION" "RADIANCE-CONDITION") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3ARADIANCE-CONDITION"
-   "Function radiance-core:radiance-condition")
+   "Condition radiance-core:radiance-condition")
   (("CONDITION RADIANCE-CORE:REQUEST-DENIED" "RADIANCE-CORE:REQUEST-DENIED" "REQUEST-DENIED") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AREQUEST-DENIED"
-   "Function radiance-core:request-denied")
+   "Condition radiance-core:request-denied")
   (("CONDITION RADIANCE-CORE:REQUEST-EMPTY" "RADIANCE-CORE:REQUEST-EMPTY" "REQUEST-EMPTY") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AREQUEST-EMPTY"
-   "Function radiance-core:request-empty")
+   "Condition radiance-core:request-empty")
   (("CONDITION RADIANCE-CORE:REQUEST-ERROR" "RADIANCE-CORE:REQUEST-ERROR" "REQUEST-ERROR") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AREQUEST-ERROR"
-   "Function radiance-core:request-error")
+   "Condition radiance-core:request-error")
   (("CONDITION RADIANCE-CORE:REQUEST-NOT-FOUND" "RADIANCE-CORE:REQUEST-NOT-FOUND" "REQUEST-NOT-FOUND") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AREQUEST-NOT-FOUND"
-   "Function radiance-core:request-not-found")
+   "Condition radiance-core:request-not-found")
   (("CONDITION RADIANCE-CORE:UNPARSABLE-URI-STRING" "RADIANCE-CORE:UNPARSABLE-URI-STRING" "UNPARSABLE-URI-STRING") "https://shirakumo.github.io/radiance#CONDITION%20RADIANCE-CORE%3AUNPARSABLE-URI-STRING"
-   "Function radiance-core:unparsable-uri-string")
+   "Condition radiance-core:unparsable-uri-string")
   (("HOOK RADIANCE-CORE:ENVIRONMENT-CHANGE" "RADIANCE-CORE:ENVIRONMENT-CHANGE" "ENVIRONMENT-CHANGE") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3AENVIRONMENT-CHANGE"
-   "Function radiance-core:environment-change")
+   "Hook radiance-core:environment-change")
   (("HOOK RADIANCE-CORE:REQUEST" "RADIANCE-CORE:REQUEST" "REQUEST") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3AREQUEST"
-   "Function radiance-core:request")
+   "Hook radiance-core:request")
   (("HOOK RADIANCE-CORE:SERVER-READY" "RADIANCE-CORE:SERVER-READY" "SERVER-READY") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASERVER-READY"
-   "Function radiance-core:server-ready")
+   "Hook radiance-core:server-ready")
   (("HOOK RADIANCE-CORE:SERVER-SHUTDOWN" "RADIANCE-CORE:SERVER-SHUTDOWN" "SERVER-SHUTDOWN") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASERVER-SHUTDOWN"
-   "Function radiance-core:server-shutdown")
+   "Hook radiance-core:server-shutdown")
   (("HOOK RADIANCE-CORE:SERVER-START" "RADIANCE-CORE:SERVER-START" "SERVER-START") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASERVER-START"
-   "Function radiance-core:server-start")
+   "Hook radiance-core:server-start")
   (("HOOK RADIANCE-CORE:SERVER-STOP" "RADIANCE-CORE:SERVER-STOP" "SERVER-STOP") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASERVER-STOP"
-   "Function radiance-core:server-stop")
+   "Hook radiance-core:server-stop")
   (("HOOK RADIANCE-CORE:SHUTDOWN" "RADIANCE-CORE:SHUTDOWN" "SHUTDOWN") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASHUTDOWN"
-   "Function radiance-core:shutdown")
+   "Hook radiance-core:shutdown")
   (("HOOK RADIANCE-CORE:SHUTDOWN-DONE" "RADIANCE-CORE:SHUTDOWN-DONE" "SHUTDOWN-DONE") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASHUTDOWN-DONE"
-   "Function radiance-core:shutdown-done")
+   "Hook radiance-core:shutdown-done")
   (("HOOK RADIANCE-CORE:STARTUP" "RADIANCE-CORE:STARTUP" "STARTUP") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASTARTUP"
-   "Function radiance-core:startup")
+   "Hook radiance-core:startup")
   (("HOOK RADIANCE-CORE:STARTUP-DONE" "RADIANCE-CORE:STARTUP-DONE" "STARTUP-DONE") "https://shirakumo.github.io/radiance#HOOK%20RADIANCE-CORE%3ASTARTUP-DONE"
-   "Function radiance-core:startup-done")
+   "Hook radiance-core:startup-done")
   (("ACCESSOR RADIANCE-CORE:API-ENDPOINT" "RADIANCE-CORE:API-ENDPOINT" "API-ENDPOINT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AAPI-ENDPOINT"
-   "Function radiance-core:api-endpoint")
+   "Accessor radiance-core:api-endpoint")
   (("ACCESSOR RADIANCE-CORE:API-FORMAT" "RADIANCE-CORE:API-FORMAT" "API-FORMAT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AAPI-FORMAT"
-   "Function radiance-core:api-format")
+   "Accessor radiance-core:api-format")
   (("ACCESSOR RADIANCE-CORE:ARGSLIST" "RADIANCE-CORE:ARGSLIST" "ARGSLIST") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AARGSLIST"
-   "Function radiance-core:argslist")
+   "Accessor radiance-core:argslist")
   (("ACCESSOR RADIANCE-CORE:CONTENT-TYPE" "RADIANCE-CORE:CONTENT-TYPE" "CONTENT-TYPE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ACONTENT-TYPE"
-   "Function radiance-core:content-type")
+   "Accessor radiance-core:content-type")
   (("ACCESSOR RADIANCE-CORE:COOKIE" "RADIANCE-CORE:COOKIE" "COOKIE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ACOOKIE"
-   "Function radiance-core:cookie")
+   "Accessor radiance-core:cookie")
   (("ACCESSOR RADIANCE-CORE:COOKIES" "RADIANCE-CORE:COOKIES" "COOKIES") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ACOOKIES"
-   "Function radiance-core:cookies")
+   "Accessor radiance-core:cookies")
   (("ACCESSOR RADIANCE-CORE:DATA" "RADIANCE-CORE:DATA" "DATA") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ADATA"
-   "Function radiance-core:data")
+   "Accessor radiance-core:data")
   (("ACCESSOR RADIANCE-CORE:DIRECTION" "RADIANCE-CORE:DIRECTION" "DIRECTION") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ADIRECTION"
-   "Function radiance-core:direction")
+   "Accessor radiance-core:direction")
   (("ACCESSOR RADIANCE-CORE:DISPATCH-FUNCTION" "RADIANCE-CORE:DISPATCH-FUNCTION" "DISPATCH-FUNCTION") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ADISPATCH-FUNCTION"
-   "Function radiance-core:dispatch-function")
+   "Accessor radiance-core:dispatch-function")
   (("ACCESSOR RADIANCE-CORE:DOMAIN" "RADIANCE-CORE:DOMAIN" "DOMAIN") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ADOMAIN"
-   "Function radiance-core:domain")
+   "Accessor radiance-core:domain")
   (("ACCESSOR RADIANCE-CORE:DOMAINS" "RADIANCE-CORE:DOMAINS" "DOMAINS") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ADOMAINS"
-   "Function radiance-core:domains")
+   "Accessor radiance-core:domains")
   (("ACCESSOR RADIANCE-CORE:ENVIRONMENT" "RADIANCE-CORE:ENVIRONMENT" "ENVIRONMENT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AENVIRONMENT"
-   "Function radiance-core:environment")
+   "Accessor radiance-core:environment")
   (("ACCESSOR RADIANCE-CORE:EXPANDER" "RADIANCE-CORE:EXPANDER" "EXPANDER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AEXPANDER"
-   "Function radiance-core:expander")
+   "Accessor radiance-core:expander")
   (("ACCESSOR RADIANCE-CORE:EXPIRES" "RADIANCE-CORE:EXPIRES" "EXPIRES") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AEXPIRES"
-   "Function radiance-core:expires")
+   "Accessor radiance-core:expires")
   (("ACCESSOR RADIANCE-CORE:EXTERNAL-FORMAT" "RADIANCE-CORE:EXTERNAL-FORMAT" "EXTERNAL-FORMAT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AEXTERNAL-FORMAT"
-   "Function radiance-core:external-format")
+   "Accessor radiance-core:external-format")
   (("ACCESSOR RADIANCE-CORE:GET-DATA" "RADIANCE-CORE:GET-DATA" "GET-DATA") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AGET-DATA"
-   "Function radiance-core:get-data")
+   "Accessor radiance-core:get-data")
   (("ACCESSOR RADIANCE-CORE:HANDLER" "RADIANCE-CORE:HANDLER" "HANDLER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHANDLER"
-   "Function radiance-core:handler")
+   "Accessor radiance-core:handler")
   (("ACCESSOR RADIANCE-CORE:HEADER" "RADIANCE-CORE:HEADER" "HEADER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHEADER"
-   "Function radiance-core:header")
+   "Accessor radiance-core:header")
   (("ACCESSOR RADIANCE-CORE:HEADERS" "RADIANCE-CORE:HEADERS" "HEADERS") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHEADERS"
-   "Function radiance-core:headers")
+   "Accessor radiance-core:headers")
   (("ACCESSOR RADIANCE-CORE:HOOK" "RADIANCE-CORE:HOOK" "HOOK") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHOOK"
-   "Function radiance-core:hook")
+   "Accessor radiance-core:hook")
   (("ACCESSOR RADIANCE-CORE:HTTP-METHOD" "RADIANCE-CORE:HTTP-METHOD" "HTTP-METHOD") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHTTP-METHOD"
-   "Function radiance-core:http-method")
+   "Accessor radiance-core:http-method")
   (("ACCESSOR RADIANCE-CORE:HTTP-ONLY" "RADIANCE-CORE:HTTP-ONLY" "HTTP-ONLY") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AHTTP-ONLY"
-   "Function radiance-core:http-only")
+   "Accessor radiance-core:http-only")
   (("ACCESSOR RADIANCE-CORE:IMPLEMENTATION" "RADIANCE-CORE:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AIMPLEMENTATION"
-   "Function radiance-core:implementation")
+   "Accessor radiance-core:implementation")
   (("ACCESSOR RADIANCE-CORE:ISSUE-TIME" "RADIANCE-CORE:ISSUE-TIME" "ISSUE-TIME") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AISSUE-TIME"
-   "Function radiance-core:issue-time")
+   "Accessor radiance-core:issue-time")
   (("ACCESSOR RADIANCE-CORE:LOCATORS" "RADIANCE-CORE:LOCATORS" "LOCATORS") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ALOCATORS"
-   "Function radiance-core:locators")
+   "Accessor radiance-core:locators")
   (("ACCESSOR RADIANCE-CORE:MATCHER" "RADIANCE-CORE:MATCHER" "MATCHER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AMATCHER"
-   "Function radiance-core:matcher")
+   "Accessor radiance-core:matcher")
   (("ACCESSOR RADIANCE-CORE:MCONFIG" "RADIANCE-CORE:MCONFIG" "MCONFIG") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AMCONFIG"
-   "Function radiance-core:mconfig")
+   "Accessor radiance-core:mconfig")
   (("ACCESSOR RADIANCE-CORE:MESSAGE" "RADIANCE-CORE:MESSAGE" "MESSAGE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AMESSAGE"
-   "Function radiance-core:message")
+   "Accessor radiance-core:message")
   (("ACCESSOR RADIANCE-CORE:MODULE-PERMISSIONS" "RADIANCE-CORE:MODULE-PERMISSIONS" "MODULE-PERMISSIONS") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AMODULE-PERMISSIONS"
-   "Function radiance-core:module-permissions")
+   "Accessor radiance-core:module-permissions")
   (("ACCESSOR RADIANCE-CORE:MODULE-STORAGE" "RADIANCE-CORE:MODULE-STORAGE" "MODULE-STORAGE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AMODULE-STORAGE"
-   "Function radiance-core:module-storage")
+   "Accessor radiance-core:module-storage")
   (("ACCESSOR RADIANCE-CORE:NAME" "RADIANCE-CORE:NAME" "NAME") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ANAME"
-   "Function radiance-core:name")
+   "Accessor radiance-core:name")
   (("ACCESSOR RADIANCE-CORE:OPTION" "RADIANCE-CORE:OPTION" "OPTION") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AOPTION"
-   "Function radiance-core:option")
+   "Accessor radiance-core:option")
   (("ACCESSOR RADIANCE-CORE:OPTION-TYPE" "RADIANCE-CORE:OPTION-TYPE" "OPTION-TYPE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AOPTION-TYPE"
-   "Function radiance-core:option-type")
+   "Accessor radiance-core:option-type")
   (("ACCESSOR RADIANCE-CORE:PATH" "RADIANCE-CORE:PATH" "PATH") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3APATH"
-   "Function radiance-core:path")
+   "Accessor radiance-core:path")
   (("ACCESSOR RADIANCE-CORE:PORT" "RADIANCE-CORE:PORT" "PORT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3APORT"
-   "Function radiance-core:port")
+   "Accessor radiance-core:port")
   (("ACCESSOR RADIANCE-CORE:POST-DATA" "RADIANCE-CORE:POST-DATA" "POST-DATA") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3APOST-DATA"
-   "Function radiance-core:post-data")
+   "Accessor radiance-core:post-data")
   (("ACCESSOR RADIANCE-CORE:PRIORITY" "RADIANCE-CORE:PRIORITY" "PRIORITY") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3APRIORITY"
-   "Function radiance-core:priority")
+   "Accessor radiance-core:priority")
   (("ACCESSOR RADIANCE-CORE:REFERER" "RADIANCE-CORE:REFERER" "REFERER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AREFERER"
-   "Function radiance-core:referer")
+   "Accessor radiance-core:referer")
   (("ACCESSOR RADIANCE-CORE:REMOTE" "RADIANCE-CORE:REMOTE" "REMOTE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AREMOTE"
-   "Function radiance-core:remote")
+   "Accessor radiance-core:remote")
   (("ACCESSOR RADIANCE-CORE:REQUEST-HANDLER" "RADIANCE-CORE:REQUEST-HANDLER" "REQUEST-HANDLER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AREQUEST-HANDLER"
-   "Function radiance-core:request-handler")
+   "Accessor radiance-core:request-handler")
   (("ACCESSOR RADIANCE-CORE:RESOURCE-LOCATOR" "RADIANCE-CORE:RESOURCE-LOCATOR" "RESOURCE-LOCATOR") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ARESOURCE-LOCATOR"
-   "Function radiance-core:resource-locator")
+   "Accessor radiance-core:resource-locator")
   (("ACCESSOR RADIANCE-CORE:RESOURCE-TYPE" "RADIANCE-CORE:RESOURCE-TYPE" "RESOURCE-TYPE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ARESOURCE-TYPE"
-   "Function radiance-core:resource-type")
+   "Accessor radiance-core:resource-type")
   (("ACCESSOR RADIANCE-CORE:RETURN-CODE" "RADIANCE-CORE:RETURN-CODE" "RETURN-CODE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ARETURN-CODE"
-   "Function radiance-core:return-code")
+   "Accessor radiance-core:return-code")
   (("ACCESSOR RADIANCE-CORE:ROUTE" "RADIANCE-CORE:ROUTE" "ROUTE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AROUTE"
-   "Function radiance-core:route")
+   "Accessor radiance-core:route")
   (("ACCESSOR RADIANCE-CORE:SECURE" "RADIANCE-CORE:SECURE" "SECURE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ASECURE"
-   "Function radiance-core:secure")
+   "Accessor radiance-core:secure")
   (("ACCESSOR RADIANCE-CORE:TRANSLATOR" "RADIANCE-CORE:TRANSLATOR" "TRANSLATOR") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3ATRANSLATOR"
-   "Function radiance-core:translator")
+   "Accessor radiance-core:translator")
   (("ACCESSOR RADIANCE-CORE:URI" "RADIANCE-CORE:URI" "URI") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AURI"
-   "Function radiance-core:uri")
+   "Accessor radiance-core:uri")
   (("ACCESSOR RADIANCE-CORE:URI-DISPATCHER" "RADIANCE-CORE:URI-DISPATCHER" "URI-DISPATCHER") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AURI-DISPATCHER"
-   "Function radiance-core:uri-dispatcher")
+   "Accessor radiance-core:uri-dispatcher")
   (("ACCESSOR RADIANCE-CORE:USER-AGENT" "RADIANCE-CORE:USER-AGENT" "USER-AGENT") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AUSER-AGENT"
-   "Function radiance-core:user-agent")
+   "Accessor radiance-core:user-agent")
   (("ACCESSOR RADIANCE-CORE:VALUE" "RADIANCE-CORE:VALUE" "VALUE") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AVALUE"
-   "Function radiance-core:value")
+   "Accessor radiance-core:value")
   (("ACCESSOR RADIANCE-CORE:VIRTUAL-MODULE-NAME" "RADIANCE-CORE:VIRTUAL-MODULE-NAME" "VIRTUAL-MODULE-NAME") "https://shirakumo.github.io/radiance#ACCESSOR%20RADIANCE-CORE%3AVIRTUAL-MODULE-NAME"
-   "Function radiance-core:virtual-module-name")
+   "Accessor radiance-core:virtual-module-name")
   (("FUNCTION RADIANCE-CORE:*REQUEST*" "RADIANCE-CORE:*REQUEST*" "*REQUEST*") "https://shirakumo.github.io/radiance#FUNCTION%20RADIANCE-CORE%3A%2AREQUEST%2A"
    "Function radiance-core:*request*")
   (("FUNCTION RADIANCE-CORE:*RESPONSE*" "RADIANCE-CORE:*RESPONSE*" "*RESPONSE*") "https://shirakumo.github.io/radiance#FUNCTION%20RADIANCE-CORE%3A%2ARESPONSE%2A"
@@ -616,119 +616,119 @@
   (("FUNCTION RADIANCE-CORE:VIRTUAL-MODULE" "RADIANCE-CORE:VIRTUAL-MODULE" "VIRTUAL-MODULE") "https://shirakumo.github.io/radiance#FUNCTION%20RADIANCE-CORE%3AVIRTUAL-MODULE"
    "Function radiance-core:virtual-module")
   (("URI-DISPATCHER RADIANCE-CORE:API" "RADIANCE-CORE:API" "API") "https://shirakumo.github.io/radiance#URI-DISPATCHER%20RADIANCE-CORE%3AAPI"
-   "Function radiance-core:api")
+   "Uri-dispatcher radiance-core:api")
   (("URI-DISPATCHER RADIANCE-CORE:FAVICON" "RADIANCE-CORE:FAVICON" "FAVICON") "https://shirakumo.github.io/radiance#URI-DISPATCHER%20RADIANCE-CORE%3AFAVICON"
-   "Function radiance-core:favicon")
+   "Uri-dispatcher radiance-core:favicon")
   (("URI-DISPATCHER RADIANCE-CORE:ROBOTS" "RADIANCE-CORE:ROBOTS" "ROBOTS") "https://shirakumo.github.io/radiance#URI-DISPATCHER%20RADIANCE-CORE%3AROBOTS"
-   "Function radiance-core:robots")
+   "Uri-dispatcher radiance-core:robots")
   (("URI-DISPATCHER RADIANCE-CORE:STATIC" "RADIANCE-CORE:STATIC" "STATIC") "https://shirakumo.github.io/radiance#URI-DISPATCHER%20RADIANCE-CORE%3ASTATIC"
-   "Function radiance-core:static")
+   "Uri-dispatcher radiance-core:static")
   (("GENERIC RADIANCE-CORE:API-SERIALIZE" "RADIANCE-CORE:API-SERIALIZE" "API-SERIALIZE") "https://shirakumo.github.io/radiance#GENERIC%20RADIANCE-CORE%3AAPI-SERIALIZE"
-   "Function radiance-core:api-serialize")
+   "Generic radiance-core:api-serialize")
   (("MACRO RADIANCE-CORE:@STATIC" "RADIANCE-CORE:@STATIC" "@STATIC") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3A%40STATIC"
-   "Function radiance-core:@static")
+   "Macro radiance-core:@static")
   (("MACRO RADIANCE-CORE:@TEMPLATE" "RADIANCE-CORE:@TEMPLATE" "@TEMPLATE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3A%40TEMPLATE"
-   "Function radiance-core:@template")
+   "Macro radiance-core:@template")
   (("MACRO RADIANCE-CORE:API-ERROR" "RADIANCE-CORE:API-ERROR" "API-ERROR") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3AAPI-ERROR"
-   "Function radiance-core:api-error")
+   "Macro radiance-core:api-error")
   (("MACRO RADIANCE-CORE:CONFIG" "RADIANCE-CORE:CONFIG" "CONFIG") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ACONFIG"
-   "Function radiance-core:config")
+   "Macro radiance-core:config")
   (("MACRO RADIANCE-CORE:CURRENT-MODULE" "RADIANCE-CORE:CURRENT-MODULE" "CURRENT-MODULE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ACURRENT-MODULE"
-   "Function radiance-core:current-module")
+   "Macro radiance-core:current-module")
   (("MACRO RADIANCE-CORE:DEFAULTED-CONFIG" "RADIANCE-CORE:DEFAULTED-CONFIG" "DEFAULTED-CONFIG") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFAULTED-CONFIG"
-   "Function radiance-core:defaulted-config")
+   "Macro radiance-core:defaulted-config")
   (("MACRO RADIANCE-CORE:DEFINE-API" "RADIANCE-CORE:DEFINE-API" "DEFINE-API") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-API"
-   "Function radiance-core:define-api")
+   "Macro radiance-core:define-api")
   (("MACRO RADIANCE-CORE:DEFINE-API-FORMAT" "RADIANCE-CORE:DEFINE-API-FORMAT" "DEFINE-API-FORMAT") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-API-FORMAT"
-   "Function radiance-core:define-api-format")
+   "Macro radiance-core:define-api-format")
   (("MACRO RADIANCE-CORE:DEFINE-DOCUMENTABLE" "RADIANCE-CORE:DEFINE-DOCUMENTABLE" "DEFINE-DOCUMENTABLE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-DOCUMENTABLE"
-   "Function radiance-core:define-documentable")
+   "Macro radiance-core:define-documentable")
   (("MACRO RADIANCE-CORE:DEFINE-HOOK" "RADIANCE-CORE:DEFINE-HOOK" "DEFINE-HOOK") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-HOOK"
-   "Function radiance-core:define-hook")
+   "Macro radiance-core:define-hook")
   (("MACRO RADIANCE-CORE:DEFINE-HOOK-SWITCH" "RADIANCE-CORE:DEFINE-HOOK-SWITCH" "DEFINE-HOOK-SWITCH") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-HOOK-SWITCH"
-   "Function radiance-core:define-hook-switch")
+   "Macro radiance-core:define-hook-switch")
   (("MACRO RADIANCE-CORE:DEFINE-IMPLEMENT-TRIGGER" "RADIANCE-CORE:DEFINE-IMPLEMENT-TRIGGER" "DEFINE-IMPLEMENT-TRIGGER") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-IMPLEMENT-TRIGGER"
-   "Function radiance-core:define-implement-trigger")
+   "Macro radiance-core:define-implement-trigger")
   (("MACRO RADIANCE-CORE:DEFINE-INTERFACE" "RADIANCE-CORE:DEFINE-INTERFACE" "DEFINE-INTERFACE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-INTERFACE"
-   "Function radiance-core:define-interface")
+   "Macro radiance-core:define-interface")
   (("MACRO RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION" "RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION" "DEFINE-INTERFACE-EXTENSION") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-INTERFACE-EXTENSION"
-   "Function radiance-core:define-interface-extension")
+   "Macro radiance-core:define-interface-extension")
   (("MACRO RADIANCE-CORE:DEFINE-MATCHING-ROUTE" "RADIANCE-CORE:DEFINE-MATCHING-ROUTE" "DEFINE-MATCHING-ROUTE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-MATCHING-ROUTE"
-   "Function radiance-core:define-matching-route")
+   "Macro radiance-core:define-matching-route")
   (("MACRO RADIANCE-CORE:DEFINE-MODULE" "RADIANCE-CORE:DEFINE-MODULE" "DEFINE-MODULE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-MODULE"
-   "Function radiance-core:define-module")
+   "Macro radiance-core:define-module")
   (("MACRO RADIANCE-CORE:DEFINE-MODULE-EXTENSION" "RADIANCE-CORE:DEFINE-MODULE-EXTENSION" "DEFINE-MODULE-EXTENSION") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-MODULE-EXTENSION"
-   "Function radiance-core:define-module-extension")
+   "Macro radiance-core:define-module-extension")
   (("MACRO RADIANCE-CORE:DEFINE-OPTION" "RADIANCE-CORE:DEFINE-OPTION" "DEFINE-OPTION") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-OPTION"
-   "Function radiance-core:define-option")
+   "Macro radiance-core:define-option")
   (("MACRO RADIANCE-CORE:DEFINE-PAGE" "RADIANCE-CORE:DEFINE-PAGE" "DEFINE-PAGE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-PAGE"
-   "Function radiance-core:define-page")
+   "Macro radiance-core:define-page")
   (("MACRO RADIANCE-CORE:DEFINE-RESOURCE-LOCATOR" "RADIANCE-CORE:DEFINE-RESOURCE-LOCATOR" "DEFINE-RESOURCE-LOCATOR") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-RESOURCE-LOCATOR"
-   "Function radiance-core:define-resource-locator")
+   "Macro radiance-core:define-resource-locator")
   (("MACRO RADIANCE-CORE:DEFINE-RESOURCE-TYPE" "RADIANCE-CORE:DEFINE-RESOURCE-TYPE" "DEFINE-RESOURCE-TYPE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-RESOURCE-TYPE"
-   "Function radiance-core:define-resource-type")
+   "Macro radiance-core:define-resource-type")
   (("MACRO RADIANCE-CORE:DEFINE-ROUTE" "RADIANCE-CORE:DEFINE-ROUTE" "DEFINE-ROUTE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-ROUTE"
-   "Function radiance-core:define-route")
+   "Macro radiance-core:define-route")
   (("MACRO RADIANCE-CORE:DEFINE-STRING-ROUTE" "RADIANCE-CORE:DEFINE-STRING-ROUTE" "DEFINE-STRING-ROUTE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-STRING-ROUTE"
-   "Function radiance-core:define-string-route")
+   "Macro radiance-core:define-string-route")
   (("MACRO RADIANCE-CORE:DEFINE-TARGET-ROUTE" "RADIANCE-CORE:DEFINE-TARGET-ROUTE" "DEFINE-TARGET-ROUTE") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-TARGET-ROUTE"
-   "Function radiance-core:define-target-route")
+   "Macro radiance-core:define-target-route")
   (("MACRO RADIANCE-CORE:DEFINE-TRIGGER" "RADIANCE-CORE:DEFINE-TRIGGER" "DEFINE-TRIGGER") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-TRIGGER"
-   "Function radiance-core:define-trigger")
+   "Macro radiance-core:define-trigger")
   (("MACRO RADIANCE-CORE:DEFINE-URI-DISPATCHER" "RADIANCE-CORE:DEFINE-URI-DISPATCHER" "DEFINE-URI-DISPATCHER") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3ADEFINE-URI-DISPATCHER"
-   "Function radiance-core:define-uri-dispatcher")
+   "Macro radiance-core:define-uri-dispatcher")
   (("MACRO RADIANCE-CORE:OR*" "RADIANCE-CORE:OR*" "OR*") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3AOR%2A"
-   "Function radiance-core:or*")
+   "Macro radiance-core:or*")
   (("MACRO RADIANCE-CORE:PERM" "RADIANCE-CORE:PERM" "PERM") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3APERM"
-   "Function radiance-core:perm")
+   "Macro radiance-core:perm")
   (("MACRO RADIANCE-CORE:REMCONFIG" "RADIANCE-CORE:REMCONFIG" "REMCONFIG") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3AREMCONFIG"
-   "Function radiance-core:remconfig")
+   "Macro radiance-core:remconfig")
   (("MACRO RADIANCE-CORE:WITH-ACTIONS" "RADIANCE-CORE:WITH-ACTIONS" "WITH-ACTIONS") "https://shirakumo.github.io/radiance#MACRO%20RADIANCE-CORE%3AWITH-ACTIONS"
-   "Function radiance-core:with-actions")
+   "Macro radiance-core:with-actions")
   (("SPECIAL ADMIN:*IMPLEMENTATION*" "ADMIN:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20ADMIN%3A%2AIMPLEMENTATION%2A"
-   "Function admin:*implementation*")
+   "Special admin:*implementation*")
   (("RESOURCE-TYPE ADMIN:PAGE" "ADMIN:PAGE" "PAGE") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20ADMIN%3APAGE"
-   "Function admin:page")
+   "Resource-type admin:page")
   (("option PANEL ADMIN:ACCESS" "PANEL ADMIN:ACCESS" "ACCESS") "https://shirakumo.github.io/radiance#option%20PANEL%20ADMIN%3AACCESS"
-   "Function panel admin:access")
+   "Option panel admin:access")
   (("HOOK ADMIN:IMPLEMENTED" "ADMIN:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20ADMIN%3AIMPLEMENTED"
-   "Function admin:implemented")
+   "Hook admin:implemented")
   (("HOOK ADMIN:UNIMPLEMENTED" "ADMIN:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20ADMIN%3AUNIMPLEMENTED"
-   "Function admin:unimplemented")
+   "Hook admin:unimplemented")
   (("ACCESSOR ADMIN:IMPLEMENTATION" "ADMIN:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20ADMIN%3AIMPLEMENTATION"
-   "Function admin:implementation")
+   "Accessor admin:implementation")
   (("FUNCTION ADMIN:LIST-PANELS" "ADMIN:LIST-PANELS" "LIST-PANELS") "https://shirakumo.github.io/radiance#FUNCTION%20ADMIN%3ALIST-PANELS"
    "Function admin:list-panels")
   (("FUNCTION ADMIN:REMOVE-PANEL" "ADMIN:REMOVE-PANEL" "REMOVE-PANEL") "https://shirakumo.github.io/radiance#FUNCTION%20ADMIN%3AREMOVE-PANEL"
    "Function admin:remove-panel")
   (("MACRO ADMIN:DEFINE-PANEL" "ADMIN:DEFINE-PANEL" "DEFINE-PANEL") "https://shirakumo.github.io/radiance#MACRO%20ADMIN%3ADEFINE-PANEL"
-   "Function admin:define-panel")
+   "Macro admin:define-panel")
   (("SPECIAL AUTH:*IMPLEMENTATION*" "AUTH:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20AUTH%3A%2AIMPLEMENTATION%2A"
-   "Function auth:*implementation*")
+   "Special auth:*implementation*")
   (("SPECIAL AUTH:*LOGIN-TIMEOUT*" "AUTH:*LOGIN-TIMEOUT*" "*LOGIN-TIMEOUT*") "https://shirakumo.github.io/radiance#SPECIAL%20AUTH%3A%2ALOGIN-TIMEOUT%2A"
-   "Function auth:*login-timeout*")
+   "Special auth:*login-timeout*")
   (("RESOURCE-TYPE AUTH:PAGE" "AUTH:PAGE" "PAGE") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20AUTH%3APAGE"
-   "Function auth:page")
+   "Resource-type auth:page")
   (("HOOK AUTH:ASSOCIATE" "AUTH:ASSOCIATE" "ASSOCIATE") "https://shirakumo.github.io/radiance#HOOK%20AUTH%3AASSOCIATE"
-   "Function auth:associate")
+   "Hook auth:associate")
   (("HOOK AUTH:IMPLEMENTED" "AUTH:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20AUTH%3AIMPLEMENTED"
-   "Function auth:implemented")
+   "Hook auth:implemented")
   (("HOOK AUTH:UNIMPLEMENTED" "AUTH:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20AUTH%3AUNIMPLEMENTED"
-   "Function auth:unimplemented")
+   "Hook auth:unimplemented")
   (("ACCESSOR AUTH:IMPLEMENTATION" "AUTH:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20AUTH%3AIMPLEMENTATION"
-   "Function auth:implementation")
+   "Accessor auth:implementation")
   (("FUNCTION AUTH:ASSOCIATE" "AUTH:ASSOCIATE" "ASSOCIATE") "https://shirakumo.github.io/radiance#FUNCTION%20AUTH%3AASSOCIATE"
    "Function auth:associate")
   (("FUNCTION AUTH:CURRENT" "AUTH:CURRENT" "CURRENT") "https://shirakumo.github.io/radiance#FUNCTION%20AUTH%3ACURRENT"
    "Function auth:current")
   (("SPECIAL BAN:*IMPLEMENTATION*" "BAN:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20BAN%3A%2AIMPLEMENTATION%2A"
-   "Function ban:*implementation*")
+   "Special ban:*implementation*")
   (("HOOK BAN:IMPLEMENTED" "BAN:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20BAN%3AIMPLEMENTED"
-   "Function ban:implemented")
+   "Hook ban:implemented")
   (("HOOK BAN:UNIMPLEMENTED" "BAN:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20BAN%3AUNIMPLEMENTED"
-   "Function ban:unimplemented")
+   "Hook ban:unimplemented")
   (("ACCESSOR BAN:IMPLEMENTATION" "BAN:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20BAN%3AIMPLEMENTATION"
-   "Function ban:implementation")
+   "Accessor ban:implementation")
   (("FUNCTION BAN:JAIL" "BAN:JAIL" "JAIL") "https://shirakumo.github.io/radiance#FUNCTION%20BAN%3AJAIL"
    "Function ban:jail")
   (("FUNCTION BAN:JAIL-TIME" "BAN:JAIL-TIME" "JAIL-TIME") "https://shirakumo.github.io/radiance#FUNCTION%20BAN%3AJAIL-TIME"
@@ -738,49 +738,49 @@
   (("FUNCTION BAN:RELEASE" "BAN:RELEASE" "RELEASE") "https://shirakumo.github.io/radiance#FUNCTION%20BAN%3ARELEASE"
    "Function ban:release")
   (("SPECIAL CACHE:*IMPLEMENTATION*" "CACHE:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20CACHE%3A%2AIMPLEMENTATION%2A"
-   "Function cache:*implementation*")
+   "Special cache:*implementation*")
   (("HOOK CACHE:IMPLEMENTED" "CACHE:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20CACHE%3AIMPLEMENTED"
-   "Function cache:implemented")
+   "Hook cache:implemented")
   (("HOOK CACHE:UNIMPLEMENTED" "CACHE:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20CACHE%3AUNIMPLEMENTED"
-   "Function cache:unimplemented")
+   "Hook cache:unimplemented")
   (("ACCESSOR CACHE:IMPLEMENTATION" "CACHE:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20CACHE%3AIMPLEMENTATION"
-   "Function cache:implementation")
+   "Accessor cache:implementation")
   (("FUNCTION CACHE:GET" "CACHE:GET" "GET") "https://shirakumo.github.io/radiance#FUNCTION%20CACHE%3AGET"
    "Function cache:get")
   (("FUNCTION CACHE:RENEW" "CACHE:RENEW" "RENEW") "https://shirakumo.github.io/radiance#FUNCTION%20CACHE%3ARENEW"
    "Function cache:renew")
   (("MACRO CACHE:WITH-CACHE" "CACHE:WITH-CACHE" "WITH-CACHE") "https://shirakumo.github.io/radiance#MACRO%20CACHE%3AWITH-CACHE"
-   "Function cache:with-cache")
+   "Macro cache:with-cache")
   (("SPECIAL DATABASE:*IMPLEMENTATION*" "DATABASE:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20DATABASE%3A%2AIMPLEMENTATION%2A"
-   "Function database:*implementation*")
+   "Special database:*implementation*")
   (("CONDITION DATABASE:COLLECTION-ALREADY-EXISTS" "DATABASE:COLLECTION-ALREADY-EXISTS" "COLLECTION-ALREADY-EXISTS") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3ACOLLECTION-ALREADY-EXISTS"
-   "Function database:collection-already-exists")
+   "Condition database:collection-already-exists")
   (("CONDITION DATABASE:COLLECTION-CONDITION" "DATABASE:COLLECTION-CONDITION" "COLLECTION-CONDITION") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3ACOLLECTION-CONDITION"
-   "Function database:collection-condition")
+   "Condition database:collection-condition")
   (("CONDITION DATABASE:CONDITION" "DATABASE:CONDITION" "CONDITION") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3ACONDITION"
-   "Function database:condition")
+   "Condition database:condition")
   (("CONDITION DATABASE:CONNECTION-ALREADY-OPEN" "DATABASE:CONNECTION-ALREADY-OPEN" "CONNECTION-ALREADY-OPEN") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3ACONNECTION-ALREADY-OPEN"
-   "Function database:connection-already-open")
+   "Condition database:connection-already-open")
   (("CONDITION DATABASE:CONNECTION-FAILED" "DATABASE:CONNECTION-FAILED" "CONNECTION-FAILED") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3ACONNECTION-FAILED"
-   "Function database:connection-failed")
+   "Condition database:connection-failed")
   (("CONDITION DATABASE:ID" "DATABASE:ID" "ID") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3AID"
-   "Function database:id")
+   "Condition database:id")
   (("CONDITION DATABASE:INVALID-COLLECTION" "DATABASE:INVALID-COLLECTION" "INVALID-COLLECTION") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3AINVALID-COLLECTION"
-   "Function database:invalid-collection")
+   "Condition database:invalid-collection")
   (("CONDITION DATABASE:INVALID-FIELD" "DATABASE:INVALID-FIELD" "INVALID-FIELD") "https://shirakumo.github.io/radiance#CONDITION%20DATABASE%3AINVALID-FIELD"
-   "Function database:invalid-field")
+   "Condition database:invalid-field")
   (("STRUCTURE DATABASE:ID" "DATABASE:ID" "ID") "https://shirakumo.github.io/radiance#STRUCTURE%20DATABASE%3AID"
-   "Function database:id")
+   "Structure database:id")
   (("HOOK DATABASE:CONNECTED" "DATABASE:CONNECTED" "CONNECTED") "https://shirakumo.github.io/radiance#HOOK%20DATABASE%3ACONNECTED"
-   "Function database:connected")
+   "Hook database:connected")
   (("HOOK DATABASE:DISCONNECTED" "DATABASE:DISCONNECTED" "DISCONNECTED") "https://shirakumo.github.io/radiance#HOOK%20DATABASE%3ADISCONNECTED"
-   "Function database:disconnected")
+   "Hook database:disconnected")
   (("HOOK DATABASE:IMPLEMENTED" "DATABASE:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20DATABASE%3AIMPLEMENTED"
-   "Function database:implemented")
+   "Hook database:implemented")
   (("HOOK DATABASE:UNIMPLEMENTED" "DATABASE:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20DATABASE%3AUNIMPLEMENTED"
-   "Function database:unimplemented")
+   "Hook database:unimplemented")
   (("ACCESSOR DATABASE:IMPLEMENTATION" "DATABASE:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20DATABASE%3AIMPLEMENTATION"
-   "Function database:implementation")
+   "Accessor database:implementation")
   (("FUNCTION DATABASE:COLLECTION-EXISTS-P" "DATABASE:COLLECTION-EXISTS-P" "COLLECTION-EXISTS-P") "https://shirakumo.github.io/radiance#FUNCTION%20DATABASE%3ACOLLECTION-EXISTS-P"
    "Function database:collection-exists-p")
   (("FUNCTION DATABASE:COLLECTIONS" "DATABASE:COLLECTIONS" "COLLECTIONS") "https://shirakumo.github.io/radiance#FUNCTION%20DATABASE%3ACOLLECTIONS"
@@ -814,17 +814,17 @@
   (("FUNCTION DATABASE:UPDATE" "DATABASE:UPDATE" "UPDATE") "https://shirakumo.github.io/radiance#FUNCTION%20DATABASE%3AUPDATE"
    "Function database:update")
   (("MACRO DATABASE:QUERY" "DATABASE:QUERY" "QUERY") "https://shirakumo.github.io/radiance#MACRO%20DATABASE%3AQUERY"
-   "Function database:query")
+   "Macro database:query")
   (("MACRO DATABASE:WITH-TRANSACTION" "DATABASE:WITH-TRANSACTION" "WITH-TRANSACTION") "https://shirakumo.github.io/radiance#MACRO%20DATABASE%3AWITH-TRANSACTION"
-   "Function database:with-transaction")
+   "Macro database:with-transaction")
   (("SPECIAL LOGGER:*IMPLEMENTATION*" "LOGGER:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20LOGGER%3A%2AIMPLEMENTATION%2A"
-   "Function logger:*implementation*")
+   "Special logger:*implementation*")
   (("HOOK LOGGER:IMPLEMENTED" "LOGGER:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20LOGGER%3AIMPLEMENTED"
-   "Function logger:implemented")
+   "Hook logger:implemented")
   (("HOOK LOGGER:UNIMPLEMENTED" "LOGGER:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20LOGGER%3AUNIMPLEMENTED"
-   "Function logger:unimplemented")
+   "Hook logger:unimplemented")
   (("ACCESSOR LOGGER:IMPLEMENTATION" "LOGGER:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20LOGGER%3AIMPLEMENTATION"
-   "Function logger:implementation")
+   "Accessor logger:implementation")
   (("FUNCTION LOGGER:DEBUG" "LOGGER:DEBUG" "DEBUG") "https://shirakumo.github.io/radiance#FUNCTION%20LOGGER%3ADEBUG"
    "Function logger:debug")
   (("FUNCTION LOGGER:ERROR" "LOGGER:ERROR" "ERROR") "https://shirakumo.github.io/radiance#FUNCTION%20LOGGER%3AERROR"
@@ -842,29 +842,29 @@
   (("FUNCTION LOGGER:WARN" "LOGGER:WARN" "WARN") "https://shirakumo.github.io/radiance#FUNCTION%20LOGGER%3AWARN"
    "Function logger:warn")
   (("SPECIAL MAIL:*IMPLEMENTATION*" "MAIL:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20MAIL%3A%2AIMPLEMENTATION%2A"
-   "Function mail:*implementation*")
+   "Special mail:*implementation*")
   (("HOOK MAIL:IMPLEMENTED" "MAIL:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20MAIL%3AIMPLEMENTED"
-   "Function mail:implemented")
+   "Hook mail:implemented")
   (("HOOK MAIL:SEND" "MAIL:SEND" "SEND") "https://shirakumo.github.io/radiance#HOOK%20MAIL%3ASEND"
-   "Function mail:send")
+   "Hook mail:send")
   (("HOOK MAIL:UNIMPLEMENTED" "MAIL:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20MAIL%3AUNIMPLEMENTED"
-   "Function mail:unimplemented")
+   "Hook mail:unimplemented")
   (("ACCESSOR MAIL:IMPLEMENTATION" "MAIL:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20MAIL%3AIMPLEMENTATION"
-   "Function mail:implementation")
+   "Accessor mail:implementation")
   (("FUNCTION MAIL:SEND" "MAIL:SEND" "SEND") "https://shirakumo.github.io/radiance#FUNCTION%20MAIL%3ASEND"
    "Function mail:send")
   (("SPECIAL PROFILE:*IMPLEMENTATION*" "PROFILE:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20PROFILE%3A%2AIMPLEMENTATION%2A"
-   "Function profile:*implementation*")
+   "Special profile:*implementation*")
   (("RESOURCE-TYPE PROFILE:PAGE" "PROFILE:PAGE" "PAGE") "https://shirakumo.github.io/radiance#RESOURCE-TYPE%20PROFILE%3APAGE"
-   "Function profile:page")
+   "Resource-type profile:page")
   (("option PANEL PROFILE:ACCESS" "PANEL PROFILE:ACCESS" "ACCESS") "https://shirakumo.github.io/radiance#option%20PANEL%20PROFILE%3AACCESS"
-   "Function panel profile:access")
+   "Option panel profile:access")
   (("HOOK PROFILE:IMPLEMENTED" "PROFILE:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20PROFILE%3AIMPLEMENTED"
-   "Function profile:implemented")
+   "Hook profile:implemented")
   (("HOOK PROFILE:UNIMPLEMENTED" "PROFILE:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20PROFILE%3AUNIMPLEMENTED"
-   "Function profile:unimplemented")
+   "Hook profile:unimplemented")
   (("ACCESSOR PROFILE:IMPLEMENTATION" "PROFILE:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20PROFILE%3AIMPLEMENTATION"
-   "Function profile:implementation")
+   "Accessor profile:implementation")
   (("FUNCTION PROFILE:ADD-FIELD" "PROFILE:ADD-FIELD" "ADD-FIELD") "https://shirakumo.github.io/radiance#FUNCTION%20PROFILE%3AADD-FIELD"
    "Function profile:add-field")
   (("FUNCTION PROFILE:AVATAR" "PROFILE:AVATAR" "AVATAR") "https://shirakumo.github.io/radiance#FUNCTION%20PROFILE%3AAVATAR"
@@ -880,33 +880,33 @@
   (("FUNCTION PROFILE:REMOVE-PANEL" "PROFILE:REMOVE-PANEL" "REMOVE-PANEL") "https://shirakumo.github.io/radiance#FUNCTION%20PROFILE%3AREMOVE-PANEL"
    "Function profile:remove-panel")
   (("MACRO PROFILE:DEFINE-PANEL" "PROFILE:DEFINE-PANEL" "DEFINE-PANEL") "https://shirakumo.github.io/radiance#MACRO%20PROFILE%3ADEFINE-PANEL"
-   "Function profile:define-panel")
+   "Macro profile:define-panel")
   (("SPECIAL RATE:*IMPLEMENTATION*" "RATE:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20RATE%3A%2AIMPLEMENTATION%2A"
-   "Function rate:*implementation*")
+   "Special rate:*implementation*")
   (("HOOK RATE:IMPLEMENTED" "RATE:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20RATE%3AIMPLEMENTED"
-   "Function rate:implemented")
+   "Hook rate:implemented")
   (("HOOK RATE:UNIMPLEMENTED" "RATE:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20RATE%3AUNIMPLEMENTED"
-   "Function rate:unimplemented")
+   "Hook rate:unimplemented")
   (("ACCESSOR RATE:IMPLEMENTATION" "RATE:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20RATE%3AIMPLEMENTATION"
-   "Function rate:implementation")
+   "Accessor rate:implementation")
   (("FUNCTION RATE:LEFT" "RATE:LEFT" "LEFT") "https://shirakumo.github.io/radiance#FUNCTION%20RATE%3ALEFT"
    "Function rate:left")
   (("MACRO RATE:DEFINE-LIMIT" "RATE:DEFINE-LIMIT" "DEFINE-LIMIT") "https://shirakumo.github.io/radiance#MACRO%20RATE%3ADEFINE-LIMIT"
-   "Function rate:define-limit")
+   "Macro rate:define-limit")
   (("MACRO RATE:WITH-LIMITATION" "RATE:WITH-LIMITATION" "WITH-LIMITATION") "https://shirakumo.github.io/radiance#MACRO%20RATE%3AWITH-LIMITATION"
-   "Function rate:with-limitation")
+   "Macro rate:with-limitation")
   (("SPECIAL SERVER:*IMPLEMENTATION*" "SERVER:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20SERVER%3A%2AIMPLEMENTATION%2A"
-   "Function server:*implementation*")
+   "Special server:*implementation*")
   (("HOOK SERVER:IMPLEMENTED" "SERVER:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20SERVER%3AIMPLEMENTED"
-   "Function server:implemented")
+   "Hook server:implemented")
   (("HOOK SERVER:STARTED" "SERVER:STARTED" "STARTED") "https://shirakumo.github.io/radiance#HOOK%20SERVER%3ASTARTED"
-   "Function server:started")
+   "Hook server:started")
   (("HOOK SERVER:STOPPED" "SERVER:STOPPED" "STOPPED") "https://shirakumo.github.io/radiance#HOOK%20SERVER%3ASTOPPED"
-   "Function server:stopped")
+   "Hook server:stopped")
   (("HOOK SERVER:UNIMPLEMENTED" "SERVER:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20SERVER%3AUNIMPLEMENTED"
-   "Function server:unimplemented")
+   "Hook server:unimplemented")
   (("ACCESSOR SERVER:IMPLEMENTATION" "SERVER:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20SERVER%3AIMPLEMENTATION"
-   "Function server:implementation")
+   "Accessor server:implementation")
   (("FUNCTION SERVER:LISTENERS" "SERVER:LISTENERS" "LISTENERS") "https://shirakumo.github.io/radiance#FUNCTION%20SERVER%3ALISTENERS"
    "Function server:listeners")
   (("FUNCTION SERVER:START" "SERVER:START" "START") "https://shirakumo.github.io/radiance#FUNCTION%20SERVER%3ASTART"
@@ -914,23 +914,23 @@
   (("FUNCTION SERVER:STOP" "SERVER:STOP" "STOP") "https://shirakumo.github.io/radiance#FUNCTION%20SERVER%3ASTOP"
    "Function server:stop")
   (("SPECIAL SESSION:*DEFAULT-TIMEOUT*" "SESSION:*DEFAULT-TIMEOUT*" "*DEFAULT-TIMEOUT*") "https://shirakumo.github.io/radiance#SPECIAL%20SESSION%3A%2ADEFAULT-TIMEOUT%2A"
-   "Function session:*default-timeout*")
+   "Special session:*default-timeout*")
   (("SPECIAL SESSION:*IMPLEMENTATION*" "SESSION:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20SESSION%3A%2AIMPLEMENTATION%2A"
-   "Function session:*implementation*")
+   "Special session:*implementation*")
   (("CLASS SESSION:SESSION" "SESSION:SESSION" "SESSION") "https://shirakumo.github.io/radiance#CLASS%20SESSION%3ASESSION"
-   "Function session:session")
+   "Class session:session")
   (("HOOK SESSION:CREATE" "SESSION:CREATE" "CREATE") "https://shirakumo.github.io/radiance#HOOK%20SESSION%3ACREATE"
-   "Function session:create")
+   "Hook session:create")
   (("HOOK SESSION:IMPLEMENTED" "SESSION:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20SESSION%3AIMPLEMENTED"
-   "Function session:implemented")
+   "Hook session:implemented")
   (("HOOK SESSION:UNIMPLEMENTED" "SESSION:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20SESSION%3AUNIMPLEMENTED"
-   "Function session:unimplemented")
+   "Hook session:unimplemented")
   (("ACCESSOR SESSION:FIELD" "SESSION:FIELD" "FIELD") "https://shirakumo.github.io/radiance#ACCESSOR%20SESSION%3AFIELD"
-   "Function session:field")
+   "Accessor session:field")
   (("ACCESSOR SESSION:IMPLEMENTATION" "SESSION:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20SESSION%3AIMPLEMENTATION"
-   "Function session:implementation")
+   "Accessor session:implementation")
   (("ACCESSOR SESSION:TIMEOUT" "SESSION:TIMEOUT" "TIMEOUT") "https://shirakumo.github.io/radiance#ACCESSOR%20SESSION%3ATIMEOUT"
-   "Function session:timeout")
+   "Accessor session:timeout")
   (("FUNCTION SESSION:=" "SESSION:=" "=") "https://shirakumo.github.io/radiance#FUNCTION%20SESSION%3A%3D"
    "Function session:=")
   (("FUNCTION SESSION:ACTIVE-P" "SESSION:ACTIVE-P" "ACTIVE-P") "https://shirakumo.github.io/radiance#FUNCTION%20SESSION%3AACTIVE-P"
@@ -946,31 +946,31 @@
   (("FUNCTION SESSION:START" "SESSION:START" "START") "https://shirakumo.github.io/radiance#FUNCTION%20SESSION%3ASTART"
    "Function session:start")
   (("SPECIAL USER:*IMPLEMENTATION*" "USER:*IMPLEMENTATION*" "*IMPLEMENTATION*") "https://shirakumo.github.io/radiance#SPECIAL%20USER%3A%2AIMPLEMENTATION%2A"
-   "Function user:*implementation*")
+   "Special user:*implementation*")
   (("CLASS USER:USER" "USER:USER" "USER") "https://shirakumo.github.io/radiance#CLASS%20USER%3AUSER"
-   "Function user:user")
+   "Class user:user")
   (("CONDITION USER:CONDITION" "USER:CONDITION" "CONDITION") "https://shirakumo.github.io/radiance#CONDITION%20USER%3ACONDITION"
-   "Function user:condition")
+   "Condition user:condition")
   (("CONDITION USER:NOT-FOUND" "USER:NOT-FOUND" "NOT-FOUND") "https://shirakumo.github.io/radiance#CONDITION%20USER%3ANOT-FOUND"
-   "Function user:not-found")
+   "Condition user:not-found")
   (("HOOK USER:ACTION" "USER:ACTION" "ACTION") "https://shirakumo.github.io/radiance#HOOK%20USER%3AACTION"
-   "Function user:action")
+   "Hook user:action")
   (("HOOK USER:CREATE" "USER:CREATE" "CREATE") "https://shirakumo.github.io/radiance#HOOK%20USER%3ACREATE"
-   "Function user:create")
+   "Hook user:create")
   (("HOOK USER:IMPLEMENTED" "USER:IMPLEMENTED" "IMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20USER%3AIMPLEMENTED"
-   "Function user:implemented")
+   "Hook user:implemented")
   (("HOOK USER:READY" "USER:READY" "READY") "https://shirakumo.github.io/radiance#HOOK%20USER%3AREADY"
-   "Function user:ready")
+   "Hook user:ready")
   (("HOOK USER:REMOVE" "USER:REMOVE" "REMOVE") "https://shirakumo.github.io/radiance#HOOK%20USER%3AREMOVE"
-   "Function user:remove")
+   "Hook user:remove")
   (("HOOK USER:UNIMPLEMENTED" "USER:UNIMPLEMENTED" "UNIMPLEMENTED") "https://shirakumo.github.io/radiance#HOOK%20USER%3AUNIMPLEMENTED"
-   "Function user:unimplemented")
+   "Hook user:unimplemented")
   (("HOOK USER:UNREADY" "USER:UNREADY" "UNREADY") "https://shirakumo.github.io/radiance#HOOK%20USER%3AUNREADY"
-   "Function user:unready")
+   "Hook user:unready")
   (("ACCESSOR USER:FIELD" "USER:FIELD" "FIELD") "https://shirakumo.github.io/radiance#ACCESSOR%20USER%3AFIELD"
-   "Function user:field")
+   "Accessor user:field")
   (("ACCESSOR USER:IMPLEMENTATION" "USER:IMPLEMENTATION" "IMPLEMENTATION") "https://shirakumo.github.io/radiance#ACCESSOR%20USER%3AIMPLEMENTATION"
-   "Function user:implementation")
+   "Accessor user:implementation")
   (("FUNCTION USER:=" "USER:=" "=") "https://shirakumo.github.io/radiance#FUNCTION%20USER%3A%3D"
    "Function user:=")
   (("FUNCTION USER:ACTION" "USER:ACTION" "ACTION") "https://shirakumo.github.io/radiance#FUNCTION%20USER%3AACTION"
