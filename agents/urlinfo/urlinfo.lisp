@@ -45,6 +45,7 @@
              (string-trim " " (r "  +" " " (r "[\\n\\r]+" " " title)))))))
 
 (defun short-url (url &optional (url-cutoff 50))
+  (setf url (cl-ppcre:regex-replace "^[^:]*://" url ""))
   (if (< (length url) url-cutoff)
       url
       (format NIL "~a..." (subseq url 0 (- url-cutoff 3)))))
