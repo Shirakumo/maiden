@@ -84,6 +84,14 @@
   (loop until (stream-end-p stream)
         collect (read-value stream)))
 
+(defun read-kargs-arg (stream)
+  (loop until (stream-end-p stream)
+        for key = (read-value stream)
+        for val = (read-value stream)
+        do (unless (char= #\: (char key 0))
+             (error 'expected-key-error :value key))
+        collect key collect val))
+
 (defun read-string-arg (stream)
   (with-output-to-string (output)
     (loop for char = (read-char stream NIL)
@@ -111,7 +119,7 @@
                                               (setf kargs (gensym "KARGS"))
                                               `(setf ,kargs (if (stream-end-p ,input)
                                                                 (error 'not-enough-arguments-error :lambda-list ',lambda-list)
-                                                                (read-rest-arg ,input)))))
+                                                                (read-kargs-arg ,input)))))
                                            (T
                                             (case mode
                                               (&required
