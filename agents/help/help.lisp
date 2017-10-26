@@ -51,7 +51,7 @@
         (*print-case* :downcase))
     (unless invoker
       (reply ev "No such command found."))
-    (reply ev "Command Syntax: ~a ~{~a~^ ~}~%~
+    (reply ev "Command Syntax: ~a ~{~:@(~a~)~^ ~}~%~
                Documentation:  ~:[None.~;~:*~a~]"
            (prefix invoker) (lambda-list invoker) (documentation invoker T))))
 
