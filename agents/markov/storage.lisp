@@ -14,7 +14,7 @@
 
 (defun read-word (stream)
   (let ((vec (make-array 5 :element-type '(unsigned-byte 8) :initial-element 0 :adjustable T :fill-pointer 0)))
-    (loop for char = (fast-io:read8 stream)
+    (loop for char = (fast-io:readu8 stream)
           until (= 0 char)
           do (vector-push-extend char vec))
     (babel:octets-to-string vec :encoding :utf-8)))
@@ -22,7 +22,7 @@
 (defun write-word (word stream)
   (fast-io:fast-write-sequence
    (babel:string-to-octets word :encoding :utf-8) stream)
-  (fast-io:write8 0 stream))
+  (fast-io:writeu8 0 stream))
 
 (defun read-words (stream)
   (let ((i -1) (map (make-hash-table :test 'equal)))
