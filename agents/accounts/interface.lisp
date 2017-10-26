@@ -123,8 +123,8 @@
   (let* ((account (account (or account (user ev))))
          (value (field field account (user ev))))
     (if value
-        (reply ev "The field is not set to anything." field)
-        (reply ev "The field is set to ~s." value))))
+        (reply ev "The field is set to ~s." value)
+        (reply ev "The field is not set to anything." field))))
 
 (define-command (accounts set-field) (c ev field value &optional account)
   :command "set account field"
