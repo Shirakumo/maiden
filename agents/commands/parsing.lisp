@@ -90,7 +90,7 @@
         for val = (read-value stream)
         do (unless (char= #\: (char key 0))
              (error 'expected-key-error :value key))
-        collect key collect val))
+        collect (string-upcase key) collect val))
 
 (defun read-string-arg (stream)
   (with-output-to-string (output)
@@ -103,23 +103,89 @@
         do (when (funcall test item key)
              (return val))))
 
+(defun %remf* (plist item &key (test #'eql))
+  ;; Pop front
+  (loop while (funcall test (car plist) item)
+        do (setf plist (cddr plist)))
+  ;; Remove inner cones
+  (loop with cons = plist
+        while cons
+        do (if (funcall test (caddr cons) item)
+               (setf (cddr cons) (cddddr cons))
+               (setf cons (cddr cons))))
+  plist)
+
+(defmacro remf* (plist item &key (test '#'eql))
+  `(setf ,plist (%remf* ,plist ,item :test ,test)))
+
+(defun check-lambda-list (lambda-list)
+  (when (and (find '&allow-other-keys lambda-list)
+             (not (find '&key lambda-list)))
+    (error "Cannot use &allow-other-keys without &key in a lambda-list."))
+  (tagbody required
+     (case (pop lambda-list)
+       (&optional (go optional))
+       (&string (go string))
+       (&rest (go rest))
+       (&key (go key))
+       (&allow-other-keys (error "&allow-other-keys at invalid position in lambda-list."))
+       ((NIL) (go end)))
+     (go required)
+   optional
+     (case (pop lambda-list)
+       (&optional (error "Already specified &optional once."))
+       (&string (go string))
+       (&rest (go rest))
+       (&key (go key))
+       (&allow-other-keys (error "&allow-other-keys at invalid position in lambda-list."))
+       ((NIL) (go end)))
+     (go optional)
+   string
+     (case (pop lambda-list)
+       ((NIL) (error "&string requires a name.")))
+     (go end)
+   rest
+     (case (pop lambda-list)
+       ((NIL) (error "&rest requires a name.")))
+     (case (pop lambda-list)
+       (&optional (error "&optional cannot come after &rest."))
+       (&string (error "&rest and &string cannot appear together."))
+       (&rest (error "Already specified &rest once."))
+       (&key (go key))
+       (&allow-other-keys (error "&allow-other-keys at invalid position in lambda-list.")))
+     (go end)
+   key
+     (case (pop lambda-list)
+       (&optional (error "&optional cannot come after &key."))
+       (&string (error "&string cannot come after &key."))
+       (&rest (error "&rest cannot come after &key."))
+       (&key (error "Already specified &key once."))
+       (&allow-other-keys (go allow-other-keys))
+       ((NIL) (go end)))
+     (go key)
+   allow-other-keys
+     (go end)
+   end
+     (when lambda-list (error "No further arguments are allowed."))))
+
 (defun generate-lambda-list-body (lambda-list input)
-  (when (and (find '&string lambda-list)
-             (or (find '&rest lambda-list)
-                 (find '&key lambda-list)))
-    (error "Cannot use &string with &key or &rest in a lambda-list."))
+  (check-lambda-list lambda-list)
   (let ((kargs)
         (karg (gensym "KARG"))
         (vars ()))
     (values (append (loop with mode = '&required
                           for item in lambda-list
-                          for form = (cond ((find item '(&optional &key &rest &string))
+                          for form = (cond ((find item '(&optional &key &rest &string &allow-other-keys))
                                             (setf mode item)
-                                            (when (and (eql item '&key) (not kargs))
-                                              (setf kargs (gensym "KARGS"))
-                                              `(setf ,kargs (if (stream-end-p ,input)
-                                                                (error 'not-enough-arguments-error :lambda-list ',lambda-list)
-                                                                (read-kargs-arg ,input)))))
+                                            (case item
+                                              (&key
+                                               (unless kargs
+                                                 (setf kargs (gensym "KARGS"))
+                                                 `(setf ,kargs (if (stream-end-p ,input)
+                                                                   (error 'not-enough-arguments-error :lambda-list ',lambda-list)
+                                                                   (read-kargs-arg ,input)))))
+                                              (&allow-other-keys
+                                               `(setf ,kargs ()))))
                                            (T
                                             (case mode
                                               (&required
@@ -147,14 +213,15 @@
                                                (destructuring-bind (symb val provided) (normalize-opt-arg item)
                                                  (push symb vars)
                                                  (when provided (push provided vars))
-                                                 `(let ((,karg (getf* ,kargs ,(format NIL ":~a" symb) :test #'string-equal)))
+                                                 `(let ((,karg (getf* ,kargs ,(format NIL ":~a" symb) :test #'string=)))
                                                     (cond (,karg
+                                                           (remf* ,kargs ,(format NIL ":~a" symb) :test #'string=)
                                                            ,@(when provided `((setf ,provided T)))
                                                            (setf ,symb ,karg))
                                                           (T
                                                            (setf ,symb ,val)))))))))
                           when form collect form)
-                    (list `(unless (stream-end-p ,input)
+                    (list `(unless (and (not ,kargs) (stream-end-p ,input))
                              (error 'too-many-arguments-error :lambda-list ',lambda-list))))
             (append (unless (symbol-package kargs) (list kargs))
                     (nreverse vars)))))

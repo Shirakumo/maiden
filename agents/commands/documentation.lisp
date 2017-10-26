@@ -405,8 +405,8 @@ See WITH-COMMAND-DESTRUCTURING-BIND")
   (function with-command-destructuring-bind
     "Destructure the INPUT string according to the lambda-list.
 
-The lambda-list keywords &optional &rest &key &string are
-supported.
+The lambda-list keywords &optional &string &rest &key &allow-other-keys
+are supported.
 
 If the arguments cannot be parsed or if they do not match
 the lambda-list, an error is signalled.
