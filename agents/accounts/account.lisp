@@ -46,7 +46,8 @@
   (setf (account (name account)) account))
 
 (defmethod offload ((account account))
-  (ubiquitous:offload (account-pathname account) :lisp account))
+  (let ((*package* #.*package*))
+    (ubiquitous:offload (account-pathname account) :lisp account)))
 
 (defmethod offload (account-ish)
   (offload (account account-ish)))
@@ -133,7 +134,8 @@
   (account (string name) :error error))
 
 (defmethod account ((name string) &key (error T))
-  (let ((name (normalize-account-name name)))
+  (let ((name (normalize-account-name name))
+        (*package* #.*package*))
     (or (gethash name *accounts*)
         (handler-case
             (setf (account name) (ubiquitous:restore (account-pathname name)))
@@ -168,7 +170,8 @@
                                      :type "lisp"
                                      :directory '(:relative "account")))))
     (with-simple-restart (abort "Abort restoring the account from ~a." pathname)
-      (let ((account (ubiquitous:restore pathname)))
+      (let* ((*package* #.*package*)
+             (account (ubiquitous:restore pathname)))
         (setf (account (name account)) account)))))
 
 (load-all-accounts)
