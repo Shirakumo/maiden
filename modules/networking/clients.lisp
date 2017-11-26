@@ -245,7 +245,7 @@
 (defmethod handle-connection ((client tcp-client))
   (with-retry-restart (continue "Discard the message and continue.")
     (let ((time (get-universal-time)))
-      (loop (usocket:wait-for-input (socket client) :timeout 0.001)
+      (loop (usocket:wait-for-input (socket client) :timeout 1)
             (cond ((<= (idle-interval client)
                        (- (get-universal-time) time))
                    (setf time (get-universal-time))
