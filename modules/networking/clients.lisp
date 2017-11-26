@@ -83,8 +83,8 @@
 (defmethod initiate-connection :after ((client socket-client))
   (let ((read-thread (read-thread client)))
     (unless (and read-thread (bt:thread-alive-p read-thread))
-      (setf (read-thread client) (bt:make-thread (lambda () (handle-connection client))
-                                                 :name (format NIL "~a read thread" client))))))
+      (setf (read-thread client) (deeds::make-thread (lambda () (handle-connection client))
+                                                     (format NIL "~a read thread" client))))))
 
 (defmethod close-connection :around ((client socket-client))
   (handler-bind ((error (lambda (err)
