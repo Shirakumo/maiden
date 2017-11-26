@@ -173,5 +173,3 @@
       (let* ((*package* #.*package*)
              (account (ubiquitous:restore pathname)))
         (setf (account (name account)) account)))))
-
-(load-all-accounts)

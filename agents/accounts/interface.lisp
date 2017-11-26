@@ -24,6 +24,9 @@
 (define-consumer accounts (agent)
   ())
 
+(defmethod start :after ((accounts accounts))
+  (load-all-accounts))
+
 (defun random-string (length)
   (with-output-to-string (out)
     (loop repeat length do (write-char (elt "abcdefghijklmnopqrstuvwxyz0123456789" (random 36)) out))))
