@@ -46,11 +46,9 @@
 (defun read-delimited-token (in delim &key (escape #\\) (key #'identity) unread)
   (with-output-to-string (out)
     (flet ((emit (c) (write-char (funcall key c) out)))
-      (loop with esc = NIL
-            for c = (consume in)
+      (loop for c = (consume in)
             while c
-            do (cond (esc (setf escape NIL) (emit c))
-                     ((char= c escape) (setf esc T))
+            do (cond ((char= c escape) (emit (or (consume in) (error "Unexpected end of token."))))
                      ((char= c delim) (when unread (unread-char c in)) (return))
                      (T (emit c)))))))
 
