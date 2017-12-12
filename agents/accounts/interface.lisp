@@ -121,7 +121,7 @@
     (reply ev "Identity deassociated.")))
 
 (define-command (accounts field) (c ev field &optional account)
-  :command "show account field"
+  :command "get"
   :advice public
   (let* ((account (account (or account (user ev))))
          (value (field field account (user ev))))
@@ -130,7 +130,7 @@
         (reply ev "The field is not set to anything." field))))
 
 (define-command (accounts set-field) (c ev field value &optional account)
-  :command "set account field"
+  :command "set"
   :advice public
   (let ((account (account (or account (user ev)))))
     (setf (field field account (user ev)) value)
