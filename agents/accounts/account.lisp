@@ -120,7 +120,7 @@
   (declare (ignore error))
   account)
 
-(defmethod account ((user user) &key error)
+(defmethod account ((user user) &key (error T))
   (or (data-value 'account user)
       (and (authenticated-p user)
            (setf (account user) (account (identity user) :error error)))))
@@ -130,8 +130,11 @@
     (or (gethash identity *identity-account-map*)
         (when error (error 'no-account-for-identity :identity identity)))))
 
-(defmethod account ((name symbol) &key error)
-  (account (string name) :error error))
+(defmethod account ((name symbol) &key (error T))
+  (cond (name
+         (account (string name) :error error))
+        (error
+         (error 'account-not-found :name name))))
 
 (defmethod account ((name string) &key (error T))
   (let ((name (normalize-account-name name))
