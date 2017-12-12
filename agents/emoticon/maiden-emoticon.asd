@@ -16,7 +16,8 @@
   :components ((:file "package")
                (:file "emoticon")
                (:file "documentation"))
-  :depends-on (:maiden-commands
+  :depends-on (:maiden-activatable
+               :maiden-commands
                :maiden-storage
                :maiden-client-entities
                :cl-ppcre))

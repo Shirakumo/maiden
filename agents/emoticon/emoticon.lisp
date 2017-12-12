@@ -53,6 +53,8 @@
         (reply ev "No emoticons have been defined yet."))))
 
 (define-handler (emoticon respond (and passive-event message-event)) (c ev message)
+  :class maiden-activatable:activatable-handler
+  :module #.*package*
   (unless (matches (username (client ev)) (user ev))
     (let ((counter 0))
       (cl-ppcre:do-register-groups (name) (":(.*?):" message)
