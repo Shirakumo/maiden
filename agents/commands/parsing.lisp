@@ -30,6 +30,14 @@
   (:report (lambda (c s) (format s "There were too many arguments to match ~a"
                                  (slot-value c 'lambda-list)))))
 
+(define-condition unknown-keyword-argument-error (destructuring-error)
+  ((lambda-list :initarg :lambda-list)
+   (offending-kargs :initarg :offending-kargs))
+  (:report (lambda (c s) (format s "The keyword argument~p ~{~a~^, ~} are not valid for ~a"
+                                 (length (slot-value c 'offending-kargs))
+                                 (slot-value c 'offending-kargs)
+                                 (slot-value c 'lambda-list)))))
+
 (defun peek (in)
   (peek-char T in NIL))
 
@@ -166,22 +174,32 @@
    end
      (when lambda-list (error "No further arguments are allowed."))))
 
+(defun check-for-unknown-kargs (rest lambda-list)
+  (let* ((kargs (lambda-fiddle:key-lambda-vars lambda-list))
+         (unknown (loop for (key val) on rest by #'cddr
+                        unless (find key kargs :test (lambda (a b) (string-equal a b :start1 1)))
+                        collect key)))
+    (when unknown (error 'unknown-keyword-argument-error :lambda-list lambda-list :offending-kargs unknown))))
+
 (defun generate-lambda-list-body (lambda-list input)
   (check-lambda-list lambda-list)
   (let ((kargs)
         (karg (gensym "KARG"))
-        (vars ()))
+        (vars ())
+        (end-test `(unless (stream-end-p ,input)
+                     (error 'too-many-arguments-error :lambda-list ',lambda-list))))
     (values (append (loop with mode = '&required
                           for item in lambda-list
                           for form = (cond ((find item '(&optional &key &rest &string &allow-other-keys))
                                             (setf mode item)
                                             (case item
+                                              (&rest
+                                               (setf end-test '()))
                                               (&key
-                                               (unless kargs
-                                                 (setf kargs (gensym "KARGS"))
-                                                 `(setf ,kargs (if (stream-end-p ,input)
-                                                                   (error 'not-enough-arguments-error :lambda-list ',lambda-list)
-                                                                   (read-kargs-arg ,input)))))
+                                               (prog1 (unless kargs
+                                                        (setf kargs (gensym "KARGS"))
+                                                        `(setf ,kargs (read-kargs-arg ,input)))
+                                                 (setf end-test `(check-for-unknown-kargs ,kargs ',lambda-list))))
                                               (&allow-other-keys
                                                `(setf ,kargs ()))))
                                            (T
@@ -219,8 +237,7 @@
                                                           (T
                                                            (setf ,symb ,val)))))))))
                           when form collect form)
-                    (list `(unless (and (not ,kargs) (stream-end-p ,input))
-                             (error 'too-many-arguments-error :lambda-list ',lambda-list))))
+                    (list end-test))
             (append (unless (symbol-package kargs) (list kargs))
                     (nreverse vars)))))
 
@@ -231,3 +248,4 @@
          (with-input-from-string (,stream ,input)
            ,@forms)
          (locally ,@body)))))
+
