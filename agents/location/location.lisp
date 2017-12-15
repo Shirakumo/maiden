@@ -12,7 +12,8 @@
 ;;   (location () "A physical location where the user currently resides."))
 
 (defun geo-information (location &optional key)
-  (let* ((data (request-as :json *geocode-api* :get `(("sensor" "false") ("address" ,location) ("key" ,(or key "")))))
+  (let* ((key (or key (maiden-storage:with-storage ('location) (maiden-storage:value :api-key))))
+         (data (request-as :json *geocode-api* :get `(("sensor" "false") ("address" ,location) ("key" ,(or key "")))))
          (status (json-v data "status")))
     (cond ((string-equal status "ok")
            (json-v data "results" 0))
@@ -38,12 +39,10 @@
 
 (define-command (location query-address) (c ev &string location)
   :command "address of"
-  (maiden-storage:with-storage (c)
-    (reply ev "I think the address for ~s is ~a." location (address location (maiden-storage:value :api-key)))))
+  (reply ev "I think the address for ~s is ~a." location (address location)))
 
 (define-command (location query-coordinates) (c ev &string location)
   :command "coordinates of"
-  (maiden-storage:with-storage (c)
-    (multiple-value-bind (coordinates location) (coordinates location)
-      (reply ev "~s is located at ~flat ~flng."
-             location (first coordinates) (second coordinates) (maiden-storage:value :api-key)))))
+  (multiple-value-bind (coordinates location) (coordinates location)
+    (reply ev "~s is located at ~flat ~flng."
+           location (first coordinates) (second coordinates))))
