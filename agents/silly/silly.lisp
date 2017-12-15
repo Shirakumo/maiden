@@ -204,3 +204,19 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
 (define-command (silly fortune-for) (c ev name)
   :command "fortune for"
   (reply ev "~@(~a~)'s fortune for today is: ~a" name (fortune name)))
+
+(define-event tell-message (message-event passive-event)
+  ((original-event :initarg :original-event)
+   (target-user :initarg :target-user)))
+
+(defmethod reply ((event tell-message) format &rest args)
+  (reply (slot-value event 'original-event)
+         "~a: ~?" (slot-value event 'target-user) format args))
+
+(define-command (silly tell) (c ev user &string command)
+  (issue (make-instance 'tell-message :message (format NIL "~a: ~a" (username (client ev)) command)
+                                      :user (user ev)
+                                      :client (client ev)
+                                      :original-event ev
+                                      :target-user user)
+         (core ev)))

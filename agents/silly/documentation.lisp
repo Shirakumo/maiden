@@ -103,4 +103,7 @@ a counter for days.
 See *FORTUNES*")
 
   (command fortune
-    "Display the fortune of today for you or for a user. It changes daily!"))
+    "Display the fortune of today for you or for a user. It changes daily!")
+
+  (command tell
+    "Show someone else the output of a command."))

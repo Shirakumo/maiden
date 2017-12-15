@@ -22,4 +22,5 @@
    #:present
    #:you-are
    #:make
-   #:fortune))
+   #:fortune
+   #:tell))
