@@ -7,16 +7,17 @@
 (in-package #:org.shirakumo.maiden.clients.lichat)
 
 (defun parse-event (client stream)
-  (let ((sexpr (lichat-protocol:read-sexpr stream)))
-    (when (consp sexpr)
-      (unless (typep (first sexpr) 'symbol)
-        (error 'lichat-protocol:malformed-wire-object :update sexpr))
-      (setf (car sexpr) (or (find-symbol (string (car sexpr)) '#:org.shirakumo.maiden.clients.lichat.rpl)
-                            (error 'lichat-protocol:unknown-wire-object :update sexpr)))
-      (lichat-protocol:check-update-options sexpr)
-      (loop for char = (read-char stream NIL)
-            until (or (not char) (char= #\Nul char)))
-      (apply #'make-instance (first sexpr) :client client (rest sexpr)))))
+  (unwind-protect
+       (let ((sexpr (lichat-protocol:read-sexpr stream)))
+         (when (consp sexpr)
+           (unless (typep (first sexpr) 'symbol)
+             (error 'lichat-protocol:malformed-wire-object :update sexpr))
+           (setf (car sexpr) (or (find-symbol (string (car sexpr)) '#:org.shirakumo.maiden.clients.lichat.rpl)
+                                 (error 'lichat-protocol:unknown-wire-object :update sexpr)))
+           (lichat-protocol:check-update-options sexpr)
+           (apply #'make-instance (first sexpr) :client client (rest sexpr))))
+    (loop for char = (read-char stream NIL)
+          until (or (not char) (char= #\Nul char)))))
 
 (defun good-initarg-p (initarg)
   (member initarg '(:id :clock :from :password :version :channel :target :text
