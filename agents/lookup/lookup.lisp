@@ -49,6 +49,13 @@
 (defun table-find (term table)
   (let ((term (cl-ppcre:split " +" term)))
     (loop for (matches . data) in table
+          ;; Attempt to do exact match first.
+          do (dolist (match matches)
+               (when (loop for part in term
+                           always (string-equal part match))
+                 (return-from table-find
+                   (list (list* match data)))))
+          ;; Otherwise collect if fuzzy matching.
           when (loop for match in matches
                      thereis (loop for part in term
                                    always (search part match :test #'char-equal)))
