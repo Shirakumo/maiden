@@ -152,7 +152,8 @@ are not guaranteed, but may be provided by a client.
 
 See CLIENT-ENTITY
 See AUTHENTICATE
-See AUTHENTICATED-P</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-ADDED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-ADDED">USER-ADDED</a></code></h4>  </header> <pre class="docstring">Event issued when a user is now tracked by the client.
+See AUTHENTICATED-P
+See USERNAME</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-ADDED"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-ADDED">USER-ADDED</a></code></h4>  </header> <pre class="docstring">Event issued when a user is now tracked by the client.
 
 See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-CLIENT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-CLIENT">USER-CLIENT</a></code></h4>  </header> <pre class="docstring">Superclass for clients that communicate with users of some form.
 
@@ -160,7 +161,8 @@ See FIND-USER
 See USERS
 See ENSURE-USER
 See AUTHENTICATE
-See USER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-CONTAINER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-CONTAINER">USER-CONTAINER</a></code></h4>  </header> <pre class="docstring">Mixin for objects that can contain users in some way.
+See USER
+See USERNAME</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-CONTAINER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-CONTAINER">USER-CONTAINER</a></code></h4>  </header> <pre class="docstring">Mixin for objects that can contain users in some way.
 
 The standard implementation this offers uses an equalp hash-table
 for the user storage, mapping user names to user objects.
@@ -191,7 +193,10 @@ See OLD-NAME</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-REM
 This does not necessarily mean that the user has left the remote
 server.
 
-See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP">CHANNEL-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps channel names to channel objects on the channel-container
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL">CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the channel that the game is being played on.
+
+See MAIDEN-CLIENT-ENTITIES:CHANNEL
+See GAME</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL-MAP">CHANNEL-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps channel names to channel objects on the channel-container
 
 See CHANNEL-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CLIENT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CLIENT">CLIENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Accessor to the client that this object holds.
 
@@ -219,9 +224,20 @@ register user objects with the client.
 See USER
 See USER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:MESSAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:MESSAGE">MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the message string carried by the event.
 
-See MESSAGE-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-MAP">USER-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps user names to user objects on the user-container.
+See MESSAGE-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
 
-See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:AUTHENTICATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:AUTHENTICATE">AUTHENTICATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER CLIENT</code><code>)</code>  </header> <pre class="docstring">Return whether it is known that the given user object is really that particular user, or might also be someone else.
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER-MAP"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER-MAP">USER-MAP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the hash-table that maps user names to user objects on the user-container.
+
+See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USERNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Accessor to the entity's name on the client network.
+
+This may or may not be distinct from the entity's NAME.
+Especially clients may often want to keep a separate NAME
+and USERNAME, as the name should stay the same on the local
+core, but the username may possibly change or be different
+depending on the network.
+
+See USER
+See USER-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:AUTHENTICATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:AUTHENTICATE">AUTHENTICATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER CLIENT</code><code>)</code>  </header> <pre class="docstring">Return whether it is known that the given user object is really that particular user, or might also be someone else.
 
 In other words, this returns whether the identity of the user can
 be trusted or not. Note that the check is not cached, and may thus
@@ -234,9 +250,7 @@ This value is cached. The first time this is called on a user, it
 may take a while.
 
 See USER
-See AUTHENTICATE</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNEL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNEL">CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the channel object the event relates to
-
-See CHANNEL-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNELS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNELS">CHANNELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Return a list of all known channel objects on the client.
+See AUTHENTICATE</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:CHANNELS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:CHANNELS">CHANNELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Return a list of all known channel objects on the client.
 
 See CHANNEL
 See CHANNEL-CLIENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:ENSURE-CHANNEL"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:ENSURE-CHANNEL">ENSURE-CHANNEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL CLIENT</code><code>)</code>  </header> <pre class="docstring">Either return the existing channel of that name, or create it new. Either way, ensure it exists.
@@ -253,9 +267,7 @@ See CHANNEL
 See CHANNEL-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REMOVE-USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REMOVE-USER">REMOVE-USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME CONTAINER</code><code>)</code>  </header> <pre class="docstring">Remove the given user from the user-container.
 
 See USER
-See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REPLY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REPLY">REPLY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT FORMAT-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
-
-See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USERS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USERS">USERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL</code><code>)</code>  </header> <pre class="docstring">Return a list of all known user objects on the client.
+See USER-CONTAINER</pre> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:REPLY"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:REPLY">REPLY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">EVENT FORMAT-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="MAIDEN-CLIENT-ENTITIES:USERS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CLIENT-ENTITIES:USERS">USERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CHANNEL</code><code>)</code>  </header> <pre class="docstring">Return a list of all known user objects on the client.
 
 See USER
 See USER-CLIENT</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

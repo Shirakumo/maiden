@@ -112,7 +112,8 @@ are not guaranteed, but may be provided by a client.
 
 See CLIENT-ENTITY
 See AUTHENTICATE
-See AUTHENTICATED-P</pre> </article> </li><li> <a name="MAIDEN-IRC:INTENDED-NICKNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:INTENDED-NICKNAME">INTENDED-NICKNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Holds the intended nickname, which may be different from the actual nickname.
+See AUTHENTICATED-P
+See USERNAME</pre> </article> </li><li> <a name="MAIDEN-IRC:INTENDED-NICKNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:INTENDED-NICKNAME">INTENDED-NICKNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Holds the intended nickname, which may be different from the actual nickname.
 
 This is used to try and automatically change NICK to
 the intended nickname when possible.
@@ -126,7 +127,11 @@ user, in order to keep the name of a client instance
 consistent and unchanging, the client's nickname is
 kept separate.
 
-See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:PASSWORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:PASSWORD">PASSWORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The password that is used during connection to the server.
+This is another accessor to the same field as MAIDEN-
+CLIENT-ENTITIES:USERNAME
+
+See IRC-CLIENT
+See MAIDEN-CLIENT-ENTITIES:USERNAME</pre> </article> </li><li> <a name="MAIDEN-IRC:PASSWORD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:PASSWORD">PASSWORD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The password that is used during connection to the server.
 
 See SERVICES-PASSWORD
 See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:REALNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:REALNAME">REALNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The realname that is passed to the server upon connection.
@@ -144,11 +149,14 @@ services are explicitly supported:
 This is in part used to be able to authenticate the
 nicknames of users and check if they aren't impostors.
 
-See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:USERNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The username that is passed to the server upon connection.
+See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:USER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
 
-See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:USER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:USER">USER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Reader for the user object the event relates to.
+See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-IRC:USERNAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">The username that is passed to the server upon connection.
 
-See USER-EVENT</pre> </article> </li><li> <a name="MAIDEN-IRC:DEFINE-IRC-COMMAND"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:DEFINE-IRC-COMMAND">DEFINE-IRC-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define an IRC server command.
+Note that this is /not/ the same as MAIDEN-CLIENT-ENTITIES:
+USERNAME, which instead corresponds to NICKNAME.
+
+See IRC-CLIENT</pre> </article> </li><li> <a name="MAIDEN-IRC:DEFINE-IRC-COMMAND"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-IRC:DEFINE-IRC-COMMAND">DEFINE-IRC-COMMAND</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define an IRC server command.
 
 This will do the following:
 - It defines an event of the same name whose MESSAGE

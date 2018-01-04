@@ -109,7 +109,7 @@ client's back-queue if possible.</pre> </article> </li><li> <a name="MAIDEN-CHAT
 See CL-POSTGRES:PREPARE-QUERY
 See CL-POSTGRES:EXEC-PREPARED</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:PROCESS-BACK-QUEUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:PROCESS-BACK-QUEUE">PROCESS-BACK-QUEUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">C</code><code>)</code>  </header> <pre class="docstring">Process the queue on the consumer and record all messages, if possible.
 
-See MAYBE-RECORD-MESSAGE</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:RECORD-MESSAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:RECORD-MESSAGE">RECORD-MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE CHANNEL USER MESSAGE &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Record a message of a given type in the database.
+See MAYBE-RECORD-MESSAGE</pre> </article> </li><li> <a name="MAIDEN-CHATLOG:RECORD-MESSAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#MAIDEN-CHATLOG:RECORD-MESSAGE">RECORD-MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE CHANNEL USER TIME MESSAGE &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Record a message of a given type in the database.
 
 TYPE must be an acceptable type as by TYPE-&gt;CHAR
 
