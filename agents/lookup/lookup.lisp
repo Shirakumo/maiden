@@ -64,3 +64,47 @@
     `(define-lookup-function ,archive (,term)
        (or (table-find ,term ',entries)
            (error "~s not found in ~a." ,term ',archive)))))
+
+(defun split-section-title (text)
+  (let ((section (with-output-to-string (out)
+                   (loop for c across text
+                         do (if (find c "0123456789.")
+                                (write-char c out)
+                                (return))))))
+    (when (string/= "" section)
+      (list section
+            (string-right-trim "." section)
+            (string-left-trim " " (subseq text (length section)))))))
+
+(defun generate-table-from-staple-page (url)
+  (let ((doc (etypecase url
+               (string (multiple-value-bind (doc ret) (drakma:http-request url)
+                         (if (= 200 ret)
+                             doc
+                             (error "No such page ~s" url))))
+               (pathname url)))
+        (entries ()))
+    (lquery:$ (initialize doc)
+      "#documentation" "h1,h2,h3,h4,h5,h6"
+      (each (lambda (a)
+              (let ((id (lquery:$1 a (attr :id)))
+                    (text (string-trim '(#\Space #\Tab #\Return #\Linefeed) (lquery:$1 a (text)))))
+                (push `((,text ,@(split-section-title text))
+                        ,(format NIL "~a~@[#~a~]" url id)
+                        ,text)
+                      entries))
+              T)))
+    (lquery:$ (initialize doc)
+      "#symbol-index article"
+      (each (lambda (a)
+              (cl-ppcre:register-groups-bind (b c d) ("([^ ]+ ([^:]+:(.+)))" (lquery:$1 a (attr :id)))
+                (push `((,b ,c ,d)
+                        ,(format NIL "~a~a" url (lquery:$1 a ".name a" (attr :href)))
+                        ,(format NIL "~@(~a~)~a" (char b 0) (subseq b 1)))
+                      entries))
+              T)))
+    (nreverse entries)))
+
+(defmacro define-staple-doc-lookup (archive url)
+  `(define-table-lookup ,archive
+     ,@(generate-table-from-staple-page url)))

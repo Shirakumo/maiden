@@ -21,4 +21,5 @@
   :depends-on (:maiden-commands
                :maiden-api-access
                :maiden-client-entities
-               :lquery))
+               :lquery
+               :drakma))
