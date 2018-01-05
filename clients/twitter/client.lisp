@@ -52,11 +52,21 @@ and enter the PIN:
 
 (defmethod ensure-user ((user chirp:user) (client twitter-client))
   (setf (find-user (chirp:screen-name user) client)
-        (change-class user 'user :name (chirp:screen-name user) :client client)))
+        (change-class user 'user :id (princ-to-string (uuid:make-v4-uuid))
+                                 :name (chirp:screen-name user)
+                                 :client client)))
+
+(defmethod ensure-channel ((name string) (client twitter-client))
+  (or (find-channel name client)
+      (make-instance 'channel :name name :client client)))
+
+(defmethod ensure-channel ((user chirp:user) (client twitter-client))
+  (setf (find-channel (chirp:screen-name user) client)
+        (make-instance 'channel :name (chirp:screen-name user) :client client)))
 
 (defmethod start :before ((client twitter-client))
   (with-chirp (client)
-    (setf (user client) (chirp:account/verify-credentials))))
+    (setf (user client) (ensure-user (chirp:account/verify-credentials) client))))
 
 (defmethod start :after ((client twitter-client))
   (setf (running-p client) T)
@@ -72,8 +82,8 @@ and enter the PIN:
   (when (eql (bt:current-thread) (read-thread client))
     (invoke-restart 'exit-handling))
   (loop repeat 100
-        while (read-thread client)
-        do (sleep 0.01)
+        do (unless (read-thread client) (return))
+           (sleep 0.01)
         finally (bt:interrupt-thread (read-thread client)
                                      (lambda () (invoke-restart 'exit-handling)))))
 
@@ -89,6 +99,12 @@ and enter the PIN:
                                   (running-p client))))))
 
 (defmethod process (thing (client twitter-client)))
+
+(defmethod process :around (thing (client twitter-client))
+  (with-simple-restart (continue "Ignore the update.")
+    (handler-bind ((error (lambda (err)
+                            (maybe-invoke-debugger err 'continue))))
+      (call-next-method))))
 
 (define-event send-event (client-event active-event)
   ())
@@ -116,6 +132,7 @@ and enter the PIN:
 (defmethod reply ((channel channel) fmt &rest args)
   (do-issue (first (cores (client channel))) update-channel
     :client (client channel)
+    :user (user (client channel))
     :channel channel
     :message (apply #'format NIL fmt args)))
 
@@ -126,14 +143,15 @@ and enter the PIN:
   ((message :initarg :message :accessor message :mutable T)))
 
 (defmethod send ((update update-channel) client)
-  (chirp:direct-messages/new (message update) :screen-name (name (channel update))))
+  (chirp:direct-messages/new (message update)
+                             :screen-name (name (maiden-client-entities:channel update))))
 
 (define-event update-status (message-event send-event)
   ((message :initarg :message :accessor message :mutable T)
    (reply-to :initarg :reply-to :reader reply-to)))
 
 (defmethod send ((update update-status) client)
-  (chirp:statuses/update (message update) :reply-to (chirp:id (reply-to update))))
+  (chirp:reply (reply-to update) (message update)))
 
 (define-event status (message-event passive-event)
   ((object :initarg :object :reader object)))
@@ -142,13 +160,14 @@ and enter the PIN:
   (do-issue (first (cores client)) status
     :client client
     :object status
-    :user (ensure-user (chirp:user status) (client status))
+    :user (ensure-user (chirp:user status) client)
     :message (chirp:text status)))
 
 (defmethod reply ((status status) fmt &rest args)
   (do-issue (first (cores (client status))) update-status
     :client (client status)
-    :reply-to status
+    :user (user (client status))
+    :reply-to (object status)
     :message (apply #'format NIL fmt args)))
 
 (define-event direct-message (message-event channel-event passive-event)
@@ -161,7 +180,7 @@ and enter the PIN:
     :user (ensure-user (chirp:sender message) client)
     :channel (ensure-channel
               (if (string= (username client)
-                           (chirp:sender message))
+                           (chirp:screen-name (chirp:sender message)))
                   (chirp:recipient message)
                   (chirp:sender message))
               client)
