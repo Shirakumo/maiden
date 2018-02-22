@@ -134,7 +134,7 @@
       (list type)))
 
 (defun consumer-commands (consumer)
-  (loop for handler in (handlers (class-of consumer))
+  (loop for handler in (effective-handlers (class-of consumer))
         when (loop for type in (flatten-typespec (getf (options handler) :event-type))
                    thereis (c2mop:subclassp (find-class type)
                                             (find-class 'command-event)))
