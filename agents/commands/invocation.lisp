@@ -168,7 +168,7 @@
            (dotimes (i (length a) (aref v1 (length b)))
              (incf (aref v1 0))
              (dotimes (j (length b))
-               (let ((cost (if (char= (char a i) (char b j)) 0 1)))
+               (let ((cost (if (char-equal (char a i) (char b j)) 0 1)))
                  (setf (aref v1 (1+ j)) (min (1+ (aref v1 j))
                                              (1+ (aref v0 (1+ j)))
                                              (+ cost (aref v0 j))))))
