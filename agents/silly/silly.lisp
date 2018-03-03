@@ -157,6 +157,14 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
         (T
          (reply ev "Thanks for the ~a!" thing))))
 
+(define-command (silly love-you) (c ev)
+  :command "I love you"
+  (reply ev (alexandria:random-elt
+             '("Aw shucks."
+               "Haha, thanks!"
+               "You're making me blush. Stop it."
+               "Flirting with robots, eh?"))))
+
 (define-command (silly you-are) (c ev &string thing)
   :command "you are"
   (cond ((profane-p thing)
