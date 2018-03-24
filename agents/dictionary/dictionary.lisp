@@ -9,6 +9,10 @@
 (define-consumer dictionary (agent)
   ())
 
+(defun find-words (word &key (language "en") (offset 0) (limit 10))
+  (let* ((matches (oxenfurt:search-words word :source-lang language :offset offset :limit limit)))
+    (mapcar #'oxenfurt:word matches)))
+
 (defun synonyms (word &key (language "en"))
   (let* ((word (oxenfurt:find-word word :synonyms T :source-lang language))
          (lexical-entry (first (oxenfurt:lexical-entries word)))
@@ -73,8 +77,10 @@
     (let* ((word (oxenfurt:find-word word
                                      :source-lang language
                                      :filters (when kind `(:lexical-category ,kind))))
-           (lex (first (oxenfurt:lexical-entries word))))
-      (format out "~a /~a/ " (oxenfurt:text lex) (oxenfurt:phonetic-spelling (first (oxenfurt:pronunciations lex))))
+           (pron (find NIL (oxenfurt:lexical-entries word) :key #'oxenfurt:pronunciations :test-not #'eq)))
+      (format out "~a~@[ /~a/~] "
+              (oxenfurt:text (find NIL (oxenfurt:lexical-entries word) :key #'oxenfurt:text :test-not #'eq))
+              (when pron (oxenfurt:phonetic-spelling pron)))
       (dolist (lexical-entry (oxenfurt:lexical-entries word))
         (format out "~&(~(~a~)): ~a"
                 (oxenfurt:lexical-category lexical-entry)
@@ -99,6 +105,15 @@
     (when app-id (setf (maiden-storage:value :app-id) app-id))
     (when app-key (setf (maiden-storage:value :app-key) app-key))
     (reply ev "The Oxford API keys have been updated.")))
+
+(define-command (dictionary find-word) (c ev word-ish &key (language "en") (offset "0") (limit "10"))
+  :command "find word"
+  (let ((offset (parse-integer offset))
+        (limit (parse-integer limit)))
+    (if (< 0 limit 21)
+        (with-lookup-handling (c ev word-ish)
+          (reply ev "~{~a~^, ~}" (find-words word-ish :language language :offset offset :limit limit)))
+        (error "LIMIT must be between 1 and 20."))))
 
 (define-command (dictionary description) (c ev word &key (language "en") kind)
   :command "define"
