@@ -35,11 +35,11 @@
 (define-command (accounts login) (c ev password &optional account)
   :command "login"
   :advice public
-  (let ((account (or (account (or account (user ev)))
-                     (account (name (user ev))))))
+  (let ((account (or (account (or account (user ev)) :error NIL)
+                     (account (name (user ev)) :error NIL))))
     (cond ((not account)
            (error "This identity is not associated with any account."))
-          ((account (user ev))
+          ((account (user ev) :error NIL)
            (error "I still remember you, ~a." (name (user ev))))
           ((string/= password (password account))
            (error "Invalid password."))
