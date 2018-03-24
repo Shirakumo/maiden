@@ -80,7 +80,7 @@
            (pron (find NIL (oxenfurt:lexical-entries word) :key #'oxenfurt:pronunciations :test-not #'eq)))
       (format out "~a~@[ /~a/~] "
               (oxenfurt:text (find NIL (oxenfurt:lexical-entries word) :key #'oxenfurt:text :test-not #'eq))
-              (when pron (oxenfurt:phonetic-spelling pron)))
+              (when pron (oxenfurt:phonetic-spelling (first (oxenfurt:pronunciations pron)))))
       (dolist (lexical-entry (oxenfurt:lexical-entries word))
         (format out "~&(~(~a~)): ~a"
                 (oxenfurt:lexical-category lexical-entry)
