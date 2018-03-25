@@ -118,7 +118,7 @@
 (define-handler (irc-client yank-nick irc:msg-quit) (client ev user)
   :match-consumer 'client
   (when (and (string-equal (name user) (intended-nickname client))
-             (not (string-equal user (nickname client))))
+             (not (string-equal (name user) (nickname client))))
     (v:info :maiden.clients.irc.connection "Detected nick drop for our intended nick ~s." user)
     (irc:nick client user)))
 
