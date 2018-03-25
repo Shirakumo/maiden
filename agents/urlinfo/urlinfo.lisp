@@ -8,13 +8,16 @@
 
 (defun fetch (url)
   (multiple-value-bind (stream status headers url)
-      (drakma:http-request url :want-stream T :connection-timeout 2)
+      (let ((drakma:*text-content-types* '(("text")
+                                           ("application" . "xhtml+xml"))))
+        (drakma:http-request url :want-stream T :connection-timeout 2))
     (unless (= status 200)
       (error "Failed to fetch URL, received status code ~a." status))
     (values (puri:render-uri url NIL) (cdr (assoc :content-type headers)) stream)))
 
-(defun process-until (string function stream)
+(defun process-until (string function stream &optional limit)
   (loop with index = 0
+        for i from 0
         for c = (read-char stream)
         do (cond ;; We might have a match here...
                  ((char= c (aref string index))
@@ -27,6 +30,8 @@
                     (funcall function (aref string i)))
                   (funcall function c)
                   (setf index 0))
+                 ((and limit (< limit i))
+                  (return))
                  ;; Nothing unusual, just process.
                  (T
                   (funcall function C)))))
@@ -36,7 +41,7 @@
     (process-until "<title>" (lambda (c) c) stream)
     (plump-dom:decode-entities
      (with-output-to-string (s)
-       (process-until "</title>" (lambda (c) (write-char c s)) stream)))))
+       (process-until "</title>" (lambda (c) (write-char c s)) stream 100)))))
 
 (defun nicer-title (title)
   (cond ((not title) NIL)
