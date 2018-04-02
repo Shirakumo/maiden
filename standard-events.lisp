@@ -18,6 +18,7 @@
    :client (error "CLIENT required.")))
 
 (defmethod respond ((event client-event) &rest args &key (class (class-of event)) &allow-other-keys)
+  (remf args :class)
   (issue (apply #'make-instance class :client (client event) args)
          (event-loop event)))
 
