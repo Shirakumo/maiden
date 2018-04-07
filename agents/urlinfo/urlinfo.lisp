@@ -20,7 +20,7 @@
         for i from 0
         for c = (read-char stream)
         do (cond ;; We might have a match here...
-                 ((char= c (aref string index))
+                 ((char-equal c (aref string index))
                   (incf index)
                   (when (= index (length string))
                     (return)))
