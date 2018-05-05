@@ -58,6 +58,9 @@
 (defmethod (setf password) :after (value (account account))
   (offload account))
 
+(defmethod (setf identities) :after (value (account account))
+  (offload account))
+
 (defmethod data-value ((field symbol) (account account))
   (data-value (normalize-field-name field) account))
 
