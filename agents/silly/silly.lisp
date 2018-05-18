@@ -140,6 +140,12 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
            (reply ev "~dd~d: ~d" times size (loop for i from 0 below times summing (1+ (random size))))
            (reply ev "I don't know how to roll that."))))))
 
+(define-command (silly pick) (c ev &rest choices)
+  :command "randomly pick one of"
+  (if (null choices)
+      (reply ev "Uh, I'll need at least one thing to pick from, you know.")
+      (reply ev "Okey, I choose... ~a!" (alexandria:random-elt choices))))
+
 (defun profane-p (thing)
   (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist" "scrap" "trash" "garbage" "junk" "sex")
         :test (lambda (a b) (search b a))))
