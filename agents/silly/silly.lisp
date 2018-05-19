@@ -110,7 +110,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
   (reply ev "Eight."))
 
 (define-command (silly jerkcity) (c ev)
-  (multiple-value-bind (content status headers uri) (request-as :html "http://jerkcity.com/random/")
+  (multiple-value-bind (content status headers uri) (request-as :html "https://www.bonequest.com/random/")
     (declare (ignore headers))
     (when (= 200 status)
       (reply ev "~a ~a"
