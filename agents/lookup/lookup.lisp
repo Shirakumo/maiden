@@ -102,7 +102,7 @@
                       entries))
               T)))
     (lquery:$ (initialize doc)
-      "#symbol-index article"
+      "#symbol-index article, #index article"
       (each (lambda (a)
               (cl-ppcre:register-groups-bind (b c d) ("([^ ]+ ([^:]+:(.+)))" (lquery:$1 a (attr :id)))
                 (push `((,b ,c ,d)
