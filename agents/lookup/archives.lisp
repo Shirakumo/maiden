@@ -140,3 +140,25 @@
              `(define-table-lookup alexandria
                 ,@(coerce (parse-alexandria-docs) 'list))))
   (define-alexandria-docs))
+
+(defun parse-usocket-docs (&optional (url "https://common-lisp.net/project/usocket/api-docs.shtml"))
+  (let ((doc (plump:parse (multiple-value-bind (doc ret) (drakma:http-request url)
+                            (if (= 200 ret) doc (error "Could not fetch ~s." url))))))
+    (lquery:$ doc
+      ".sym>span"
+      (map (lambda (node)
+             (let* ((type-ish (plump:attribute node "class"))
+                    (type (cond ((string= type-ish "function-name") "function")
+                                ((string= type-ish "class-name") "class")
+                                ((string= type-ish "var-name") "variable")))
+                    (name (lquery:$1 node (text)))
+                    (anchor (lquery:$1 node "a" (attr :name))))
+               (list (list (format NIL "~a ~a" type name)
+                           name)
+                     (format NIL "~a#~a" url anchor)
+                     (format NIL "~a ~a" type name))))))))
+
+(macrolet ((define-usocket-docs ()
+             `(define-table-lookup usocket
+                ,@(coerce (parse-usocket-docs) 'list))))
+  (define-usocket-docs))
