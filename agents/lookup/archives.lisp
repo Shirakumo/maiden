@@ -90,6 +90,34 @@
 (define-staple-doc-lookup ubiquitous "https://shinmera.github.io/ubiquitous")
 (define-staple-doc-lookup verbose "https://shinmera.github.io/verbose")
 
+(define-weitz-doc-lookup chunga "https://edicl.github.io/chunga/")
+(define-weitz-doc-lookup cl-fad "https://edicl.github.io/cl-fad/")
+(define-weitz-doc-lookup cl-gd "https://edicl.github.io/cl-gd/")
+(define-weitz-doc-lookup cl-ppcre "https://edicl.github.io/cl-ppcre/")
+(define-weitz-doc-lookup cl-unicode "https://edicl.github.io/cl-unicode/")
+(define-weitz-doc-lookup cl-webdav "https://edicl.github.io/cl-webdav/")
+(define-weitz-doc-lookup cl-who "https://edicl.github.io/cl-who/" :iso-8859-1)
+(define-weitz-doc-lookup drakma "https://edicl.github.io/drakma/")
+(define-weitz-doc-lookup flexi-streams "https://edicl.github.io/flexi-streams/")
+(define-weitz-doc-lookup html-template "https://edicl.github.io/html-template/" :iso-8859-1)
+(define-weitz-doc-lookup hunchentoot "https://edicl.github.io/hunchentoot/")
+(define-weitz-doc-lookup url-rewrite "https://edicl.github.io/url-rewrite/")
+
+(macrolet ((define-alexandria-docs ()
+             `(define-table-lookup alexandria
+                ,@(coerce (parse-alexandria-docs) 'list))))
+  (define-alexandria-docs))
+
+(macrolet ((define-usocket-docs ()
+             `(define-table-lookup usocket
+                ,@(coerce (parse-usocket-docs) 'list))))
+  (define-usocket-docs))
+
+(macrolet ((define-cffi-docs ()
+             `(define-table-lookup cffi
+                ,@(parse-cffi-docs))))
+  (define-cffi-docs))
+
 (define-table-lookup bordeaux-threads
   (("About") "https://trac.common-lisp.net/bordeaux-threads/wiki/ApiDocumentation")
   (("Thread Creation") "https://trac.common-lisp.net/bordeaux-threads/wiki/ApiDocumentation#ThreadCreation")
@@ -129,26 +157,3 @@
   (("function finalize" "finalize") "https://common-lisp.net/project/trivial-garbage/#trivial-garbage__fun__finalize" "function finalize")
   (("function cancel-finalization" "cancel-finalization") "https://common-lisp.net/project/trivial-garbage/#trivial-garbage__fun__cancel-finalization" "function cancel-finalization")
   (("function gc" "gc") "https://common-lisp.net/project/trivial-garbage/#trivial-garbage__fun__gc" "function gc"))
-
-(macrolet ((define-alexandria-docs ()
-             `(define-table-lookup alexandria
-                ,@(coerce (parse-alexandria-docs) 'list))))
-  (define-alexandria-docs))
-
-(macrolet ((define-usocket-docs ()
-             `(define-table-lookup usocket
-                ,@(coerce (parse-usocket-docs) 'list))))
-  (define-usocket-docs))
-
-(define-weitz-doc-lookup chunga "https://edicl.github.io/chunga/")
-(define-weitz-doc-lookup cl-fad "https://edicl.github.io/cl-fad/")
-(define-weitz-doc-lookup cl-gd "https://edicl.github.io/cl-gd/")
-(define-weitz-doc-lookup cl-ppcre "https://edicl.github.io/cl-ppcre/")
-(define-weitz-doc-lookup cl-unicode "https://edicl.github.io/cl-unicode/")
-(define-weitz-doc-lookup cl-webdav "https://edicl.github.io/cl-webdav/")
-(define-weitz-doc-lookup cl-who "https://edicl.github.io/cl-who/" :iso-8859-1)
-(define-weitz-doc-lookup drakma "https://edicl.github.io/drakma/")
-(define-weitz-doc-lookup flexi-streams "https://edicl.github.io/flexi-streams/")
-(define-weitz-doc-lookup html-template "https://edicl.github.io/html-template/" :iso-8859-1)
-(define-weitz-doc-lookup hunchentoot "https://edicl.github.io/hunchentoot/")
-(define-weitz-doc-lookup url-rewrite "https://edicl.github.io/url-rewrite/")

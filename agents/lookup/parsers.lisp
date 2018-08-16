@@ -107,3 +107,30 @@
   `(define-table-lookup ,name
      (("About") ,url ,(format NIL "About ~:(~a~)" name))
      ,@(delete NIL (coerce (parse-weitz-docs url encoding) 'list))))
+
+(defun parse-cffi-docs (&optional (url "https://common-lisp.net/project/cffi/manual/cffi-manual.html"))
+  (let ((doc (url-html url)) (results ()))
+    (lquery:$ doc "h2.chapter,h3.section"
+      (each (lambda (node)
+              (let ((name (plump:text node))
+                    (anchor (lquery:$1 node (prev "a") (attr :name))))
+                (when anchor
+                  (push (list (list name) (format NIL "~a#~a" url anchor))
+                        results)))
+              T)))
+    (lquery:$ doc "h3.heading"
+      (each (lambda (node)
+              (let ((anchor (lquery:$1 node (prev "a") (attr :name)))
+                    (names (cl-ppcre:split "\\s*,+\\s*" (plump:text node)))
+                    (types (lquery:$ node (next-all "dl") (text))))
+                (loop for name in names
+                      for type across types
+                      do (cl-ppcre:register-groups-bind (type) ("^\\s*([^:]+):" type)
+                           (when (and anchor type)
+                             (let ((full-name (format NIL "~a ~a" type name)))
+                               (push (list (list full-name name)
+                                           (format NIL "~a#~a" url anchor)
+                                           full-name)
+                                     results)))))
+                T))))
+    (nreverse results)))
