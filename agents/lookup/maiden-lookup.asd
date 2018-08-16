@@ -15,11 +15,13 @@
   :serial T
   :components ((:file "package")
                (:file "lookup")
+               (:file "parsers")
                (:file "archives")
                (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
                :maiden-api-access
                :maiden-client-entities
+               :cl-ppcre
                :lquery
                :drakma))
