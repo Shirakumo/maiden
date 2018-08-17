@@ -10,7 +10,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Twitter client for Maiden"
-  :homepage "https://github.com/Shinmera/maiden"
+  :homepage "https://Shinmera.github.io/maiden/"
+  :bug-tracker "https://github.com/Shinmera/maiden/issues"
+  :source-control (:git "https://github.com/Shinmera/maiden.git")
   :serial T
   :components ((:file "package")
                (:file "client")

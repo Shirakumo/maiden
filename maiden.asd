@@ -14,7 +14,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A modern and extensible chat bot framework."
-  :homepage "https://github.com/Shinmera/maiden"
+  :homepage "https://Shinmera.github.io/maiden/"
+  :bug-tracker "https://github.com/Shinmera/maiden/issues"
+  :source-control (:git "https://github.com/Shinmera/maiden.git")
   :serial T
   :components ((:file "package")
                (:file "toolkit")
