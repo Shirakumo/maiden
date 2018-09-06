@@ -115,13 +115,7 @@
          (with-retry-restart (continue "Retry handling the connection.")
            (restart-case
                (handler-bind ((error #'maybe-invoke-debugger))
-                 (handler-bind (((or usocket:ns-try-again-condition 
-                                     usocket:timeout-error
-                                     usocket:shutdown-error
-                                     usocket:connection-reset-error
-                                     usocket:connection-aborted-error
-                                     cl:stream-error
-                                     client-timeout-error)
+                 (handler-bind (((or usocket:socket-error cl:stream-error client-timeout-error)
                                   (lambda (err)
                                     (invoke-restart 'handle-error err))))
                    (call-next-method)))
