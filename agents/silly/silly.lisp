@@ -150,6 +150,15 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
   (find thing '("shit" "ass" "fuck" "cunt" "retard" "idiot" "stupid" "cock" "dick" "autist" "scrap" "trash" "garbage" "junk" "sex")
         :test (lambda (a b) (search b a))))
 
+(define-command (silly welcome) (c ev &string place)
+  (cond ((string= place "back")
+         (reply ev "Thanks, it's good to be back."))
+        ((starts-with "to " place :test #'char-equal)
+         (reply ev "Thanks, I'm glad to be in ~a."
+                (subseq place 3)))
+        (T
+         (reply ev "Thanks!"))))
+
 (define-command (silly hello) (c ev &string other)
   (cond ((profane-p other)
          (reply ev "Well fuck you, too."))
