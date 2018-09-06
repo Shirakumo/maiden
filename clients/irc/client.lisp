@@ -139,6 +139,10 @@
     (loop for k being the hash-keys of (channel-map client)
           do (irc:join client k))))
 
+(define-handler (irc-client version-reply irc:msg-version) (client ev)
+  :match-consumer 'client
+  (reply ev "maiden-irc ~a" (asdf:component-version (asdf:find-system :maiden-irc))))
+
 (defmethod authenticate ((nick string) (client irc-client))
   (authenticate-with (services client) nick client))
 
