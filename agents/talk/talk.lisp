@@ -7,21 +7,28 @@
 (in-package #:org.shirakumo.maiden.agents.talk)
 
 (define-consumer talk (agent)
-  ((device :initarg :device :accessor device)
-   (output :initform NIL :accessor output))
-  (:default-initargs
-   :device #+linux "pulse"
-           #-linux NIL))
+  ((server :accessor server)))
 
 (defmethod start :after ((talk talk))
-  (setf (output talk) (cl-out123:connect (cl-out123:make-output (device talk) :name "Maiden Talk")))
-  (cl-out123:start (output talk) :rate 24000 :channels 1 :encoding :int16))
+  (unless (slot-boundp talk 'server)
+    (let* ((pipeline (make-instance 'harmony:pipeline))
+           (server (make-instance 'harmony:server))
+           (output (make-instance #+linux 'harmony-alsa:alsa-drain
+                                  #+windows 'harmony-wasapi:wasapi-drain
+                                  #+darwin 'harmony-coreaudio:coreaudio-drain
+                                  #-(or linux windows darwin) (error "Platform not supported.")
+                                  :context server))
+           (queue (make-instance 'harmony:queue
+                                 :name 'queue :context server)))
+      (harmony:connect pipeline queue 0 output 0)
+      (harmony:connect pipeline queue 1 output 1)
+      (harmony:compile-pipeline pipeline server)
+      (setf (server talk) server)))
+  (harmony:start (server talk)))
 
 (defmethod stop :before ((talk talk))
-  (when (output talk)
-    (cl-out123:stop (output talk))
-    (cl-out123:disconnect (output talk))
-    (setf (output talk) NIL)))
+  (when (slot-boundp talk 'server)
+    (harmony:stop server)))
 
 (defun get-speech-stream (text language)
   (multiple-value-bind (stream code)
@@ -37,7 +44,7 @@
         (error "Failed to translate into speech. This failure is most likely due to an invalid language.")
         stream)))
 
-(defun call-with-speech-file (function text language)
+(defun speech-file (text language)
   (let ((path (merge-pathnames (format NIL "maiden-talk-~d-~d.mp3" (get-universal-time) (random 1000))
                                (uiop:temporary-directory))))
     (with-open-file (out path :if-exists :supersede
@@ -46,38 +53,7 @@
       (let ((in (get-speech-stream text language)))
         (uiop:copy-stream-to-stream in out :element-type '(unsigned-byte 8))
         (close in)))
-    (unwind-protect
-         (funcall function path)
-      (uiop:delete-file-if-exists path))))
-
-(defmacro with-speech-file ((path text &key (language "en-US")) &body body)
-  `(call-with-speech-file (lambda (,path) ,@body) ,text ,language))
-
-(defmacro with-output ((out device &rest args) &body body)
-  `(let ((,out (cl-out123:connect (cl-out123:make-output ,device ,@args))))
-     (unwind-protect
-          (progn
-            (cl-out123:start ,out :rate 24000 :channels 1 :encoding :int16)
-            ,@body)
-       (cl-out123:stop ,out)
-       (cl-out123:disconnect ,out))))
-
-(defun play-file (file &key output)
-  (if output
-      (let ((file (cl-mpg123:connect (cl-mpg123:make-file file :accepted-format #+linux T
-                                                                                #-linux (list (cl-out123:rate output)
-                                                                                              (cl-out123:channels output)
-                                                                                              (cl-out123:encoding output))))))
-        (unwind-protect
-             (loop with buffer = (cl-mpg123:buffer file)
-                   for read = (cl-mpg123:process file)
-                   do (cl-out123:play output buffer read)
-                   while (< 0 read))
-          (cl-mpg123:disconnect file))
-        (cl-out123:drain output))
-      (with-output (out #+linux "pulse"
-                        #-linux NIL)
-        (play-file file :output out))))
+    path))
 
 (defun split-word-boundary (text max)
   (let ((boundary (loop with space = 0
@@ -92,22 +68,39 @@
         (subseq text 0 boundary)
         (subseq text 0 (min max (length text))))))
 
-(defun talk (text &key (language "en-US") output)
+(defmethod stop-playing ((talk talk) &key all)
+  (let ((queue (harmony:segment 'queue (server talk))))
+    (if all
+        (harmony:clear queue)
+        (harmony:stop (harmony:segment 0 queue)))))
+
+(defmethod play ((talk talk) path)
+  (harmony:enqueue (make-instance (harmony:source-type (pathname-type path)) :file path)
+                   (harmony:segment 'queue (server talk))))
+
+(defmethod talk ((talk talk) text &key (language "en-US") output)
   (cond ((<= (length text) 200)
-         (with-speech-file (path text :language language)
-           (play-file path :output output)))
+         (play talk (speech-file text language)))
         (T
          (let ((sub (split-word-boundary text 200)))
-           (talk sub :language language :output output)
-           (talk (subseq text (length sub)) :language language :output output)))))
+           (talk talk sub :language language :output output)
+           (talk talk (subseq text (length sub)) :language language :output output)))))
 
 (define-command (talk talk-en) (c ev &string text)
   :command "talk"
-  (talk (format NIL "~{~a~^ ~}" text)
-        :output (output c)))
+  (talk c (format NIL "~{~a~^ ~}" text)))
 
 (define-command (talk talk-lang) (c ev language &string text)
   :command "talk in"
-  (talk (format NIL "~{~a~^ ~}" text)
-        :language language
-        :output (output c)))
+  (talk c (format NIL "~{~a~^ ~}" text)
+        :language language))
+
+(define-command (talk shut-up) (c ev &optional what)
+  :command "shut up"
+  :add-to-consumer NIL
+  (cond ((null what)
+         (stop-playing c))
+        ((string-equal what "everything")
+         (stop-playing c :all T))
+        (T
+         (reply ev "I don't know how to shut that up."))))

@@ -19,7 +19,15 @@
                (:file "codes")
                (:file "talk")
                (:file "documentation"))
+  :defsystem-depends-on (:trivial-features)
   :depends-on (:maiden-commands
-               :cl-mpg123
-               :cl-out123
-               :drakma))
+               :array-utils
+               :drakma
+               :harmony
+               (:feature :linux :harmony-alsa)
+               (:feature :windows :harmony-wasapi)
+               (:feature :darwin :harmony-coreaudio)
+               :harmony
+               :harmony-mp3
+               :harmony-wav
+               :harmony-flac))
