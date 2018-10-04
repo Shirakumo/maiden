@@ -201,7 +201,8 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
          (reply ev "Enjoy your ~a! It will approximately be ready in ~a"
                 thing (format-relative-time (+ (get-universal-time) (random (* 60 60 24 365 1000))))))))
 
-(define-command (silly tell) (c ev target to &string thing)
+(define-command (silly tell-to) (c ev target to &string thing)
+  :command "tell to"
   (reply ev "~a: Hey, ~a!" target (string-left-trim ".?!" thing)))
 
 (define-command (silly say) (c ev &string thing)
