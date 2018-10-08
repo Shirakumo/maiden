@@ -11,10 +11,10 @@
   ;; talk.lisp
   (:export
    #:talk
-   #:get-speech-stream
-   #:with-speech-file
-   #:with-output
-   #:play-file
+   #:speech-file
+   #:stop-playing
+   #:play
    #:talk
    #:talk-en
-   #:talk-lang))
+   #:talk-lang
+   #:shut-up))

@@ -9,17 +9,20 @@
 (define-consumer talk (agent)
   ((server :accessor server)))
 
+(defclass queue (harmony:segment cl-mixed:queue) ())
+
 (defmethod start :after ((talk talk))
   (unless (slot-boundp talk 'server)
     (let* ((pipeline (make-instance 'harmony:pipeline))
            (server (make-instance 'harmony:server))
-           (output (make-instance #+linux 'harmony-alsa:alsa-drain
+           (output (make-instance #+linux 'harmony-pulse:pulse-drain
                                   #+windows 'harmony-wasapi:wasapi-drain
                                   #+darwin 'harmony-coreaudio:coreaudio-drain
                                   #-(or linux windows darwin) (error "Platform not supported.")
+                                  :program-name "Maiden Talk"
                                   :context server))
-           (queue (make-instance 'harmony:queue
-                                 :name 'queue :context server)))
+           (queue (make-instance 'queue
+                                 :name 'queue :inputs 0 :context server)))
       (harmony:connect pipeline queue 0 output 0)
       (harmony:connect pipeline queue 1 output 1)
       (harmony:compile-pipeline pipeline server)
@@ -71,12 +74,14 @@
 (defmethod stop-playing ((talk talk) &key all)
   (let ((queue (harmony:segment 'queue (server talk))))
     (if all
-        (harmony:clear queue)
-        (harmony:stop (harmony:segment 0 queue)))))
+        (cl-mixed:clear queue)
+        (let ((current (cl-mixed:current-segment queue)))
+          (when current (cl-mixed:withdraw current queue))))))
 
 (defmethod play ((talk talk) path)
-  (harmony:enqueue (make-instance (harmony:source-type (pathname-type path)) :file path)
-                   (harmony:segment 'queue (server talk))))
+  (harmony:add (make-instance (harmony:source-type (pathname-type path))
+                              :file path :context (server talk))
+               (harmony:segment 'queue (server talk))))
 
 (defmethod talk ((talk talk) text &key (language "en-US") output)
   (cond ((<= (length text) 200)
@@ -88,12 +93,16 @@
 
 (define-command (talk talk-en) (c ev &string text)
   :command "talk"
-  (talk c (format NIL "~{~a~^ ~}" text)))
+  (v:info :test "test")
+  (talk c (format NIL "~a" text)))
 
 (define-command (talk talk-lang) (c ev language &string text)
   :command "talk in"
-  (talk c (format NIL "~{~a~^ ~}" text)
-        :language language))
+  (talk c (format NIL "~a" text) :language language))
+
+(define-command (talk play) (c ev &string file)
+  :command "play file"
+  (play c (parse-namestring file)))
 
 (define-command (talk shut-up) (c ev &optional what)
   :command "shut up"

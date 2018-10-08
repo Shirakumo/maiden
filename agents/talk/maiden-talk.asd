@@ -24,7 +24,7 @@
                :array-utils
                :drakma
                :harmony
-               (:feature :linux :harmony-alsa)
+               (:feature :linux :harmony-pulse)
                (:feature :windows :harmony-wasapi)
                (:feature :darwin :harmony-coreaudio)
                :harmony
