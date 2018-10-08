@@ -31,7 +31,7 @@
 
 (defmethod stop :before ((talk talk))
   (when (slot-boundp talk 'server)
-    (harmony:stop server)))
+    (harmony:stop (server talk))))
 
 (defun get-speech-stream (text language)
   (multiple-value-bind (stream code)
