@@ -56,6 +56,7 @@
 (define-staple-doc-lookup lichat "https://shirakumo.github.io/lichat-protocol")
 (define-staple-doc-lookup lquery "https://shinmera.github.io/lquery")
 (define-staple-doc-lookup maiden "https://shirakumo.github.io/maiden")
+(define-staple-doc-lookup mmap "https://shinmera.github.io/mmap")
 (define-staple-doc-lookup modularize "https://shinmera.github.io/modularize")
 (define-staple-doc-lookup modularize-hooks "https://shinmera.github.io/modularize-hooks")
 (define-staple-doc-lookup modularize-interfaces "https://shinmera.github.io/modularize-interfaces")
