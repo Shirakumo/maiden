@@ -127,9 +127,10 @@
   (when (and (services-password client)
              (string= (nickname client) (intended-nickname client)))
     (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client))))
-  ;; Attempt to join all channels. This might fail due to delayed +i on channels +R.
+  ;; Attempt to join all channels. This might fail due to delayed +i on channels +r.
   (loop for k being the hash-keys of (channel-map client)
-        do (irc:join client k)))
+        do (irc:join client k)
+           (sleep 1)))
 
 (define-handler (irc-client handle-authenticate irc:msg-mode) (client ev target mode)
   :match-consumer 'client
@@ -137,7 +138,8 @@
   (when (and (string-equal target (nickname client))
              (find #\i mode))
     (loop for k being the hash-keys of (channel-map client)
-          do (irc:join client k))))
+          do (irc:join client k)
+             (sleep 1))))
 
 (define-handler (irc-client version-reply irc:msg-version) (client ev)
   :match-consumer 'client
