@@ -74,6 +74,7 @@
 
 (defmethod send ((message string) (client irc-client))
   ;; FIXME: Better handling for multilines
+  ;; FIXME: Queue messages or sleep to avoid flood
   (let ((message (format NIL "~a~c~c" (cl-ppcre:regex-replace-all "\\n" message " ") #\Return #\Linefeed)))
     (when (< *send-length-limit* (length (babel:string-to-octets message :encoding (encoding client))))
       (warn 'data-too-long-warning :data message))
