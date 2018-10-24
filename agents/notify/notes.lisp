@@ -53,5 +53,6 @@
 
 (defun user-notes (user)
   (copy-list
-   (with-storage ('notes)
-     (value (normalize-user-name user)))))
+   (ignore-errors
+    (with-storage ('notes)
+      (value (normalize-user-name user))))))

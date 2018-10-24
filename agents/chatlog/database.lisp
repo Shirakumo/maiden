@@ -74,6 +74,9 @@
 (defmethod channel-designator ((channel channel))
   (channel-designator (cons (name (client channel)) (name channel))))
 
+(defmethod channel-designator ((thing client-entity))
+  (channel-designator (cons (name (client thing)) (name thing))))
+
 (defmethod channel-designator ((spec cons))
   (setf (car spec) (string-downcase (car spec)))
   (setf (cdr spec) (string-downcase (cdr spec)))
