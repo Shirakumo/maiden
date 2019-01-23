@@ -94,15 +94,15 @@
 (define-command (talk talk-en) (c ev &string text)
   :command "talk"
   (v:info :test "test")
-  (talk c (format NIL "~a" text)))
+  (talk c text))
 
 (define-command (talk talk-lang) (c ev language &string text)
   :command "talk in"
-  (talk c (format NIL "~a" text) :language language))
+  (talk c text :language language))
 
 (define-command (talk play) (c ev &string file)
   :command "play file"
-  (play c (parse-namestring file)))
+  (play c (uiop:parse-native-namestring file)))
 
 (define-command (talk shut-up) (c ev &optional what)
   :command "shut up"
