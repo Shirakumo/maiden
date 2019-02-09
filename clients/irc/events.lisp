@@ -27,14 +27,6 @@
   (print-unreadable-object (reply-event stream :type T :identity T)
     (format stream "~s ~a" :user (name (user reply-event)))))
 
-(defmethod print-object ((reply-event irc:msg-notice) stream)
-  (print-unreadable-object (reply-event stream :type T :identity T)
-    (format stream "~s ~a: ~s" :user (name (user reply-event)) (message reply-event))))
-
-(defmethod print-object ((reply-event irc:msg-error) stream)
-  (print-unreadable-object (reply-event stream :type T :identity T)
-    (format stream "~s ~a: ~s" :user (name (user reply-event)) (message reply-event))))
-
 (define-event unknown-event (reply-event)
   ())
 
@@ -502,3 +494,11 @@
          (irc:privmsg (client event) (name (user event)) (apply #'format NIL fmst args)))
         (T
          (irc:privmsg (client event) (name (channel event)) (apply #'format NIL fmst args)))))
+
+(defmethod print-object ((reply-event irc:msg-notice) stream)
+  (print-unreadable-object (reply-event stream :type T :identity T)
+    (format stream "~s ~a: ~s" :user (name (user reply-event)) (message reply-event))))
+
+(defmethod print-object ((reply-event irc:msg-error) stream)
+  (print-unreadable-object (reply-event stream :type T :identity T)
+    (format stream "~s ~a: ~s" :user (name (user reply-event)) (message reply-event))))
