@@ -82,6 +82,8 @@
 (define-staple-doc-lookup simple-tasks "https://shinmera.github.io/simple-tasks")
 (define-staple-doc-lookup softdrink "https://shinmera.github.io/softdrink")
 (define-staple-doc-lookup staple "https://shinmera.github.io/staple")
+(define-staple-doc-lookup staple-server "https://shinmera.github.io/staple/staple-server/")
+(define-staple-doc-lookup staple-code-parser "https://shinmera.github.io/staple/staple-code-parser/")
 (define-staple-doc-lookup system-locale "https://shinmera.github.io/system-locale")
 (define-staple-doc-lookup tooter "https://shinmera.github.io/tooter")
 (define-staple-doc-lookup trivial-arguments "https://shinmera.github.io/trivial-arguments")
