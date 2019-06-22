@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-blocker
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Module to allow blocking channels or users from issuing commands."

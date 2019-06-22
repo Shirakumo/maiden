@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-talk
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Performs text-to-speech"

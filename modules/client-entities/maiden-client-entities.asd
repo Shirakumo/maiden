@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-client-entities
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Support for the concepts of users and channels."

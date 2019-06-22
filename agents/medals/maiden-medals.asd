@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-medals
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Allows you to award \"medals\" to users in Maiden"

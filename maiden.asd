@@ -10,7 +10,7 @@
 
 (asdf:defsystem maiden
   :version "3.1.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A modern and extensible chat bot framework."

@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-core-manager
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Manage the core through an agent."

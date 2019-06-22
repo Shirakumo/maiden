@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-activatable
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Provide a handler type that can be activated on a per-channel basis."

@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-commands
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Command parsing and issuing module for Maiden"

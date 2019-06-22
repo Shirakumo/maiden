@@ -6,7 +6,7 @@
 
 (asdf:defsystem maiden-twitter
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Twitter client for Maiden"

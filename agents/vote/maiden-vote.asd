@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-vote
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Access information about URLs in Maiden."

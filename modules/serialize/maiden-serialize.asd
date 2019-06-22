@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-serialize
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Serialisation support for Maiden events."

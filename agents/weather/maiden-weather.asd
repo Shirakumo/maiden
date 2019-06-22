@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-weather
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Simple weather data access through forecast.io"

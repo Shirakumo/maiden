@@ -7,7 +7,7 @@
 
 (asdf:defsystem maiden-lichat
   :version "0.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Lichat client for Maiden"
