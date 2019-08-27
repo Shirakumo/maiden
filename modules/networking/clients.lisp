@@ -206,7 +206,7 @@
 (defmethod receive :around ((client text-client))
   (handler-bind (#+sbcl (sb-int:stream-decoding-error
                           (lambda (err)
-                            (v:log :warning :maiden.client.receive err)
+                            (v:warn :maiden.client.receive err)
                             (invoke-restart 'sb-int:attempt-resync))))
     (call-next-method)))
 
