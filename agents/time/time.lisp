@@ -11,10 +11,12 @@
 ;; (maiden-accounts:define-fields
 ;;   (timezone () "The time zone the account's user is currently in."))
 
-(defun timezone-data (location &optional (time (get-unix-time)))
-  (let* ((location (if (listp location) location (maiden-location:coordinates location)))
+(defun timezone-data (location &optional (time (get-unix-time)) key)
+  (let* ((key (or key (maiden-storage:with-storage ('time) (maiden-storage:value :api-key))))
+         (location (if (listp location) location (maiden-location:coordinates location)))
          (data (request-as :json *timezone-api* :get `(("sensor" "false")
                                                        ("timestamp" ,time)
+                                                       ("key" ,(or key ""))
                                                        ("location" ,(format NIL "~f,~f" (first location) (second location))))))
          (status (json-v data "status")))
     (cond ((string-equal status "ok")
@@ -26,6 +28,8 @@
            (values))
           ((string-equal status "over_query_limit")
            (error "Exceeded allowed amount of queries against the Google Maps API."))
+          ((null key)
+           (error "You have not set the Google Maps API key yet."))
           (T
            (error "Google Maps failed to perform your request for an unknown reason.")))))
 
@@ -85,4 +89,4 @@
 
 (define-command (time time-between-users) (c ev from to)
   :command "time between users"
-  (do-issue (core ev) 'time-between :from (user-location from) :to (user-location to)))
+  (do-issue (core ev) time-between :from (user-location from) :to (user-location to)))

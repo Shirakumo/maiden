@@ -21,6 +21,8 @@
            (error "No location called ~s could be found." location))
           ((string-equal status "over_query_limit")
            (error "Exceeded allowed amount of queries against the Google Maps API."))
+          ((null key)
+           (error "You have not set the Google Maps API key yet."))
           (T
            (error "Google Maps failed to perform your request for an unknown reason.")))))
 
