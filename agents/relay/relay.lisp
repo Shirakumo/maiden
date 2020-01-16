@@ -5,8 +5,8 @@
 |#
 
 (in-package #:maiden-user)
-(defpackage #:maiden-relay
-  (:nicknames #:org.shirakumo.maiden.agents.relay)
+(defpackage #:maiden-channel-relay
+  (:nicknames #:org.shirakumo.maiden.agents.channel-relay)
   (:use #:cl #:maiden #:maiden-storage #:maiden-commands #:maiden-client-entities)
   (:shadow #:relay)
   (:export
@@ -16,7 +16,7 @@
    #:id
    #:prefix-id
    #:prefix-user))
-(in-package #:org.shirakumo.maiden.agents.relay)
+(in-package #:org.shirakumo.maiden.agents.channel-relay)
 
 (define-consumer relay (agent)
   ((mappings :accessor mappings)))

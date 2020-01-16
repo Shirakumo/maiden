@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(asdf:defsystem maiden-relay
+(asdf:defsystem maiden-channel-relay
   :version "0.0.0"
   :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
