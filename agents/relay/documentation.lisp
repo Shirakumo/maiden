@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.shirakumo.maiden.agents.relay)
+(in-package #:org.shirakumo.maiden.agents.channel-relay)
 
 (docs:define-docs
   (type relay
