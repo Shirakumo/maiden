@@ -31,7 +31,8 @@
    :prefix-user T))
 
 (defmethod initialize-instance :after ((relay relay) &key mappings)
-  (setf (mappings relay) (or mappings (value :mappings) (make-hash-table :test 'equalp))))
+  (with-storage (relay)
+    (setf (mappings relay) (or mappings (value :mappings) (make-hash-table :test 'equalp)))))
 
 (define-stored-accessor relay mappings :mappings)
 
