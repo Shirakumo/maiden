@@ -27,7 +27,7 @@
 (define-staple-doc-lookup cl-gamepad "https://shirakumo.github.io/cl-gamepad")
 (define-staple-doc-lookup cl-gpio "https://shinmera.github.io/cl-gpio")
 (define-staple-doc-lookup cl-markless "https://shirakumo.github.io/cl-markless")
-(define-staple-doc-lookup cl-mixed "https://shirakumo.github.io/cl-mixed")
+;(define-staple-doc-lookup cl-mixed "https://shirakumo.github.io/cl-mixed")
 (define-staple-doc-lookup cl-monitors "https://shirakumo.github.io/cl-monitors")
 (define-staple-doc-lookup cl-mpg123 "https://shirakumo.github.io/cl-mpg123")
 (define-staple-doc-lookup cl-out123 "https://shirakumo.github.io/cl-out123")
