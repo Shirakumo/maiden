@@ -9,30 +9,6 @@
 (define-consumer talk (agent)
   ((server :accessor server)))
 
-(defclass queue (harmony:segment cl-mixed:queue) ())
-
-(defmethod start :after ((talk talk))
-  (unless (slot-boundp talk 'server)
-    (let* ((pipeline (make-instance 'harmony:pipeline))
-           (server (make-instance 'harmony:server))
-           (output (make-instance #+linux 'harmony-pulse:pulse-drain
-                                  #+windows 'harmony-wasapi:wasapi-drain
-                                  #+darwin 'harmony-coreaudio:coreaudio-drain
-                                  #-(or linux windows darwin) (error "Platform not supported.")
-                                  :program-name "Maiden Talk"
-                                  :context server))
-           (queue (make-instance 'queue
-                                 :name 'queue :inputs 0 :context server)))
-      (harmony:connect pipeline queue 0 output 0)
-      (harmony:connect pipeline queue 1 output 1)
-      (harmony:compile-pipeline pipeline server)
-      (setf (server talk) server)))
-  (harmony:start (server talk)))
-
-(defmethod stop :before ((talk talk))
-  (when (slot-boundp talk 'server)
-    (harmony:stop (server talk))))
-
 (defun get-speech-stream (text language)
   (multiple-value-bind (stream code)
       (drakma:http-request "http://translate.google.com/translate_tts"
@@ -72,16 +48,11 @@
         (subseq text 0 (min max (length text))))))
 
 (defmethod stop-playing ((talk talk) &key all)
-  (let ((queue (harmony:segment 'queue (server talk))))
-    (if all
-        (cl-mixed:clear queue)
-        (let ((current (cl-mixed:current-segment queue)))
-          (when current (cl-mixed:withdraw current queue))))))
+  ;; FIXME: implement
+  )
 
 (defmethod play ((talk talk) path)
-  (harmony:add (make-instance (harmony:source-type (pathname-type path))
-                              :file path :context (server talk))
-               (harmony:segment 'queue (server talk))))
+  (org.shirakumo.fraf.mixed.examples:play path))
 
 (defmethod talk ((talk talk) text &key (language "en-US") output)
   (cond ((<= (length text) 200)

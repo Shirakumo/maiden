@@ -23,11 +23,4 @@
   :depends-on (:maiden-commands
                :array-utils
                :drakma
-               :harmony
-               (:feature :linux :harmony-pulse)
-               (:feature :windows :harmony-wasapi)
-               (:feature :darwin :harmony-coreaudio)
-               :harmony
-               :harmony-mp3
-               :harmony-wav
-               :harmony-flac))
+               :cl-mixed-examples))
