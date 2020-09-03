@@ -8,6 +8,8 @@
 (defpackage #:maiden-talk
   (:nicknames #:org.shirakumo.maiden.agents.talk)
   (:use #:cl #:maiden #:maiden-commands)
+  (:local-nicknames
+   (#:mixed #:org.shirakumo.fraf.mixed))
   ;; talk.lisp
   (:export
    #:talk

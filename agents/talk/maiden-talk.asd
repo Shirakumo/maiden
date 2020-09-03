@@ -23,4 +23,7 @@
   :depends-on (:maiden-commands
                :array-utils
                :drakma
-               :cl-mixed-examples))
+               :cl-mixed-mpg123
+               (:feature :linux :cl-mixed-pulse)
+               (:feature :windows :cl-mixed-wasapi)
+               (:feature :darwin :cl-mixed-coreaudio)))

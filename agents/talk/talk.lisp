@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.maiden.agents.talk)
 
 (define-consumer talk (agent)
-  ((server :accessor server)))
+  ((playing :initform NIL :accessor playing)))
 
 (defun get-speech-stream (text language)
   (multiple-value-bind (stream code)
@@ -47,12 +47,22 @@
         (subseq text 0 boundary)
         (subseq text 0 (min max (length text))))))
 
-(defmethod stop-playing ((talk talk) &key all)
-  ;; FIXME: implement
-  )
-
 (defmethod play ((talk talk) path)
-  (org.shirakumo.fraf.mixed.examples:play path))
+  (setf (playing talk) T)
+  (mixed:with-objects ((source (mixed:make-unpacker))
+                       (drain (mixed:make-packer))
+                       (mp3 (make-instance 'org.shirakumo.fraf.mixed.mpg123:source :file path :pack source))
+                       (out (make-instance #+linux 'org.shirakumo.fraf.mixed.pulse:drain
+                                           #+windows 'org.shirakumo.fraf.mixed:wasapi:drain
+                                           #+darwin 'org.shirakumo.fraf.mixed.coreaudio:drain
+                                           :pack drain)))
+    (mixed:with-buffers 500 (l r)
+      (mixed:connect source :left drain :left l)
+      (mixed:connect source :right drain :right r)
+      (mixed:with-chain chain (mp3 source drain out)
+        (loop while (playing talk)
+              until (mixed:done-p mp3)
+              do (mixed:mix chain))))))
 
 (defmethod talk ((talk talk) text &key (language "en-US") output)
   (cond ((<= (length text) 200)
@@ -75,12 +85,7 @@
   :command "play file"
   (play c (uiop:parse-native-namestring file)))
 
-(define-command (talk shut-up) (c ev &optional what)
+(define-command (talk shut-up) (c ev)
   :command "shut up"
   :add-to-consumer NIL
-  (cond ((null what)
-         (stop-playing c))
-        ((string-equal what "everything")
-         (stop-playing c :all T))
-        (T
-         (reply ev "I don't know how to shut that up."))))
+  (setf (playing c) NIL))
