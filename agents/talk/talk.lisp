@@ -7,7 +7,11 @@
 (in-package #:org.shirakumo.maiden.agents.talk)
 
 (define-consumer talk (agent)
-  ((playing :initform NIL :accessor playing)))
+  ((server :initform NIL :accessor server)
+   (voice :initform NIL :accessor voice)))
+
+(defmethod start :after ((talk talk))
+  (setf (server talk) (harmony:start (harmony:make-simple-server :latency 0.1))))
 
 (defun get-speech-stream (text language)
   (multiple-value-bind (stream code)
@@ -48,21 +52,10 @@
         (subseq text 0 (min max (length text))))))
 
 (defmethod play ((talk talk) path)
-  (setf (playing talk) T)
-  (mixed:with-objects ((source (mixed:make-unpacker))
-                       (drain (mixed:make-packer))
-                       (mp3 (make-instance 'org.shirakumo.fraf.mixed.mpg123:source :file path :pack source))
-                       (out (make-instance #+linux 'org.shirakumo.fraf.mixed.pulse:drain
-                                           #+windows 'org.shirakumo.fraf.mixed:wasapi:drain
-                                           #+darwin 'org.shirakumo.fraf.mixed.coreaudio:drain
-                                           :pack drain)))
-    (mixed:with-buffers 500 (l r)
-      (mixed:connect source :left drain :left l)
-      (mixed:connect source :right drain :right r)
-      (mixed:with-chain chain (mp3 source drain out)
-        (loop while (playing talk)
-              until (mixed:done-p mp3)
-              do (mixed:mix chain))))))
+  (when (voice talk)
+    (loop until (mixed:done-p (voice talk))
+          do (sleep 0.1)))
+  (setf (voice talk) (harmony:play path :server (server talk) :mixer :speech)))
 
 (defmethod talk ((talk talk) text &key (language "en-US") output)
   (cond ((<= (length text) 200)
@@ -88,4 +81,5 @@
 (define-command (talk shut-up) (c ev)
   :command "shut up"
   :add-to-consumer NIL
-  (setf (playing c) NIL))
+  (when (voice c)
+    (setf (mixed:done-p (voice c)) T)))

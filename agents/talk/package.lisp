@@ -9,7 +9,8 @@
   (:nicknames #:org.shirakumo.maiden.agents.talk)
   (:use #:cl #:maiden #:maiden-commands)
   (:local-nicknames
-   (#:mixed #:org.shirakumo.fraf.mixed))
+   (#:mixed #:org.shirakumo.fraf.mixed)
+   (#:harmony #:org.shirakumo.fraf.harmony.user))
   ;; talk.lisp
   (:export
    #:talk
