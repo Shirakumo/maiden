@@ -20,9 +20,10 @@
           until (or (not char) (char= #\Nul char)))))
 
 (defun good-initarg-p (initarg)
-  (member initarg '(:id :clock :from :password :version :channel :target :text
-                    :permissions :users :channels :registered :connections
-                    :update-id :compatible-versions)))
+  (member initarg '(:id :clock :from :password :version :extensions :channel :target :text
+                    :permissions :users :channels :registered :connections :update :permitted
+                    :attributes :update-id :compatible-versions :content-type :filename
+                    :payload :name :names :keys :key :ip :mask :by :identities)))
 
 (defun print-event (event stream)
   (lichat-protocol:print-sexpr
@@ -108,19 +109,16 @@
                                        :id (slot-value update 'id)
                                        :text (slot-value update 'text))))
 
-(define-update ping (update)
-  ())
+(define-update ping (update) ())
 
-(define-update pong (update)
-  ())
+(define-update pong (update) ())
 
 (define-update connect (update)
   (password &optional
             (version (lichat-protocol:protocol-version))
             (extensions '("shirakumo-backfill" "shirakumo-data"))))
 
-(define-update disconnect (update)
-  ())
+(define-update disconnect (update) ())
 
 (define-update register (update)
   (password))
@@ -132,7 +130,7 @@
   (channel))
 
 (define-update create (channel-update)
-  (channel))
+  (&optional (channel NIL)))
 
 (define-update kick (channel-update target-update)
   (target channel))
@@ -141,7 +139,13 @@
   (target channel))
 
 (define-update permissions (channel-update)
-  (&optional (permissions ())))
+  (channel &optional (permissions ())))
+
+(define-update grant (channel-update target-update)
+  (update))
+
+(define-update deny (channel-update target-update)
+  (update))
 
 (define-update message (channel-update text-update)
   (channel text))
@@ -153,19 +157,19 @@
                                        :text (slot-value update 'text))))
 
 (define-update users (channel-update)
-  (&optional (users ())))
+  (channel &optional (users ())))
 
 (define-update channels (update)
-  (&optional (channels ())))
+  (&optional (channel NIL) (channels ())))
 
 (define-update user-info (target-update)
-  (&optional (registered NIL) (connections 1)))
+  (target &optional (registered NIL) (connections 1)))
 
-(define-update backfill (channel-update)
-  ())
+(define-update capabilities (channel-update)
+  (channel &optional (permitted ())))
 
-(define-update data (channel-update)
-  (content-type payload &optional (filename NIL)))
+(define-update server-info (target-update)
+  (target &optional (attributes ()) (connections ())))
 
 (define-update failure (text-update)
   (&optional text))
@@ -194,6 +198,9 @@
 (define-update invalid-update (update-failure)
   (update-id &optional text))
 
+(define-update already-connected (update-failure)
+  (update-id &optional text))
+
 (define-update username-mismatch (update-failure)
   (update-id &optional text))
 
@@ -210,6 +217,9 @@
   (update-id &optional text))
 
 (define-update no-such-channel (update-failure)
+  (update-id &optional text))
+
+(define-update registration-rejected (update-failure)
   (update-id &optional text))
 
 (define-update already-in-channel (update-failure)
@@ -236,5 +246,95 @@
 (define-update too-many-updates (update-failure)
   (update-id &optional text))
 
+(define-update clock-skewed (update-failure)
+  (update-id &optional text))
+
+(define-update backfill (channel-update)
+  (channel))
+
+(define-update data (channel-update)
+  (content-type payload &optional (filename NIL)))
+
+(define-update emotes ()
+  (content-type name payload))
+
+(define-update emote ()
+  (content-type name payload))
+
+(define-update edit (message)
+  (id channel text))
+
+(define-update channel-info (channel-update)
+  (&optional (keys T)))
+
+(define-update set-channel-info (channel-update text-update)
+  (key))
+
+(define-update kill (target-update)
+  (target))
+
+(define-update destroy (channel-update)
+  (channel))
+
+(define-update ban (target-update)
+  (target))
+
+(define-update unban (target-update)
+  (target))
+
+(define-update ip-ban ()
+  (ip mask))
+
+(define-update ip-unban ()
+  (ip mask))
+
+(define-update pause (channel-update)
+  (channel by))
+
+(define-update quiet (channel-update target-update)
+  (channel target))
+
+(define-update unquiet (channel-update target-update)
+  (channel target))
+
+(define-update bridge (channel-update)
+  (channel))
+
+(define-update link (data)
+  (content-type filename payload))
+
+(define-update set-user-info (text-update)
+  (key text))
+
+(define-update share-identity ()
+  (&optional key))
+
+(define-update unshare-identity ()
+  (&optional key))
+
+(define-update list-shared-identities ()
+  (&optional identities))
+
+(define-update assume-identity (target-update)
+  (target key))
+
 (define-update bad-content-type (update-failure)
   (update-id &optional allowed-content-types))
+
+(define-update no-such-parent-channel (update-failure)
+  (update-id &optional text))
+
+(define-update no-such-channel-info (update-failure)
+  (update-id &optional text key))
+
+(define-update malformed-channel-info (update-failure)
+  (update-id &optional text))
+
+(define-update bad-ip-format (update-failure)
+  (update-id &optional text))
+
+(define-update malformed-user-info (update-failure)
+  (update-id &optional text))
+
+(define-update no-such-user-info (update-failure)
+  (update-id &optional text key))
