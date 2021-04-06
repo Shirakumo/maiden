@@ -8,7 +8,8 @@
 
 (defun parse-event (client stream)
   (unwind-protect
-       (let ((sexpr (lichat-protocol:read-sexpr stream)))
+       (let ((sexpr (handler-bind ((lichat-protocol:unknown-symbol #'continue))
+                      (lichat-protocol:read-sexpr stream))))
          (when (consp sexpr)
            (unless (typep (first sexpr) 'symbol)
              (error 'lichat-protocol:malformed-wire-object :update sexpr))
@@ -69,7 +70,7 @@
    :id (lichat-protocol:next-id)
    :clock (get-universal-time)))
 
-(defmethod initialize-instance :after ((event update) &key client user from)
+(defmethod initialize-instance :after ((event update) &key client user from &allow-other-keys)
   (unless (typep (or user from) 'user)
     (deeds:with-immutable-slots-unlocked ()
       (setf (slot-value event 'user) (ensure-user (or user from) client)))))
