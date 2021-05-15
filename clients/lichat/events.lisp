@@ -87,7 +87,8 @@
   ())
 
 (define-event channel-update (update channel-event)
-  ())
+  ((bridge :initarg :bridge :reader bridge))
+  (:default-initargs :bridge NIL))
 
 (defmethod initialize-instance :after ((event channel-update) &key client channel)
   (unless (typep channel 'channel)
@@ -149,7 +150,7 @@
   (update))
 
 (define-update message (channel-update text-update)
-  (channel text))
+  (channel text &optional link))
 
 (defmethod print-object ((update message) stream)
   (print-unreadable-object (update stream :type T)
@@ -301,8 +302,8 @@
 (define-update bridge (channel-update)
   (channel))
 
-(define-update link (data)
-  (content-type filename payload))
+(define-update emote (channel-update)
+  (target update-id emote))
 
 (define-update set-user-info (text-update)
   (key text))
