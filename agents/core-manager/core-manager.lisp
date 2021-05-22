@@ -9,6 +9,20 @@
 (define-consumer core-manager ()
   ())
 
+(defmethod start :after ((core-manager core-manager))
+  (maiden-storage:with-storage (core-manager)
+    (dolist (core (cores core-manager))
+      (loop for (class . initargs) in (ubiquitous:value :consumers)
+            do (unless (consumer (getf initargs :name) core)
+                 (start (add-consumer (apply #'make-instance class initargs) core)))))))
+
+(defun add-consumer-to-storage (c name class-name initargs)
+  (maiden-storage:with-storage (c)
+    (let ((clients (ubiquitous:value :consumers)))
+      (setf clients (remove name clients :key (lambda (c) (getf (rest c) :name)) :test #'equal))
+      (push (list* class-name (list* :name name initargs)) clients)
+      (setf (ubiquitous:value :consumers) clients))))
+
 (define-command (core-manager start-consumer) (c ev consumer)
   :command "start consumer"
   :advice (not public)
@@ -44,7 +58,29 @@
     (let ((consumer (make-instance class-name)))
       (when name (setf (name consumer) name))
       (start (add-consumer consumer (core ev)))
-      (reply ev "~a added to core." consumer))))
+      (reply ev "~a added to core." consumer)
+      (add-consumer-to-storage c (name consumer) class-name ()))))
+
+(define-command (core-manager add-client) (c ev package &key symbol name username nickname host channels password services-password)
+  :command "add client"
+  :advice (not public)
+  (let ((class-name (if symbol
+                        (find-symbol symbol package)
+                        (find-consumer-in-package package)))
+        (initargs ()))
+    (when (or (not class-name) (not (find-class class-name NIL)))
+      (error "No such class found."))
+    (macrolet ((build-initargs (&rest initargs)
+                 `(progn
+                    ,@(loop for name in initargs
+                            collect ``(when ,name
+                                        (push ,name initargs)
+                                        (push ,(intern (string name) "KEYWORD") initargs))))))
+      (build-initargs name username nickname host channels password services-password))
+    (let ((consumer (apply #'make-instance class-name initargs)))
+      (start (add-consumer consumer (core ev)))
+      (reply ev "~a added to core." consumer)
+      (add-consumer-to-storage c (name consumer) class-name initargs))))
 
 (define-command (core-manager list-consumers) (c ev)
   :command "list consumers"
