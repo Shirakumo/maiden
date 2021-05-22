@@ -106,15 +106,18 @@
   :match-consumer 'client
   (irc:pong client server other-server))
 
+(defun services-logon (client)
+  (when (services-password client)
+    (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client)))))
+
 (define-handler (irc-client nick-change irc:msg-nick) (client ev user nickname)
   :match-consumer 'client
   (when (string-equal (name user) (nickname client))
     (v:info :maiden.clients.irc.connection "Detected nick change from ~s to ~s." user nickname)
     (setf (nickname client) nickname)
     ;; If we reclaimed our proper nick, we can try re-identifying.
-    (when (and (services-password client)
-               (string= (intended-nickname client) nickname))
-      (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client))))))
+    (when (string= (intended-nickname client) nickname)
+      (services-logon client))))
 
 (define-handler (irc-client yank-nick irc:msg-quit) (client ev user)
   :match-consumer 'client
@@ -134,9 +137,8 @@
 
 (define-handler (irc-client handle-init irc:rpl-welcome) (client ev)
   :match-consumer 'client
-  (when (and (services-password client)
-             (string= (nickname client) (intended-nickname client)))
-    (irc:privmsg client "NickServ" (format NIL "IDENTIFY ~a" (services-password client))))
+  (when (string= (nickname client) (intended-nickname client))
+    (services-logon client))
   ;; Attempt to join all channels. This might fail due to delayed +i on channels +r.
   (rejoin-channels client))
 
