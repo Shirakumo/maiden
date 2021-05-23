@@ -302,7 +302,7 @@
 (define-update bridge (channel-update)
   (channel))
 
-(define-update emote (channel-update)
+(define-update react (channel-update)
   (target update-id emote))
 
 (define-update set-user-info (text-update)
