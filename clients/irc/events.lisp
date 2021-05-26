@@ -92,6 +92,7 @@
                  `(list (make-instance ',name :client client :code code :args args :user user)))))
        (pushnew ',name (gethash ,code *reply-events*)))))
 
+(define-irc-reply MSG-AUTHENTICATE AUTHENTICATE ("(.*)" MESSAGE))
 ;; Parsed from https://www.alien.net.au/irc/irc2numerics.html
 ;; Manually edited to suit a more parseable format, and to
 ;; remove conflicting duplicates.
@@ -471,6 +472,11 @@
 (define-irc-reply RPL-LOGGEDIN 900 ())
 (define-irc-reply RPL-LOGGEDOUT 901 ())
 (define-irc-reply ERR-NICKLOCKED 902 ())
+(define-irc-reply RPL-SASL-SUCCESS 903 ())
+(define-irc-reply ERR-SASL-FAILED 904 ())
+(define-irc-reply ERR-SASL-MESSAGE-TOO-LONG 905 ())
+(define-irc-reply ERR-SASL-ABORTED 906 ())
+(define-irc-reply ERR-SASL-ALREADY-DONE 907 ())
 (define-irc-reply ERR-CANNOTDOCOMMAND 972 ())
 (define-irc-reply ERR-CANNOTCHANGEUMODE 973 ("([^ ]+) (:.*)" MODE-CHAR INFO))
 (define-irc-reply ERR-CANNOTCHANGECHANMODE 974 ("([^ ]+) (:.*)" MODE-CHAR INFO))

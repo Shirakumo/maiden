@@ -26,4 +26,5 @@
                :babel
                :cl-ppcre
                :form-fiddle
-               :lambda-fiddle))
+               :lambda-fiddle
+               :base64))

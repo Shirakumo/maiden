@@ -15,7 +15,8 @@
    (realname :initarg :realname :accessor realname)
    (intended-nickname :initarg :intended-nickname :accessor intended-nickname)
    (services :initarg :services :accessor services)
-   (services-password :initarg :services-password :accessor services-password))
+   (services-password :initarg :services-password :accessor services-password)
+   (sasl :initarg :sasl :accessor sasl))
   (:default-initargs
    :nickname "Maiden"
    :username (machine-instance)
@@ -23,7 +24,8 @@
    :realname (machine-instance)
    :port 6667
    :services :generic
-   :services-password NIL))
+   :services-password NIL
+   :sasl NIL))
 
 (defmethod initialize-instance :after ((client irc-client) &key channels)
   (dolist (channel channels)
@@ -35,10 +37,12 @@
     (setf (intended-nickname client) (nickname client))))
 
 (defmethod initiate-connection :after ((client irc-client))
-  (with-slots (nickname username password realname) client
+  (with-slots (nickname username password realname sasl) client
+    (when sasl (irc:cap client "REQ" :sasl (getf sasl :method "PLAIN")))
     (when password (irc:pass client password))
     (setf (nickname client) (irc:nick* client nickname))
-    (irc:user client username 0 "*" realname)))
+    (irc:user client username 0 "*" realname)
+    (when sasl (irc:authenticate client (getf sasl :method "PLAIN")))))
 
 (defmethod close-connection :before ((client irc-client))
   (when (client-connected-p client)
@@ -142,12 +146,24 @@
   ;; Attempt to join all channels. This might fail due to delayed +i on channels +r.
   (rejoin-channels client))
 
-(define-handler (irc-client handle-authenticate irc:msg-mode) (client ev target mode)
+(define-handler (irc-client handle-mode irc:msg-mode) (client ev target mode)
   :match-consumer 'client
   ;; We are now identified, attempt to rejoin channels.
   (when (and (string-equal target (nickname client))
              (find #\i mode))
     (rejoin-channels client)))
+
+(define-handler (irc-client handle-authenticate irc:msg-authenticate) (client ev message)
+  :match-consumer 'client
+  (when (and (string= "+" message) (sasl client))
+    (destructuring-bind (&key identity username password method) (sasl client)
+      (etypecase method
+        ((NIL :plain)
+         (irc:authenticate client (base64:base64-encode (format NIL "~@[~a~]~c~a~c~a" identity #\Nul username #\Nul password))))))))
+
+(define-handler (irc-client handle-auth-complete irc:rpl-loggedin) (client ev)
+  :match-consumer 'client
+  (irc:cap client "END"))
 
 (define-handler (irc-client version-reply irc:msg-version) (client ev)
   :match-consumer 'client
