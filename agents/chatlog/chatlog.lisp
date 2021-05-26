@@ -75,3 +75,26 @@
                                (string (parse-integer port))
                                (null 5432)))
   (reply ev "Initialised the chatlog database."))
+
+(defun url-encode (thing &key (stream NIL) (external-format :utf-8) (allowed "-._~"))
+  (flet ((%url-encode (stream)
+           (loop for octet across (babel:string-to-octets thing :encoding external-format)
+                 for char = (code-char octet)
+                 do (cond ((or (char<= #\0 char #\9)
+                               (char<= #\a char #\z)
+                               (char<= #\A char #\Z)
+                               (find char allowed :test #'char=))
+                           (write-char char stream))
+                          (T (format stream "%~2,'0x" (char-code char)))))))
+    (if stream
+        (%url-encode stream)
+        (with-output-to-string (stream)
+          (%url-encode stream)))))
+
+(define-command (chatlog url) (client ev)
+  :command "show log"
+  (let ((channel (channel-designator ev)))
+    (with-db ()
+      (if (channel-exists-p channel)
+          (reply ev "~a/~a/~a" (maiden-storage:value :base-url) (url-encode (car channel)) (url-encode (cdr channel)))
+          (reply ev "This channel is not logged.")))))
