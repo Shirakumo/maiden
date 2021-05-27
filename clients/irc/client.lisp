@@ -157,9 +157,9 @@
   :match-consumer 'client
   (when (and (string= "+" message) (sasl client))
     (destructuring-bind (&key identity username password method) (sasl client)
-      (etypecase method
+      (ecase method
         ((NIL :plain)
-         (irc:authenticate client (base64:base64-encode (format NIL "~@[~a~]~c~a~c~a" identity #\Nul username #\Nul password))))))))
+         (irc:authenticate client (base64:string-to-base64-string (format NIL "~@[~a~]~c~a~c~a" identity #\Nul username #\Nul password))))))))
 
 (define-handler (irc-client handle-auth-complete irc:rpl-loggedin) (client ev)
   :match-consumer 'client

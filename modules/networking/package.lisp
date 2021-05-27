@@ -44,7 +44,6 @@
    #:read-thread
    #:recv-lock
    #:send-lock
-   #:ssl
    #:reconnecting-client
    #:failures
    #:max-failures
@@ -60,6 +59,8 @@
    #:tcp-client
    #:element-type
    #:idle-interval
+   #:ssl
+   #:socket-stream
    #:text-tcp-client
    #:tcp-server
    #:clients

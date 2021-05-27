@@ -279,7 +279,7 @@
 
 (defmethod initiate-connection ((server tcp-server))
   (with-slots (host port) server
-    (setf (socket client) (usocket:socket-listen host port))))
+    (setf (socket server) (usocket:socket-listen host port))))
 
 (defmethod close-connection :after ((server tcp-server))
   (loop for client = (car (clients server))

@@ -12,6 +12,8 @@
   (:export
    #:connect
    #:disconnect
+   #:cap
+   #:authenticate
    #:pass
    #:nick
    #:user
@@ -53,6 +55,8 @@
    #:nick*)
   ;; events.lisp
   (:export
+   #:msg-cap
+   #:msg-authenticate
    #:msg-pass
    #:msg-nick
    #:msg-user
@@ -414,6 +418,14 @@
    #:rpl-xinfo
    #:rpl-xinfostart
    #:rpl-xinfoend
+   #:rpl-loggedin
+   #:rpl-loggedout
+   #:err-nicklocked
+   #:rpl-sasl-success
+   #:err-sasl-failed
+   #:err-sasl-message-too-long
+   #:err-sasl-aborted
+   #:err-sasl-already-done
    #:err-cannotdocommand
    #:err-cannotchangeumode
    #:err-cannotchangechanmode

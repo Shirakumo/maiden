@@ -27,4 +27,4 @@
                :cl-ppcre
                :form-fiddle
                :lambda-fiddle
-               :base64))
+               :cl-base64))
