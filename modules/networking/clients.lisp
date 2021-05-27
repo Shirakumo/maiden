@@ -240,11 +240,16 @@
              (let* ((socket (usocket:socket-connect host port :element-type '(unsigned-byte 8)))
                     (format (cond ((equal (element-type client) '(unsigned-byte 8)) NIL)
                                   ((equal (element-type client) 'character) :utf-8)))
-                    (context (apply #'cl+ssl:make-context (etypecase (ssl client) ((eql T) ()) (list (ssl client)))))
+                    (context (apply #'cl+ssl:make-context
+                                    :verify-callback NIL
+                                    :verify-mode cl+ssl:+ssl-verify-none+
+                                    (etypecase (ssl client) ((eql T) ()) (list (ssl client)))))
                     (s (usocket:socket-stream socket)))
                (setf (socket client) socket)
                (cl+ssl:with-global-context (context)
                  (setf (socket-stream client) (cl+ssl:make-ssl-client-stream (cl+ssl:stream-fd s)
+                                                                             :verify :optional
+                                                                             :hostname (host client)
                                                                              :close-callback (lambda () (close s) (cl+ssl:ssl-ctx-free context))
                                                                              :external-format format)))))
             (T
