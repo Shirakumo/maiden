@@ -188,8 +188,8 @@
         do (when (= 0 (hash-table-count (user-map client)))
              (remove-user user client))))
 
-(define-handler (lichat-client bridge (and message-event passive-event)) (client ev message user)
-  (when (and (string/= "" message) (typep ev 'channel-event))
+(define-handler (lichat-client bridge (and message-event channel-event passive-event)) (client ev message user)
+  (when (string/= "" message)
     (if (eq client (client ev))
         (let ((target (loop for (client channel target) in (bridge client)
                             when (equalp target (name (channel ev)))
