@@ -45,11 +45,13 @@
 (define-consumer lichat-client (text-tcp-client reconnecting-client timeout-client simple-user-channel-client)
   ((servername :initform NIL :accessor servername)
    (username :initarg :username :accessor username)
-   (password :initarg :password :accessor password))
+   (password :initarg :password :accessor password)
+   (bridge :initarg :bridge :accessor bridge))
   (:default-initargs
    :username "Maiden"
    :password NIL
-   :port 1111))
+   :port 1111
+   :bridge ()))
 
 (defmethod initialize-instance :after ((client lichat-client) &key channels)
   (dolist (channel channels)
@@ -185,3 +187,24 @@
   (loop for channel being the hash-values of (channel-map client)
         do (when (= 0 (hash-table-count (user-map client)))
              (remove-user user client))))
+
+(define-handler (lichat-client bridge (and message-event passive-event)) (client ev message user)
+  (when (and (string/= "" message) (typep ev 'channel-event))
+    (if (eq client (client ev))
+        (let ((target (loop for (client channel target) in (bridge client)
+                            when (equalp target (name (channel ev)))
+                            return (list client channel))))
+          (when (and target (null (bridge ev)))
+            (let* ((target-client (consumer (first target) (first (cores client))))
+                   (channel (when target-client (find-channel (second target) target-client))))
+              (when channel
+                (reply channel "<~a> ~a" (name user) message)))))
+        (let ((target (loop for (client channel target) in (bridge client)
+                            when (and (equalp client (name (client ev)))
+                                      (equalp channel (name (channel ev))))
+                            return target)))
+          (when (and target
+                     (or (not (equal (name (user ev)) (username (client ev))))
+                         (char/= #\< (char message 0))))
+            (do-issue (first (cores client)) lichat-cmd:message
+              :client client :from (username client) :channel target :text message :bridge (name user)))))))

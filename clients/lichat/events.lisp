@@ -21,10 +21,10 @@
           until (or (not char) (char= #\Nul char)))))
 
 (defun good-initarg-p (initarg)
-  (member initarg '(:id :clock :from :password :version :extensions :channel :target :text
-                    :permissions :users :channels :registered :connections :update :permitted
-                    :attributes :update-id :compatible-versions :content-type :filename
-                    :payload :name :names :keys :key :ip :mask :by :identities)))
+  (find initarg #(:id :clock :from :password :version :extensions :channel :target :text
+                  :permissions :users :channels :registered :connections :update :permitted
+                  :attributes :update-id :compatible-versions :content-type :filename
+                  :bridge :link :payload :name :names :keys :key :ip :mask :by :identities)))
 
 (defun print-event (event stream)
   (lichat-protocol:print-sexpr
