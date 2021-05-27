@@ -335,7 +335,7 @@
 (define-irc-reply ERR-TARGETTOOFAST 439 ())
 (define-irc-reply ERR-SERVICESDOWN 440 ())
 (define-irc-reply ERR-USERNOTINCHANNEL 441 ("([^ ]+) ([^ ]+) (:.*)" NICKNAME CHANNEL INFO) (irc-channel-event))
-(define-irc-reply ERR-NOTONCHANNEL 442 ("([^ ]+) (:.*)" CHANNEL INFO) (irc-channel-event))
+(define-irc-reply ERR-NOTONCHANNEL 442 ("([^ ]+) *(:.*)" CHANNEL INFO) (irc-channel-event))
 (define-irc-reply ERR-USERONCHANNEL 443 ("([^ ]+) ([^ ]+)( :(.*))?" NICKNAME CHANNEL NIL INFO) (irc-channel-event))
 (define-irc-reply ERR-NOLOGIN 444 ("([^ ]+) (:.*)" USERNAME INFO))
 (define-irc-reply ERR-SUMMONDISABLED 445 ("(:.*)" INFO))
