@@ -98,4 +98,5 @@
    #:lichat-channel
    #:lichat-client
    #:username
-   #:password))
+   #:password
+   #:bridge))
