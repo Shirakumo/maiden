@@ -94,7 +94,7 @@
     (handler-bind ((lichat-protocol:wire-condition
                      (lambda (err)
                        (v:error :maiden.client.lichat.connection "Parse error: ~a" err)
-                       (loop with stream = (usocket:socket-stream (socket client))
+                       (loop with stream = (socket-stream client)
                              for char = (read-char stream NIL)
                              until (or (not char) (char= #\Nul char)))
                        (invoke-restart 'continue))))
@@ -109,12 +109,12 @@
     (send item client)))
 
 (defmethod send ((object update) (client lichat-client))
-  (let ((stream (usocket:socket-stream (socket client))))
+  (let ((stream (socket-stream client)))
     (print-event object stream)
     (finish-output stream)))
 
 (defmethod receive ((client lichat-client))
-  (let ((update (parse-event client (usocket:socket-stream (socket client)))))
+  (let ((update (parse-event client (socket-stream client))))
     (v:trace :maiden.client.lichat.connection "Received update: ~a" update)
     update))
 

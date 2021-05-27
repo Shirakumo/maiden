@@ -60,11 +60,11 @@
 
 (defmethod receive ((client relay-client))
   (let ((finder (lambda (id) (find-entity id (cores (server client))))))
-    (deserialize (usocket:socket-stream (socket client))
+    (deserialize (socket-stream client)
                  `((core . ,finder) (consumer . ,finder)))))
 
 (defmethod send (message (client relay-client))
-  (let ((socket (usocket:socket-stream (socket client))))
+  (let ((socket (socket-stream client)))
     (when socket
       (serialize message socket))))
 

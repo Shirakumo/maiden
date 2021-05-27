@@ -44,6 +44,7 @@
    #:read-thread
    #:recv-lock
    #:send-lock
+   #:ssl
    #:reconnecting-client
    #:failures
    #:max-failures

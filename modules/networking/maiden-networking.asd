@@ -21,4 +21,5 @@
                (:file "clients")
                (:file "documentation"))
   :depends-on (:maiden
+               :cl+ssl
                :usocket))

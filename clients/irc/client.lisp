@@ -89,7 +89,7 @@
   (with-output-to-string (out)
     ;; Slow character by character copy, but since we have to do
     ;; CRLF detection portably, we cannot use READ-LINE.
-    (loop with stream = (usocket:socket-stream (socket client))
+    (loop with stream = (socket-stream client)
           for char = (read-char stream) 
           do (case char
                (#\Return

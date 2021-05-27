@@ -156,7 +156,7 @@
          ;; We cannot call CLOSE-CONNECTION as it would end
          ;; our own thread with the restart invocation.
          ;; We don't care if it fails to close gracefully.
-         (ignore-errors (close (usocket:socket-stream (socket client))))
+         (ignore-errors (close (socket-stream client)))
          (ignore-errors (usocket:socket-close (socket client)))
          (broadcast (cores client) 'connection-closed :client client))
         (T
@@ -212,29 +212,44 @@
 
 (defmethod receive ((client text-client))
   (etypecase (buffer client)
-    ((eql :line) (read-line (usocket:socket-stream (socket client))))
-    (string (read-sequence (buffer client) (usocket:socket-stream (socket client))))))
+    ((eql :line) (read-line (socket-stream client)))
+    (string (read-sequence (buffer client) (socket-stream client)))))
 
 (defmethod send ((message string) (client text-client))
-  (let ((stream (usocket:socket-stream (socket client))))
+  (let ((stream (socket-stream client)))
     (write-string message stream)
     (finish-output stream)))
 
 (define-consumer tcp-client (socket-client)
   ((element-type :initform '(unsigned-byte 8) :reader element-type)
-   (idle-interval :initarg :idle-interval :accessor idle-interval))
+   (idle-interval :initarg :idle-interval :accessor idle-interval)
+   (ssl :initform NIL :initarg :ssl :accessor ssl)
+   (socket-stream :initform NIL :accessor socket-stream))
   (:default-initargs
    :idle-interval 10))
 
 (defmethod client-connected-p ((client tcp-client))
   (and (call-next-method)
-       (usocket:socket-stream (socket client))
-       (open-stream-p (usocket:socket-stream (socket client)))))
+       (socket-stream client)
+       (open-stream-p (socket-stream client))))
 
 (defmethod initiate-connection ((client tcp-client))
   (with-slots (host port) client
-    (unless (and (socket client) (open-stream-p (usocket:socket-stream (socket client))))
-      (setf (socket client) (usocket:socket-connect host port :element-type (element-type client))))))
+    (unless (and (socket client) (open-stream-p (socket-stream client)))
+      (cond ((ssl client)
+             (let* ((socket (usocket:socket-connect host port :element-type '(unsigned-byte 8)))
+                    (format (cond ((equal (element-type client) '(unsigned-byte 8)) NIL)
+                                  ((equal (element-type client) 'character) :utf-8)))
+                    (context (apply #'cl+ssl:make-context (etypecase (ssl client) ((eql T) ()) (list (ssl client)))))
+                    (s (usocket:socket-stream socket)))
+               (setf (socket client) socket)
+               (cl+ssl:with-global-context (context)
+                 (setf (socket-stream client) (cl+ssl:make-ssl-client-stream (cl+ssl:stream-fd s)
+                                                                             :close-callback (lambda () (close s) (cl+ssl:ssl-ctx-free context))
+                                                                             :external-format format)))))
+            (T
+             (setf (socket client) (usocket:socket-connect host port :element-type (element-type client)))
+             (setf (socket-stream client) (usocket:socket-stream (socket client))))))))
 
 (defmethod handle-connection ((client tcp-client))
   (with-retry-restart (continue "Discard the message and continue.")
