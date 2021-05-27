@@ -94,7 +94,7 @@
             (split-message-considering-newlines *message-length-limit* ,message)))))))
 
 (define-simple-irc-command cap (command &key sasl)
-  "CAP ~s~@[ :sasl~]" command sasl)
+  "CAP ~a~@[ :sasl~]" command sasl)
 
 (define-simple-irc-command authenticate (arg)
   "AUTHENTICATE ~a" arg)
