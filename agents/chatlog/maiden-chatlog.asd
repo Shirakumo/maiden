@@ -23,4 +23,5 @@
                :maiden-storage
                :maiden-client-entities
                :postmodern
+               :babel
                :bordeaux-threads))
