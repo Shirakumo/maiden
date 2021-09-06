@@ -6,17 +6,21 @@
 
 (in-package #:org.shirakumo.maiden.agents.weather)
 
-(defparameter *weather-api* "https://api.darksky.net/forecast/~a/~f,~f")
+(defparameter *weather-api* "https://api.openweathermap.org/data/2.5/onecall")
 
-(defun weather-data (apikey lat lng &key (time-frame :currently))
-  (let* ((data (request-as :json (format NIL *weather-api* apikey lat lng)
-                           :get `(("units" "si") ("exclude" ,(format NIL "~{~(~a~)~^,~}" (remove time-frame '(:currently :minutely :hourly :daily :flags :alerts))))))))
+(defun weather-data (apikey lat lng &key (time-frame :current))
+  (let* ((data (request-as :json *weather-api*
+                           :get `(("units" "metric")
+                                  ("lat" ,(float lat))
+                                  ("lon" ,(float lng))
+                                  ("appid" ,apikey)
+                                  ("exclude" ,(format NIL "~{~(~a~)~^,~}" (remove time-frame '(:current :minutely :hourly :daily :alerts))))))))
     (cond ((consp data)
-           (cdr (json-v data (string-downcase time-frame))))
+           (json-v data (string-downcase time-frame)))
           (T
-           (error "Forecast.io failed to perform your request for an unknown reason.")))))
+           (error "API failed to perform your request for an unknown reason.")))))
 
-(defun location-weather-data (apikey location &key (time-frame :currently))
+(defun location-weather-data (apikey location &key (time-frame :current))
   (multiple-value-bind (loc resolved-location) (maiden-location:coordinates location)
     (cond ((not loc)
            (error "Could not determine any location called ~s." location))
@@ -25,12 +29,12 @@
                    resolved-location)))))
 
 (defun format-weather-data (data)
-  (flet ((d (field) (cdr (assoc field data :test #'equalp))))
-    (let ((summary (d "summary"))
-          (temperature (round (d "temperature")))
-          (apparent (round (d "apparentTemperature")))
-          (humidity (round (* 100 (d "humidity"))))
-          (wind (round (d "windSpeed")))
+  (flet ((d (field &optional (data data)) (cdr (assoc field (cdr data) :test #'equalp))))
+    (let ((summary (d "description" (first (d "weather"))))
+          (temperature (round (d "temp")))
+          (apparent (round (d "feels_like")))
+          (humidity (round (d "humidity")))
+          (wind (round (d "wind_speed")))
           (pressure (round (d "pressure"))))
       (format NIL "~a at ~d°C~:[ (feels like ~d°C)~;~*~], ~d% humidity, ~dkm/h wind, ~dhPa pressure."
               summary temperature (= temperature apparent) apparent humidity wind pressure))))
@@ -47,12 +51,12 @@
     (6 "Saturday")))
 
 (defun format-daily-forecast (data)
-  (flet ((d (field) (cdr (assoc field data :test #'equalp))))
+  (flet ((d (field &optional (data data)) (cdr (assoc field data :test #'equalp))))
     (format NIL "~{~{~a ~d-~d°C~}~^, ~}"
-            (loop for dat in (d "data")
-                  collect (list (day-of-week (json-v dat "time"))
-                                (round (json-v dat "temperatureMin"))
-                                (round (json-v dat "temperatureMax")))))))
+            (loop for dat in data
+                  collect (list (day-of-week (d "dt" dat))
+                                (round (d "min" (d "temp" dat)))
+                                (round (d "max" (d "temp" dat))))))))
 
 (define-consumer weather (agent)
   ())
