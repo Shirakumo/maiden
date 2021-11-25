@@ -111,7 +111,7 @@
     (with-db ()
       (unless (channel-exists-p channel)
         (error "The channel ~a wasn't logged to begin with." channel))
-      (prepared-statement "REMOVE FROM \"channels\" WHERE \"server\"=$1 AND \"channel\"=$2"
+      (prepared-statement "DELETE FROM \"channels\" WHERE \"server\"=$1 AND \"channel\"=$2"
                           (car channel) (cdr channel))))
   channel-ish)
 
