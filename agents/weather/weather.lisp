@@ -11,8 +11,8 @@
 (defun weather-data (apikey lat lng &key (time-frame :current))
   (let* ((data (request-as :json *weather-api*
                            :get `(("units" "metric")
-                                  ("lat" ,(float lat))
-                                  ("lon" ,(float lng))
+                                  ("lat" ,(format NIL "~f" lat))
+                                  ("lon" ,(format NIL "~f" lng))
                                   ("appid" ,apikey)
                                   ("exclude" ,(format NIL "~{~(~a~)~^,~}" (remove time-frame '(:current :minutely :hourly :daily :alerts))))))))
     (cond ((consp data)
