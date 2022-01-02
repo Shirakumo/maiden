@@ -308,6 +308,9 @@
 (define-update set-user-info (text-update)
   (key text))
 
+(define-update typing (channel-update)
+  (channel))
+
 (define-update share-identity ()
   (&optional key))
 
