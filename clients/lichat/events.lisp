@@ -61,7 +61,7 @@
                    collect (intern (string var) :keyword)
                    collect var))))))
 
-(define-event update (user-event lichat-protocol:wire-object)
+(define-event update (user-event lichat-protocol:object)
   ((id :initarg :id :reader id)
    (clock :initarg :clock :reader clock)
    (user :initarg :from))
