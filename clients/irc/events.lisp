@@ -139,6 +139,7 @@
 (define-irc-reply MSG-WALLOPS WALLOPS (":(.*)" MESSAGE) (message-event))
 (define-irc-reply MSG-USERHOST USERHOST ("(.*)" (NICKNAME #\ )))
 (define-irc-reply MSG-ISON ISON ("(.*)" (NICKNAME #\ )))
+(define-irc-reply MSG-CAP CAP ("([^ ]+) ([^ ]+)(.*)" (thing command args)))
 (define-irc-reply RPL-WELCOME 001 ("(:.*)" INFO))
 (define-irc-reply RPL-YOURHOST 002 ("(:.*)" INFO))
 (define-irc-reply RPL-CREATED 003 ("(:.*)" INFO))
