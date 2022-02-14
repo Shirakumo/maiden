@@ -51,19 +51,20 @@
         (subseq text 0 boundary)
         (subseq text 0 (min max (length text))))))
 
-(defmethod play ((talk talk) path)
+(defmethod play ((talk talk) path &key effects immediate)
   (when (voice talk)
     (loop until (mixed:done-p (voice talk))
-          do (sleep 0.1)))
-  (setf (voice talk) (harmony:play path :server (server talk) :mixer :speech)))
+          do (sleep 0.1)
+             (when immediate (return))))
+  (setf (voice talk) (harmony:play path :server (server talk) :mixer :speech :effects effects)))
 
-(defmethod talk ((talk talk) text &key (language "en-US") output)
+(defmethod talk ((talk talk) text &key (language "en-US") output effects)
   (cond ((<= (length text) 200)
-         (play talk (speech-file text language)))
+         (play talk (speech-file text language) :effects effects))
         (T
          (let ((sub (split-word-boundary text 200)))
-           (talk talk sub :language language :output output)
-           (talk talk (subseq text (length sub)) :language language :output output)))))
+           (talk talk sub :language language :output output :effects effects)
+           (talk talk (subseq text (length sub)) :language language :output output :effects effects)))))
 
 (define-command (talk talk-en) (c ev &string text)
   :command "talk"
