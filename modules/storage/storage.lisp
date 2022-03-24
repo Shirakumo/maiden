@@ -45,7 +45,7 @@
   (let ((parts (split #\/ (normalize-fqdn (package-short-name package)))))
     (make-pathname :name "default"
                    :type "lisp"
-                   :defaults (apply #'pathname-utils:subdirectory NIL parts))))
+                   :defaults (make-pathname :directory `(:relative ,@parts)))))
 
 (defun find-config-directory ()
   (let ((local-config (pathname-utils:subdirectory *root* "config"))
