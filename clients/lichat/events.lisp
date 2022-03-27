@@ -116,9 +116,10 @@
 (define-update pong (update) ())
 
 (define-update connect (update)
-  (password &optional
-            (version (lichat-protocol:protocol-version))
-            (extensions '("shirakumo-backfill" "shirakumo-data"))))
+  (&optional
+   password
+   (version (lichat-protocol:protocol-version))
+   (extensions '("shirakumo-backfill" "shirakumo-data"))))
 
 (define-update disconnect (update) ())
 
