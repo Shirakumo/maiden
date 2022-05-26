@@ -66,8 +66,13 @@
       (call-next-method))))
 
 (defmethod process (message (client irc-client))
+  (v:trace :maiden.client.irc "RECV: ~s" message)
   (let ((events (when (and message (string/= message ""))
-                  (parse-reply client message))))
+                  (handler-case
+                      (parse-reply client message)
+                    (data-parse-error (err)
+                      (v:error :maiden.client.irc.connection "Parse error: ~a" err)
+                      ())))))
     (dolist (core (cores client))
       (dolist (event events)
         (issue event core)))))
@@ -77,6 +82,7 @@
     (send item client)))
 
 (defmethod send ((message string) (client irc-client))
+  (v:trace :maiden.client.irc "SEND: ~s" message)
   ;; FIXME: Better handling for multilines
   ;; FIXME: Queue messages or sleep to avoid flood
   (let ((message (format NIL "~a~c~c" (cl-ppcre:regex-replace-all "\\n" message " ") #\Return #\Linefeed)))
