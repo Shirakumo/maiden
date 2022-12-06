@@ -178,8 +178,8 @@
 (defmethod initialize-instance :around ((ev irc:privmsg) &rest args &key receivers client)
   (apply #'call-next-method ev :channel (coerce-irc-object (first (enlist receivers)) NIL NIL client) args))
 
-(define-message-irc-command notice (nickname text)
-  "NOTICE ~a ~a" nickname text)
+(define-message-irc-command notice (nickname message)
+  "NOTICE ~a :~a" nickname message)
 
 (define-simple-irc-command who (&key name opers-only)
   "WHO~@[ ~a~@[ o~]~]" name opers-only)
