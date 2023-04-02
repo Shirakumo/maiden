@@ -10,7 +10,8 @@
   (:use #:cl #:maiden #:maiden-commands)
   (:local-nicknames
    (#:mixed #:org.shirakumo.fraf.mixed)
-   (#:harmony #:org.shirakumo.fraf.harmony.user))
+   (#:harmony #:org.shirakumo.fraf.harmony.user)
+   (#:v #:org.shirakumo.verbose))
   ;; talk.lisp
   (:export
    #:talk

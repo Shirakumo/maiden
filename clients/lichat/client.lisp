@@ -164,7 +164,7 @@
 
 (define-handler (lichat-client reconnect lichat-rpl:connection-unstable) (client ev)
   :match-consumer 'client
-  (initiate-connection (close-connection client)))
+  #++(initiate-connection (close-connection client)))
 
 (define-handler (lichat-client track-join lichat-rpl:join) (client ev channel user)
   :match-consumer 'client

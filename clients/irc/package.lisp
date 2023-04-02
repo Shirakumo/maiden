@@ -7,6 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-irc-events
   (:nicknames #:irc #:org.shirakumo.maiden.clients.irc.events)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use)
   ;; commands.lisp
   (:export
@@ -442,6 +443,7 @@
 (defpackage #:maiden-irc
   (:nicknames #:org.shirakumo.maiden.clients.irc)
   (:use #:cl #:maiden #:maiden-networking #:maiden-client-entities)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:shadow #:username)
   ;; client.lisp
   (:export

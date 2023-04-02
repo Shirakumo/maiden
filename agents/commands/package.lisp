@@ -7,6 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-commands
   (:nicknames #:org.shirakumo.maiden.agents.commands)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use #:cl #:maiden #:maiden-client-entities)
   ;; dispatch.lisp
   (:export

@@ -7,6 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-networking
   (:nicknames #:org.shirakumo.maiden.modules.networking)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use #:cl #:maiden)
   ;; conditions.lisp
   (:export

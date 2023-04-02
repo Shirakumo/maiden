@@ -8,6 +8,7 @@
 
 (defpackage #:lichat-cmd
   (:nicknames #:org.shirakumo.maiden.clients.lichat.cmd)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use)
   (:export
    #:update
@@ -50,6 +51,7 @@
 
 (defpackage #:lichat-rpl
   (:nicknames #:org.shirakumo.maiden.clients.lichat.rpl)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use)
   (:export
    #:update
@@ -93,6 +95,7 @@
 (defpackage #:maiden-lichat
   (:nicknames #:org.shirakumo.maiden.clients.lichat)
   (:use #:cl #:maiden #:maiden-networking #:maiden-client-entities)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:export
    #:lichat-user
    #:lichat-channel

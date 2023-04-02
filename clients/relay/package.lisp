@@ -7,6 +7,7 @@
 (in-package #:maiden-user)
 (defpackage #:maiden-relay
   (:nicknames #:org.shirakumo.maiden.clients.relay)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use #:cl #:maiden #:maiden-serialize #:maiden-networking)
   ;; client.lisp
   (:export

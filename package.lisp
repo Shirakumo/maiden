@@ -8,6 +8,7 @@
 
 (defpackage #:maiden
   (:nicknames #:org.shirakumo.maiden)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use #:cl #:deeds)
   (:shadow
    #:event-class
@@ -144,4 +145,5 @@
 
 (defpackage #:maiden-user
   (:nicknames #:org.shirakumo.maiden.user)
+  (:local-nicknames (#:v #:org.shirakumo.verbose))
   (:use #:cl #:maiden))
