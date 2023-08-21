@@ -12,6 +12,8 @@
                (:file "lookup")
                (:file "parsers")
                (:file "archives")
+               (:file "clhs")
+               (:file "mop")
                (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
