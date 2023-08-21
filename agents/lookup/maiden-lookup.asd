@@ -14,6 +14,7 @@
                (:file "archives")
                (:file "clhs")
                (:file "mop")
+               (:file "shirakumo")
                (:file "interface")
                (:file "documentation"))
   :depends-on (:maiden-commands
