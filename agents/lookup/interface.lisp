@@ -14,6 +14,10 @@
           (reply ev "~@[~@(~a~) ~]~a" title url))
         (reply ev "Found: ~{~a~^, ~}" (mapcar #'first matches)))))
 
+(define-command (lookup archive-list) (c ev)
+  :command "list archives"
+  (reply ev "Known archives: ~{~(~a~)~^, ~}" (sort (list-archives) #'string<)))
+
 (defmacro define-shorthand-command (name &key (archive (string name)) (command (string name)))
   `(define-command (lookup ,name) (c ev &string term)
      :command ,command
