@@ -107,14 +107,15 @@
     (lquery:$ doc "h2.chapter,h3.section"
       (each (lambda (node)
               (let ((name (plump:text node))
-                    (anchor (lquery:$1 node (prev "a") (attr :name))))
+                    (anchor (lquery:$1 node (prev "[id]") (attr :id))))
                 (when anchor
-                  (push (list (list name) (format NIL "~a#~a" url anchor))
+                  (push (list (list name (subseq name 0 (position #\Space name)))
+                              (format NIL "~a#~a" url anchor))
                         results)))
               T)))
     (lquery:$ doc "h3.heading"
       (each (lambda (node)
-              (let ((anchor (lquery:$1 node (prev "a") (attr :name)))
+              (let ((anchor (lquery:$1 node (prev "[id]") (attr :id)))
                     (names (cl-ppcre:split "\\s*,+\\s*" (plump:text node)))
                     (types (lquery:$ node (next-all "dl") (text))))
                 (loop for name in names
