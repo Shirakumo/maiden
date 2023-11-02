@@ -127,6 +127,12 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
          (and (string-equal size "the")
               (string-equal times "dice")))
      (reply ev "1d6: ~d" (1+ (random 6))))
+    ((or (string-equal size "cylinder")
+         (string-equal size "gun")
+         (string-equal size "russian"))
+     (if (= 0 (random 6))
+         (reply ev "BANG!")
+         (reply ev ".... click")))
     (T
      (let ((size (parse-integer size :junk-allowed T))
            (times (parse-integer times :junk-allowed T)))
