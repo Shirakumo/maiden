@@ -89,7 +89,7 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
     "That's Numberwang!"))
 
 (define-consumer silly (agent)
-  ())
+  ((gun-cylinder :initform (vector NIL NIL NIL NIL NIL NIL) :accessor gun-cylinder)))
 
 (define-handler (silly handle (and message-event passive-event)) (c ev user message)
   :class activatable-handler
@@ -228,6 +228,45 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
 (define-command (silly fortune-for) (c ev name)
   :command "fortune for"
   (reply ev "~@(~a~)'s fortune for today is: ~a" name (fortune name)))
+
+(define-command (silly check-gun) (c ev)
+  :command "check the gun"
+  (reply ev "You check the gun... it's ~[empty~:;loaded with ~:*~d bullet~:p~]!"
+         (count T (gun-cylinder c))))
+
+(define-command (silly load-gun) (c ev)
+  :command "load the gun"
+  (let ((count (count T (gun-cylinder c))))
+    (cond ((= count (length (gun-cylinder c)))
+           (reply ev "The cylinder is already fully loaded."))
+          (T
+           (dotimes (i (length (gun-cylinder c)))
+             (unless (aref (gun-cylinder c) i)
+               (setf (aref (gun-cylinder c) i) T)
+               (return)))
+           (incf count)
+           (if (= 1 count)
+               (reply ev "You load the gun. There is now one bullet in the cylinder.")
+               (reply ev "You load the gun. There are now ~d bullets in the cylinder." count))))))
+
+(define-command (silly empty-gun) (c ev)
+  :command "empty the gun"
+  (fill (gun-cylinder c) NIL)
+  (reply ev "You empty the cylinder. The gun is now empty."))
+
+(define-command (silly spin-gun) (c ev)
+  :command "spin the gun"
+  (alexandria:rotate (gun-cylinder c) (random 6))
+  (reply ev "You spin the cylinder."))
+
+(define-command (silly fire-gun) (c ev)
+  :command "fire the gun"
+  (let ((bullet (aref (gun-cylinder c) 0)))
+    (setf (aref (gun-cylinder c) 0) NIL)
+    (alexandria:rotate (gun-cylinder c))
+    (reply ev "You aim the gun and ...")
+    (sleep (+ 0.5 (random 1.0)))
+    (reply ev "~:[click~;BANG!~]" bullet)))
 
 (define-event tell-message (message-event passive-event)
   ((original-event :initarg :original-event)
