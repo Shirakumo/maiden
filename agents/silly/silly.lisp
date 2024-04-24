@@ -268,10 +268,33 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
     (sleep (+ 0.5 (random 1.0)))
     (reply ev "~:[click~;BANG!~]" bullet)))
 
-(define-command (silly sing) (c ev &rest message)
+(defparameter *songs*
+  (with-open-file (s (asdf:system-relative-pathname :maiden-silly "songs.txt"))
+    (loop for line = (read-line s NIL NIL)
+          while line collect line)))
+
+(defun fuse (parts position)
+  (let ((cons (nthcdr position parts)))
+    (when (rest cons)
+      (setf (car cons) (format NIL "~a ~a" (first cons) (second cons)))
+      (setf (cdr cons) (cddr cons)))
+    parts))
+
+(defun split-song (song)
+  (let ((count (count #\Space song))
+        (parts (cl-ppcre:split " " song)))
+    (loop while (< 0 count)
+          repeat (max 3 (ceiling count 5))
+          do (setf parts (fuse parts (random count)))
+             (decf count))
+    parts))
+
+(define-command (silly sing) (c ev &string song)
   :command "sing"
   (reply ev "𝄞𝄙 ~{~a~a ~a ~}~a~a𝄙𝄂"
-         (loop for word in message
+         (loop for word in (split-song (if (string= song "")
+                                           (alexandria:random-elt *songs*)
+                                           song))
                collect (alexandria:random-elt #("♭" "♮" "♯" "𝆑" "" "" "" "" "" "" "" "" ""))
                collect (alexandria:random-elt "𝅝𝅗𝅥𝅘𝅥𝅘𝅥𝅮𝅘𝅥𝅯𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲♬♫")
                collect word)
