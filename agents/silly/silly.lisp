@@ -268,6 +268,16 @@ r-'ｧ'\"´/　 /!　ﾊ 　ハ　 !　　iヾ_ﾉ　i　ｲ　iゝ、ｲ人レ�
     (sleep (+ 0.5 (random 1.0)))
     (reply ev "~:[click~;BANG!~]" bullet)))
 
+(define-command (silly sing) (c ev &rest message)
+  :command "sing"
+  (reply ev "𝄞𝄙 ~{~a~a ~a ~}~a~a𝄙𝄂"
+         (loop for word in message
+               collect (alexandria:random-elt #("♭" "♮" "♯" "𝆑" "" "" "" "" "" "" "" "" ""))
+               collect (alexandria:random-elt "𝅝𝅗𝅥𝅘𝅥𝅘𝅥𝅮𝅘𝅥𝅯𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲♬♫")
+               collect word)
+         (alexandria:random-elt #("♭" "♮" "♯" "𝆑" "" "" "" "" "" "" "" "" ""))
+         (alexandria:random-elt "𝅝𝅗𝅥𝅘𝅥𝅘𝅥𝅮𝅘𝅥𝅯𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲♬♫")))
+
 (define-event tell-message (message-event passive-event)
   ((original-event :initarg :original-event)
    (target-user :initarg :target-user)))
