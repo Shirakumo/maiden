@@ -37,7 +37,8 @@
   (dolist (super (c2mop:class-direct-superclasses class))
     (unless (c2mop:class-finalized-p super)
       (c2mop:finalize-inheritance super)))
-  (cascade-handler-changes class))
+  (unless (eq (class-name class)'consumer)
+    (cascade-handler-changes class)))
 
 (defmethod (setf effective-handlers) :after (handlers (class consumer-class))
   (setf (instances class)
@@ -275,9 +276,9 @@
     (setf (find-class event-response-type) NIL))
   (fmakunbound instruction))
 
-(defmacro define-consumer (name direct-superclasses direct-slots &rest options)
+(defmacro define-consumer (&environment env name direct-superclasses direct-slots &rest options)
   (when (loop for super in direct-superclasses
-              never (c2mop:subclassp (find-class super) (find-class 'consumer)))
+              never (c2mop:subclassp (find-class super) (find-class 'consumer T env)))
     (push 'consumer direct-superclasses))
   (unless (find :metaclass options :key #'first)
     (push `(:metaclass consumer-class) options))
