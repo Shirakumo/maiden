@@ -3,7 +3,7 @@ This is a very small and primitive IRC client application to be used in the SLIM
 
 ## How To:
 Currently neither Maiden3 nor the latest version of Deeds are on Quicklisp, so you'll have to clone them into your `local-projects` or wherever. 
-For Maiden, clone the `v3` branch of `https://github.com/Shinmera/maiden` and for Deeds the `master` branch of `https://github.com/Shinmera/deeds`.
+For Maiden, clone the `v3` branch of `https://shinmera.com/project/maiden` and for Deeds the `master` branch of `https://shinmera.com/project/deeds`.
 
 Once you got that, make sure to `(ql:register-local-projects)`, then simply `(ql:quickload :maiden-circ)`, and finally `(in-package #:circ)`.
 
